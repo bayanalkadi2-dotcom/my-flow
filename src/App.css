@@ -95,3 +95,8 @@ button {
     grid-template-columns: 1fr;
   }
 }
+.app-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 20px;
+}

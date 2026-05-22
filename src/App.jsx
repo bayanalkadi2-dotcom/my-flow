@@ -1,3 +1,4 @@
+import logo from './assets/Icon Gruppe H.png'
 import './App.css'
 
 function App() {
@@ -5,6 +6,8 @@ function App() {
     <main className="app">
       <section className="hero">
         <div className="hero-content">
+          <img src={logo} alt="MyFlow Logo" className="app-logo" />
+
           <p className="tagline">Gesundheit • Routinen • Motivation</p>
           <h1>MyFlow</h1>
           <p className="description">
