@@ -120,6 +120,248 @@ input {
   background: white;
 }
 
+.login-screen {
+  min-height: calc(100vh - 16px);
+  padding: 26px 18px 30px;
+  background:
+    radial-gradient(circle at 74% 22%, rgba(255, 203, 244, 0.26), transparent 28%),
+    linear-gradient(155deg, #fffafd 0%, #faf4ff 57%, #f3f4ff 100%);
+}
+
+.login-back {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  margin: 0 0 19px;
+  background: transparent;
+  color: #17152e;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.login-header h1 {
+  margin: 0;
+  color: #141334;
+  font-size: 26px;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.login-header h1 span {
+  font-size: 23px;
+}
+
+.login-header p {
+  margin: 5px 0 30px;
+  color: #46405c;
+  font-size: 15px;
+}
+
+.login-form {
+  display: grid;
+}
+
+.login-field {
+  position: relative;
+  display: block;
+  height: 73px;
+  margin: 0 0 18px;
+  padding: 13px 47px;
+  border: 1px solid rgba(132, 105, 196, 0.13);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 21px rgba(75, 53, 141, 0.1);
+}
+
+.login-field span {
+  display: block;
+  margin: 0 0 3px;
+  color: #2b2742;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.login-field input {
+  min-height: auto;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #15132d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.login-field input::placeholder {
+  color: #777298;
+  opacity: 1;
+}
+
+.field-icon {
+  position: absolute;
+  left: 15px;
+  top: 28px;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #4d495e;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.visibility-button {
+  position: absolute;
+  top: 26px;
+  right: 13px;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #58546e;
+  box-shadow: none;
+}
+
+.visibility-button svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.forgot-password {
+  justify-self: center;
+  margin: 12px 0 45px;
+  padding: 0;
+  background: transparent;
+  color: #765cff;
+  font-size: 14px;
+  box-shadow: none;
+}
+
+.login-submit {
+  min-height: 59px;
+  border-radius: 20px;
+  font-size: 16px;
+  background: linear-gradient(110deg, #ef8be3 0%, #9160f4 52%, #637df5 100%);
+}
+
+.register-copy {
+  margin: 26px 0 0;
+  color: #3d3952;
+  font-size: 14px;
+  text-align: center;
+}
+
+.register-copy button {
+  padding: 0 0 0 5px;
+  background: transparent;
+  color: #765cff;
+  box-shadow: none;
+}
+
+.auth-detail-screen .login-header p {
+  margin-bottom: 22px;
+}
+
+.auth-detail-screen .login-field {
+  margin-bottom: 13px;
+}
+
+.register-submit,
+.reset-submit {
+  margin-top: 10px;
+}
+
+.style-screen {
+  justify-content: flex-start;
+  padding-top: 28px;
+}
+
+.style-screen h1 {
+  font-size: 34px;
+  line-height: 1.12;
+}
+
+.style-intro {
+  margin: 0 0 20px;
+  color: #5f5b7c;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.language-style-options {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.language-style-card {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 20px 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(130, 100, 255, 0.16);
+  background: rgba(255, 255, 255, 0.82);
+  color: #17133f;
+  text-align: left;
+  box-shadow: 0 12px 26px rgba(110, 90, 170, 0.1);
+}
+
+.language-style-card.selected {
+  border-color: rgba(123, 97, 255, 0.5);
+  background:
+    radial-gradient(circle at top right, rgba(115, 207, 255, 0.2), transparent 38%),
+    linear-gradient(135deg, rgba(255, 225, 240, 0.94), rgba(237, 230, 255, 0.96));
+  box-shadow: 0 16px 32px rgba(123, 97, 255, 0.18);
+}
+
+.language-style-card strong {
+  padding-right: 36px;
+  font-size: 18px;
+}
+
+.language-style-card p {
+  color: #302c5a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.language-style-card small {
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.style-check {
+  position: absolute;
+  top: 17px;
+  right: 17px;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.12);
+  color: #765cff;
+}
+
+.language-style-card.selected .style-check {
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff);
+  color: white;
+}
+
+.style-continue {
+  width: 100%;
+}
+
 .page-header h1 {
   font-size: 34px;
 }
@@ -218,6 +460,11 @@ input {
 .settings-list div {
   display: flex;
   justify-content: space-between;
+}
+
+.profile-style-button {
+  width: 100%;
+  margin-bottom: 14px;
 }
 
 .wide-button {

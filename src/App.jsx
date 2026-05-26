@@ -37,13 +37,36 @@ const welcomeFeatures = [
   },
 ]
 
+const languageStyles = {
+  casual: {
+    label: 'Locker',
+    greeting: 'Hey, schön dass du da bist!',
+    dashboardTitle: 'Heute im Flow',
+    dashboardMessage: 'Du hast {count} von {total} Routinen fast geschafft. Weiter so!',
+    progressMessage: 'Stark! Du bist heute richtig gut dabei.',
+  },
+  formal: {
+    label: 'Förmlich',
+    greeting: 'Willkommen bei MyFlow',
+    dashboardTitle: 'Ihre Tagesübersicht',
+    dashboardMessage: 'Sie haben {count} von {total} Routinen nahezu abgeschlossen.',
+    progressMessage: 'Ihr Tagesziel entwickelt sich positiv.',
+  },
+}
+
 function App() {
   const [screen, setScreen] = useState('start')
+  const [languageStyle, setLanguageStyle] = useState('casual')
+  const [showPassword, setShowPassword] = useState(false)
 
   const completedHabits = useMemo(
     () => habits.filter((habit) => habit.progress >= 90).length,
     [],
   )
+  const tone = languageStyles[languageStyle]
+  const dashboardMessage = tone.dashboardMessage
+    .replace('{count}', completedHabits)
+    .replace('{total}', habits.length)
 
   function renderScreen() {
     if (screen === 'start') {
@@ -105,20 +128,205 @@ function App() {
 
     if (screen === 'login') {
       return (
-        <section className="screen compact-screen">
-          <button className="back-button" onClick={() => setScreen('start')}>←</button>
+        <section className="screen login-screen">
+          <button className="login-back" onClick={() => setScreen('start')} aria-label="Zurück">
+            ←
+          </button>
+          <header className="login-header">
+            <h1>Willkommen zurück! <span aria-hidden="true">👋</span></h1>
+            <p>Schön, dass du wieder da bist.</p>
+          </header>
+          <form className="login-form" onSubmit={(event) => event.preventDefault()}>
+            <label className="login-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="3" />
+                <path d="m5 7 7 5.4L19 7" />
+              </svg>
+              <span>E-Mail</span>
+              <input type="email" placeholder="name@beispiel.de" />
+            </label>
+            <label className="login-field password-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="5" y="10" width="14" height="10" rx="2.5" />
+                <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
+              </svg>
+              <span>Passwort</span>
+              <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" />
+              <button
+                className="visibility-button"
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.8 12s3.3-6 9.2-6 9.2 6 9.2 6-3.3 6-9.2 6-9.2-6-9.2-6Z" />
+                  <circle cx="12" cy="12" r="2.7" />
+                </svg>
+              </button>
+            </label>
+            <button className="forgot-password" type="button" onClick={() => setScreen('resetPassword')}>
+              Passwort vergessen?
+            </button>
+            <button className="login-submit" type="button" onClick={() => setScreen('languageStyle')}>
+              Einloggen
+            </button>
+          </form>
+          <p className="register-copy">
+            Noch kein Konto? <button type="button" onClick={() => setScreen('register')}>Registrieren</button>
+          </p>
+        </section>
+      )
+    }
+
+    if (screen === 'register') {
+      return (
+        <section className="screen login-screen auth-detail-screen">
+          <button className="login-back" onClick={() => setScreen('login')} aria-label="Zurück">
+            ←
+          </button>
+          <header className="login-header">
+            <h1>Konto erstellen</h1>
+            <p>Starte noch heute mit MyFlow.</p>
+          </header>
+          <form className="login-form" onSubmit={(event) => event.preventDefault()}>
+            <label className="login-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="3.5" />
+                <path d="M5.5 19.5c.7-4 3.1-6 6.5-6s5.8 2 6.5 6" />
+              </svg>
+              <span>Name</span>
+              <input type="text" placeholder="Dein Name" />
+            </label>
+            <label className="login-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="3" />
+                <path d="m5 7 7 5.4L19 7" />
+              </svg>
+              <span>E-Mail</span>
+              <input type="email" placeholder="name@beispiel.de" />
+            </label>
+            <label className="login-field password-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="5" y="10" width="14" height="10" rx="2.5" />
+                <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
+              </svg>
+              <span>Passwort</span>
+              <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" />
+              <PasswordVisibilityButton
+                visible={showPassword}
+                onClick={() => setShowPassword((current) => !current)}
+              />
+            </label>
+            <label className="login-field password-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="5" y="10" width="14" height="10" rx="2.5" />
+                <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
+              </svg>
+              <span>Passwort bestätigen</span>
+              <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" />
+              <PasswordVisibilityButton
+                visible={showPassword}
+                onClick={() => setShowPassword((current) => !current)}
+              />
+            </label>
+            <button className="login-submit register-submit" type="button" onClick={() => setScreen('languageStyle')}>
+              Registrieren
+            </button>
+          </form>
+          <p className="register-copy">
+            Bereits ein Konto? <button type="button" onClick={() => setScreen('login')}>Einloggen</button>
+          </p>
+        </section>
+      )
+    }
+
+    if (screen === 'resetPassword') {
+      return (
+        <section className="screen login-screen auth-detail-screen">
+          <button className="login-back" onClick={() => setScreen('login')} aria-label="Zurück">
+            ←
+          </button>
+          <header className="login-header">
+            <h1>Passwort zurücksetzen</h1>
+            <p>Lege ein neues Passwort für dein Konto fest.</p>
+          </header>
+          <form className="login-form" onSubmit={(event) => event.preventDefault()}>
+            <label className="login-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="3" />
+                <path d="m5 7 7 5.4L19 7" />
+              </svg>
+              <span>E-Mail</span>
+              <input type="email" placeholder="name@beispiel.de" />
+            </label>
+            <label className="login-field password-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="5" y="10" width="14" height="10" rx="2.5" />
+                <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
+              </svg>
+              <span>Neues Passwort</span>
+              <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" />
+              <PasswordVisibilityButton
+                visible={showPassword}
+                onClick={() => setShowPassword((current) => !current)}
+              />
+            </label>
+            <label className="login-field password-field">
+              <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="5" y="10" width="14" height="10" rx="2.5" />
+                <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
+              </svg>
+              <span>Passwort bestätigen</span>
+              <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" />
+              <PasswordVisibilityButton
+                visible={showPassword}
+                onClick={() => setShowPassword((current) => !current)}
+              />
+            </label>
+            <button className="login-submit reset-submit" type="button" onClick={() => setScreen('login')}>
+              Passwort speichern
+            </button>
+          </form>
+          <p className="register-copy">
+            Zurück zum <button type="button" onClick={() => setScreen('login')}>Einloggen</button>
+          </p>
+        </section>
+      )
+    }
+
+    if (screen === 'languageStyle') {
+      return (
+        <section className="screen compact-screen style-screen">
+          <button className="back-button" onClick={() => setScreen('login')}>←</button>
           <img src={logo} alt="MyFlow Logo" className="small-logo" />
-          <p className="eyebrow">Willkommen zurück</p>
-          <h1>Einloggen</h1>
-          <label>
-            E-Mail
-            <input type="email" placeholder="name@hochschule.de" />
-          </label>
-          <label>
-            Passwort
-            <input type="password" placeholder="Passwort" />
-          </label>
-          <button onClick={() => setScreen('dashboard')}>Einloggen</button>
+          <p className="eyebrow">Personalisierung</p>
+          <h1>Wie soll MyFlow mit dir sprechen?</h1>
+          <p className="style-intro">
+            Du kannst später in deinem Profil jederzeit zwischen den Sprachstilen wechseln.
+          </p>
+          <div className="language-style-options">
+            <button
+              className={`language-style-card ${languageStyle === 'casual' ? 'selected' : ''}`}
+              onClick={() => setLanguageStyle('casual')}
+            >
+              <span className="style-check">{languageStyle === 'casual' ? '✓' : ''}</span>
+              <strong>Locker und nahbar</strong>
+              <p>„Hey! Lust, heute deine Ziele gemeinsam anzugehen?“</p>
+              <small>Persönlich, motivierend und weniger förmlich</small>
+            </button>
+            <button
+              className={`language-style-card ${languageStyle === 'formal' ? 'selected' : ''}`}
+              onClick={() => setLanguageStyle('formal')}
+            >
+              <span className="style-check">{languageStyle === 'formal' ? '✓' : ''}</span>
+              <strong>Normal und förmlich</strong>
+              <p>„Willkommen. Ihre Tagesziele stehen bereit.“</p>
+              <small>Sachlich, klar und wie in klassischen Apps</small>
+            </button>
+          </div>
+          <button className="style-continue" onClick={() => setScreen('dashboard')}>
+            Mit „{tone.label}“ fortfahren
+          </button>
         </section>
       )
     }
@@ -128,16 +336,16 @@ function App() {
         <section className="screen">
           <div className="page-header">
             <div>
-              <p className="eyebrow">Tagesübersicht</p>
-              <h1>Heute im Flow</h1>
-              <p className="lead">Du hast {completedHabits} von {habits.length} Routinen fast geschafft.</p>
+              <p className="eyebrow">{tone.greeting}</p>
+              <h1>{tone.dashboardTitle}</h1>
+              <p className="lead">{dashboardMessage}</p>
             </div>
           </div>
 
           <article className="stat-card big-stat">
             <span>Tagesfortschritt</span>
             <strong>75%</strong>
-            <p>3 von 4 Routinen erledigt.</p>
+            <p>{tone.progressMessage}</p>
           </article>
 
           <HabitList />
@@ -181,9 +389,12 @@ function App() {
         <div className="settings-list">
           <div><span>Name</span><strong>Studentin</strong></div>
           <div><span>Erinnerungen</span><strong>Aktiv</strong></div>
-          <div><span>Sprache</span><strong>Deutsch</strong></div>
+          <div><span>Sprachstil</span><strong>{tone.label}</strong></div>
           <div><span>Design</span><strong>Hell</strong></div>
         </div>
+        <button className="secondary-button profile-style-button" onClick={() => setScreen('languageStyle')}>
+          Sprachstil ändern
+        </button>
         <button onClick={() => setScreen('start')}>Abmelden</button>
       </section>
     )
@@ -193,7 +404,7 @@ function App() {
     <main className="app">
       {renderScreen()}
 
-      {screen !== 'start' && screen !== 'login' && (
+      {!['start', 'login', 'register', 'resetPassword', 'languageStyle'].includes(screen) && (
         <nav className="bottom-nav">
           {navItems.map((item) => (
             <button
@@ -234,6 +445,22 @@ function Progress({ value }) {
     <div className="progress">
       <span style={{ width: `${value}%` }} />
     </div>
+  )
+}
+
+function PasswordVisibilityButton({ visible, onClick }) {
+  return (
+    <button
+      className="visibility-button"
+      type="button"
+      onClick={onClick}
+      aria-label={visible ? 'Passwort verbergen' : 'Passwort anzeigen'}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M2.8 12s3.3-6 9.2-6 9.2 6 9.2 6-3.3 6-9.2 6-9.2-6-9.2-6Z" />
+        <circle cx="12" cy="12" r="2.7" />
+      </svg>
+    </button>
   )
 }
 
