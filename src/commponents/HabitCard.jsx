@@ -1,9 +1,17 @@
-function HabitCard({ title, description }) {
+function HabitCard({ habit }) {
   return (
-    <div className="habit-card">
-      <h3>{title}</h3>
-      <p>{description}</p>
-    </div>
+    <article className="habit-card">
+      <div>
+        <h2>{habit.title}</h2>
+        <p>{habit.detail}</p>
+      </div>
+      <div className="habit-side">
+        <span className="pill">{habit.status}</span>
+        <div className="progress">
+          <span style={{ width: `${habit.progress}%` }} />
+        </div>
+      </div>
+    </article>
   )
 }
 
