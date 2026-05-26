@@ -10,6 +10,7 @@ import Routinen from './pages/Routinen'
 import Sprachstil from './pages/Sprachstil'
 import Startseite from './pages/Startseite'
 import Statistik from './pages/Statistik'
+import Freunde from './pages/Freunde'
 import './App.css'
 
 const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle']
@@ -44,8 +45,11 @@ function App() {
         return <Statistik />
       case 'profile':
         return <Profil tone={tone} onNavigate={setScreen} />
-      default:
-        return <Startseite onNavigate={setScreen} />
+      case 'freunde':
+        return <Freunde />
+
+default:
+  return <Startseite onNavigate={setScreen} />
     }
   }
 

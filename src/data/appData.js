@@ -9,6 +9,7 @@ export const navItems = [
   { id: 'dashboard', label: 'Home' },
   { id: 'habits', label: 'Routinen' },
   { id: 'progress', label: 'Statistik' },
+  { id: 'freunde', label: 'Freunde' },
   { id: 'profile', label: 'Profil' },
 ]
 

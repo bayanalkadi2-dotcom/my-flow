@@ -1,128 +1,94 @@
-# MyFlow
+# My Flow
+
+
+
+## Getting started
+
+To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+
+Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+
+## Add your files
+
+* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
+* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+
+```
+cd existing_repo
+git remote add origin https://gitlab.hs-ruhrwest.de/bayan.alkadi/My-Flow.git
+git branch -M main
+git push -uf origin main
+```
+
+## Integrate with your tools
+
+* [Set up project integrations](https://gitlab.hs-ruhrwest.de/bayan.alkadi/My-Flow/-/settings/integrations)
+
+## Collaborate with your team
+
+* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
+* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
+* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
+* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
+* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+
+## Test and Deploy
+
+Use the built-in continuous integration in GitLab.
+
+* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
+* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
+* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
+* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
+* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+
+***
+
+# Editing this README
+
+When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+
+## Suggestions for a good README
+
+Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+
+## Name
+Choose a self-explaining name for your project.
 
 ## Description
+Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-**MyFlow** ist eine Gesundheits- und Gewohnheiten-App für junge Menschen und Studierende. Die Anwendung unterstützt Nutzerinnen und Nutzer dabei, gesunde Routinen aufzubauen, den Alltag strukturierter zu gestalten und langfristig motiviert zu bleiben.
-
-Im Mittelpunkt stehen Gewohnheitstracking, körperliche Gesundheit, mentale Gesundheit und persönliche Motivation. MyFlow soll nicht nur Daten erfassen, sondern Nutzerinnen und Nutzer aktiv im Alltag begleiten. Die App soll individuelle Routinen, Fortschritte und Erinnerungen übersichtlich darstellen und dadurch helfen, gesunde Gewohnheiten langfristig beizubehalten.
-
-Das Projekt entsteht im Rahmen des Moduls **Projektarbeit 1 – Personalisierte Gesundheitstechnologien**.
-
-## Background
-
-Viele bestehende Fitness-, Gesundheits- und Tracking-Apps konzentrieren sich hauptsächlich auf das Erfassen von Daten. Nutzerinnen und Nutzer erhalten zwar Statistiken, aber oft nur wenig individuelle Unterstützung im Alltag.
-
-Besonders junge Menschen und Studierende stehen häufig vor Herausforderungen wie Lernstress, Zeitmangel, fehlender Motivation oder unregelmäßigen Routinen. MyFlow setzt genau dort an und kombiniert Gewohnheitstracking mit mentaler Unterstützung, Motivation und personalisierten Empfehlungen.
-
-## Target Group
-
-Die Hauptzielgruppe von MyFlow sind:
-
-- Studierende
-- junge Menschen ab etwa 16 Jahren
-- Personen, die ihren Alltag gesünder und strukturierter gestalten möchten
-- Nutzerinnen und Nutzer, die Unterstützung beim Aufbau gesunder Gewohnheiten suchen
-- Menschen, die körperliche und mentale Gesundheit gemeinsam betrachten möchten
-
-## Features
-
-Geplante und teilweise umgesetzte Funktionen der App:
-
-- Erstellung individueller Ziele, zum Beispiel Sport, Wasser trinken, Schlaf oder Lernroutinen
-- Tägliches Tracking von Gewohnheiten
-- Übersichtliche Darstellung von Fortschritten und Statistiken
-- Streak-System zur Motivation
-- Erinnerungsfunktionen zur Unterstützung regelmäßiger Routinen
-- Empfehlungen zur Verbesserung des Alltags
-- Verbindung von körperlicher und mentaler Gesundheit
-- Unterstützung bei Stressmanagement und Motivation
-- Soziale Motivation durch gemeinsame Challenges oder Vergleich mit Freunden
-- Individuelle Sprachstile der App
-- Kleine aktive Übungen, zum Beispiel Aufmerksamkeitsübungen, Bewegungsübungen oder Reaktionstests
-
-## Unique Selling Points
-
-MyFlow unterscheidet sich von klassischen Habit-Tracking- oder Fitness-Apps durch mehrere Alleinstellungsmerkmale:
-
-### KI-gestützte Personalisierung
-
-Die App soll Gewohnheiten und Fortschritte analysieren und darauf basierend individuelle Empfehlungen und Erinnerungen geben.
-
-### Kombination aus mentaler und körperlicher Gesundheit
-
-MyFlow konzentriert sich nicht nur auf Fitness oder Ernährung, sondern verbindet körperliche Gesundheit mit Stressmanagement, Motivation und mentalem Wohlbefinden.
-
-### Soziale Motivation
-
-Nutzerinnen und Nutzer sollen sich gegenseitig motivieren, Fortschritte vergleichen und gemeinsam Challenges absolvieren können.
-
-### Fokus auf junge Menschen und Studierende
-
-Die App berücksichtigt typische Alltagssituationen wie Lernstress, Zeitmanagement, fehlende Motivation und unregelmäßige Tagesabläufe.
-
-### Individuelle Sprachstile
-
-MyFlow soll verschiedene Kommunikationsstile anbieten. Die App kann beispielsweise fachlich und strukturiert oder eher locker und motivierend formulieren.
-
-### Aktive Analyse des Fitness- und Gesundheitslevels
-
-Neben eingegebenen Daten sollen kleine aktive Übungen und Tests helfen, das persönliche Fitness- oder Aufmerksamkeitslevel besser einzuschätzen.
-
-## Market Analysis
-
-Im Rahmen der Marktanalyse wurden bekannte Anwendungen wie **Habit Tracker – Tagesplaner**, **Daylio**, **Yazio**, **Apple Health** und **Habitica** betrachtet.
-
-Dabei wurde festgestellt, dass viele Apps nur einzelne Bereiche abdecken. Einige Anwendungen fokussieren sich vor allem auf Gewohnheitstracking, andere auf Ernährung, Fitness oder Stimmung. Häufig fehlen jedoch personalisierte Unterstützung, soziale Motivation, aktive Tests oder ein klarer Fokus auf junge Menschen und Studierende.
-
-MyFlow kombiniert mehrere dieser Bereiche in einer Anwendung:
-
-- Gewohnheitstracking
-- mentale Gesundheit
-- körperliche Gesundheit
-- soziale Motivation
-- personalisierte Empfehlungen
-- individuelle Sprachstile
-- aktive Fitness- und Aufmerksamkeitstests
-
-Dadurch soll MyFlow nicht nur ein Tracker sein, sondern ein digitaler Begleiter für einen gesünderen und strukturierteren Alltag.
+## Badges
+On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
 ## Visuals
+Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
-Screenshots und Designentwürfe der Anwendung werden im weiteren Projektverlauf ergänzt.
+## Installation
+Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-Geplant sind unter anderem:
+## Usage
+Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-- Screenshot der Startseite
-- Screenshot der Habit-Übersicht
-- Screenshot der Fortschrittsanzeige
-- Screenshot der Erinnerungs- oder Statistikansicht
+## Support
+Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-## Technologies
+## Roadmap
+If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-Für die Umsetzung werden folgende Technologien verwendet:
+## Contributing
+State if you are open to contributions and what your requirements are for accepting them.
 
-- React
-- JavaScript
-- HTML
-- CSS
-- Node.js
-- npm
-- Git
-- GitLab
-- Visual Studio Code
+For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
-## Requirements
+You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
-Vor dem Start des Projekts sollten folgende Programme installiert sein:
+## Authors and acknowledgment
+Show your appreciation to those who have contributed to the project.
 
-- Node.js
-- npm
-- Git
-- Visual Studio Code
+## License
+For open source projects, say how it is licensed.
 
-Die Installation kann im Terminal überprüft werden mit:
-
-```bash
-node -v
-npm -v
-git --version
+## Project status
+If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+hi helowodajsfuhef
