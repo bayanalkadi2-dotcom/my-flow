@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import Navbar from './commponents/Navbar'
 import { habits, languageStyles, navItems } from './data/appData'
 import DashboardHome from './pages/DashboardHome'
@@ -15,117 +15,10 @@ import './App.css'
 
 const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle']
 
-function prepareHabit(habit) {
-  const current = Number(habit.current ?? 0)
-  const target = Number(habit.target ?? 1)
-  const unit = habit.unit ?? 'Mal'
-  const progress = Math.min(Math.round((current / target) * 100), 100)
-
-  return {
-    ...habit,
-    current,
-    target,
-    unit,
-    progress,
-    detail: `${current} / ${target} ${unit}`,
-    incrementLabel: habit.incrementLabel ?? `1 ${unit} geschafft`,
-    status: habit.done || progress >= 100 ? 'Erledigt' : current > 0 ? 'Aktiv' : 'Offen',
-  }
-}
-
-function loadSavedRoutines() {
-  try {
-    const savedRoutines = localStorage.getItem('myflow-routines')
-    return savedRoutines ? JSON.parse(savedRoutines) : habits
-  } catch {
-    return habits
-  }
-}
-
 function App() {
   const [screen, setScreen] = useState('start')
-  const [languageStyle, setLanguageStyle] = useState('casual')
-  const [routineItems, setRoutineItems] = useState(loadSavedRoutines)
+  const [languageStyle, setLanguageStyle] = useState('german')
   const tone = languageStyles[languageStyle]
-  const preparedHabits = useMemo(
-    () => routineItems.map((habit) => prepareHabit(habit)),
-    [routineItems],
-  )
-
-  useEffect(() => {
-    localStorage.setItem('myflow-routines', JSON.stringify(routineItems))
-  }, [routineItems])
-
-  function updateHabit(id, changes) {
-    setRoutineItems((currentHabits) =>
-      currentHabits.map((habit) =>
-        habit.id === id ? { ...habit, ...changes } : habit,
-      ),
-    )
-  }
-
-  function incrementHabit(id) {
-    setRoutineItems((currentHabits) =>
-      currentHabits.map((habit) => {
-        if (habit.id !== id) {
-          return habit
-        }
-
-        const current = Number(habit.current ?? 0)
-        const target = Number(habit.target ?? 1)
-        const nextCurrent = Math.min(current + 1, target)
-
-        return {
-          ...habit,
-          current: nextCurrent,
-          done: nextCurrent >= target,
-        }
-      }),
-    )
-  }
-
-  function decrementHabit(id) {
-    setRoutineItems((currentHabits) =>
-      currentHabits.map((habit) => {
-        if (habit.id !== id) {
-          return habit
-        }
-
-        const current = Number(habit.current ?? 0)
-        const nextCurrent = Math.max(current - 1, 0)
-
-        return {
-          ...habit,
-          current: nextCurrent,
-          done: false,
-        }
-      }),
-    )
-  }
-
-  function toggleHabitDone(selectedHabit) {
-    const nextDone = !selectedHabit.done
-
-    updateHabit(selectedHabit.id, {
-      done: nextDone,
-      current: nextDone ? selectedHabit.target : selectedHabit.current,
-    })
-  }
-
-  function addHabit(newHabit) {
-    setRoutineItems((currentHabits) => [
-      ...currentHabits,
-      {
-        id: Date.now(),
-        icon: '◎',
-        current: 0,
-        done: false,
-        points: 10,
-        incrementLabel: `1 ${newHabit.unit} geschafft`,
-        ...newHabit,
-      },
-    ])
-  }
 
   function renderScreen() {
     switch (screen) {
@@ -145,25 +38,9 @@ function App() {
           />
         )
       case 'dashboard':
-        return (
-          <DashboardHome
-            habits={preparedHabits}
-            tone={tone}
-            onIncrement={incrementHabit}
-            onDecrement={decrementHabit}
-            onToggleDone={toggleHabitDone}
-          />
-        )
+        return <DashboardHome habits={habits} tone={tone} />
       case 'habits':
-        return (
-          <Routinen
-            habits={preparedHabits}
-            onAddHabit={addHabit}
-            onIncrement={incrementHabit}
-            onDecrement={decrementHabit}
-            onToggleDone={toggleHabitDone}
-          />
-        )
+        return <Routinen habits={habits} />
       case 'progress':
         return <Statistik />
       case 'profile':

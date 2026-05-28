@@ -125,4 +125,4 @@ Die Installation kann im Terminal überprüft werden mit:
 ```bash
 node -v
 npm -v
-git --version
+git --

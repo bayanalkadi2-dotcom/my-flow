@@ -36,18 +36,25 @@ export const welcomeFeatures = [
 ]
 
 export const languageStyles = {
-  casual: {
-    label: 'Locker',
+  german: {
+    label: 'Deutsch',
     greeting: 'Hey, schön dass du da bist!',
     dashboardTitle: 'Heute im Flow',
     dashboardMessage: 'Du hast {count} von {total} Routinen fast geschafft. Weiter so!',
     progressMessage: 'Stark! Du bist heute richtig gut dabei.',
   },
-  formal: {
-    label: 'Förmlich',
-    greeting: 'Willkommen bei MyFlow',
-    dashboardTitle: 'Ihre Tagesübersicht',
-    dashboardMessage: 'Sie haben {count} von {total} Routinen nahezu abgeschlossen.',
-    progressMessage: 'Ihr Tagesziel entwickelt sich positiv.',
+  english: {
+    label: 'English',
+    greeting: 'Hey, good to see you!',
+    dashboardTitle: 'Today in Flow',
+    dashboardMessage: 'You nearly completed {count} of {total} routines. Keep going!',
+    progressMessage: 'Nice! You are making good progress today.',
+  },
+  turkish: {
+    label: 'Türkçe',
+    greeting: 'Merhaba, seni görmek güzel!',
+    dashboardTitle: 'Bugünkü Akış',
+    dashboardMessage: '{total} rutinden {count} tanesini neredeyse tamamladın. Devam et!',
+    progressMessage: 'Harika! Bugün iyi ilerliyorsun.',
   },
 }

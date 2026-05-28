@@ -602,6 +602,51 @@ input {
   justify-content: space-between;
 }
 
+.profile-picture-card {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  margin-top: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+}
+
+.profile-picture {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff, #73cfff);
+  color: white;
+  font-size: 30px;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(123, 97, 255, 0.2);
+}
+
+.profile-picture-card strong {
+  color: #18143f;
+}
+
+.profile-picture-card p {
+  margin: 5px 0 0;
+  color: #65607f;
+  font-size: 13px;
+}
+
+.profile-picture-button {
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: white;
+  color: #765cff;
+  border: 1px solid rgba(118, 92, 255, 0.25);
+  box-shadow: none;
+}
+
 .profile-style-button {
   width: 100%;
   margin-bottom: 14px;
