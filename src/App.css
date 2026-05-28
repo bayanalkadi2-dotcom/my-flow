@@ -920,18 +920,18 @@ input {
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  width: 100%;
-  margin-top: 28px;
-  padding: 16px 14px;
-  border-radius: 28px;
+  gap: 6px;
+  width: 88%;
+  margin: 22px auto 0;
+  padding: 10px 12px;
+  border-radius: 22px;
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(24px) saturate(145%);
   -webkit-backdrop-filter: blur(24px) saturate(145%);
   border: 1px solid rgba(255, 255, 255, 0.32);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.46),
-    0 18px 42px rgba(86, 78, 168, 0.07);
+    0 12px 28px rgba(86, 78, 168, 0.05);
   animation: fadeUp 0.7s ease 1.65s both;
 }
 
@@ -939,7 +939,7 @@ input {
   display: grid;
   grid-template-rows: auto auto 1fr;
   justify-items: center;
-  gap: 8px;
+  gap: 5px;
   min-width: 0;
   text-align: center;
   transition: transform 0.22s ease;
@@ -952,13 +952,13 @@ input {
 .feature-icon {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
   color: white;
-  font-size: 25px;
+  font-size: 18px;
   font-weight: 900;
-  box-shadow: 0 12px 22px rgba(110, 84, 198, 0.22);
+  box-shadow: 0 8px 16px rgba(110, 84, 198, 0.16);
   animation: iconGlow 4.2s ease-in-out infinite;
 }
 
@@ -977,7 +977,7 @@ input {
 .welcome-feature h2 {
   margin: 0;
   color: #19135f;
-  font-size: 12.5px;
+  font-size: 10.5px;
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -985,9 +985,9 @@ input {
 .welcome-feature p {
   margin: 0;
   color: #403a83;
-  font-size: 10.5px;
-  line-height: 1.35;
-  max-width: 82px;
+  font-size: 9px;
+  line-height: 1.25;
+  max-width: 68px;
 }
 
 @media (max-width: 380px) {

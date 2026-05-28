@@ -11,7 +11,7 @@ function Registrieren({ onNavigate }) {
       </button>
       <header className="login-header">
         <h1>Konto erstellen</h1>
-        <p>Starte noch heute mit MyFlow.</p>
+        <p>Erstelle dein Konto, um MyFlow vollständig zu nutzen.</p>
       </header>
       <form className="login-form" onSubmit={(event) => event.preventDefault()}>
         <label className="login-field">
@@ -19,8 +19,8 @@ function Registrieren({ onNavigate }) {
             <circle cx="12" cy="8" r="3.5" />
             <path d="M5.5 19.5c.7-4 3.1-6 6.5-6s5.8 2 6.5 6" />
           </svg>
-          <span>Name</span>
-          <input type="text" placeholder="Dein Name" />
+          <span>Benutzername</span>
+          <input type="text" placeholder="Dein Benutzername" required />
         </label>
         <label className="login-field">
           <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -28,15 +28,17 @@ function Registrieren({ onNavigate }) {
             <path d="m5 7 7 5.4L19 7" />
           </svg>
           <span>E-Mail</span>
-          <input type="email" placeholder="name@beispiel.de" />
+          <input type="email" placeholder="name@beispiel.de" required />
         </label>
         <PasswordField
           label="Passwort"
+          placeholder="Eigenes Passwort"
           showPassword={showPassword}
           onToggle={() => setShowPassword((current) => !current)}
         />
         <PasswordField
-          label="Passwort bestätigen"
+          label="Passwort wiederholen"
+          placeholder="Passwort wiederholen"
           showPassword={showPassword}
           onToggle={() => setShowPassword((current) => !current)}
         />
@@ -51,7 +53,7 @@ function Registrieren({ onNavigate }) {
   )
 }
 
-function PasswordField({ label, showPassword, onToggle }) {
+function PasswordField({ label, placeholder, showPassword, onToggle }) {
   return (
     <label className="login-field password-field">
       <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -59,7 +61,7 @@ function PasswordField({ label, showPassword, onToggle }) {
         <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
       </svg>
       <span>{label}</span>
-      <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" />
+      <input type={showPassword ? 'text' : 'password'} placeholder={placeholder} required />
       <PasswordVisibilityButton visible={showPassword} onClick={onToggle} />
     </label>
   )

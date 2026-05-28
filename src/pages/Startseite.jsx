@@ -42,6 +42,16 @@ function Startseite({ onNavigate }) {
           <span>Einloggen</span>
           <span className="login-arrow" aria-hidden="true">→</span>
         </button>
+        <button className="secondary-button login-cta" onClick={() => onNavigate('register')}>
+          <span className="button-orb user-orb" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M12 5v14" />
+              <path d="M5 12h14" />
+            </svg>
+          </span>
+          <span>Registrieren</span>
+          <span className="login-arrow" aria-hidden="true">→</span>
+        </button>
       </div>
       <div className="feature-strip">
         {welcomeFeatures.map((feature) => (
