@@ -562,6 +562,36 @@ input {
   background: linear-gradient(180deg, #ff9fd2, #7b61ff);
 }
 
+.smoking-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.smoking-card {
+  margin-top: 14px;
+}
+
+.smoking-card span {
+  color: #65607f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.smoking-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #7b61ff;
+  font-size: 34px;
+}
+
+.smoking-card p {
+  margin: 6px 0 0;
+  color: #65607f;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
 .settings-list {
   display: grid;
   gap: 16px;
