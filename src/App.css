@@ -477,27 +477,50 @@ input {
   left: 50%;
   bottom: 18px;
   transform: translateX(-50%);
-  width: min(390px, calc(100% - 32px));
+  width: min(390px, calc(100% - 28px));
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  padding: 10px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  padding: 8px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 14px 40px rgba(80, 60, 160, 0.2);
+  backdrop-filter: blur(18px);
 }
 
 .bottom-item {
-  padding: 10px 4px;
-  font-size: 12px;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 7px 2px;
+  font-size: 10px;
+  line-height: 1;
   background: transparent;
   color: #6c638d;
   box-shadow: none;
+  font-weight: 800;
 }
 
 .bottom-item.active {
   background: linear-gradient(135deg, #ff9fd2, #7b61ff);
   color: white;
+  box-shadow: 0 8px 18px rgba(123, 97, 255, 0.2);
+}
+
+.bottom-icon {
+  display: grid;
+  place-items: center;
+}
+
+.bottom-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 @keyframes fadeUp {

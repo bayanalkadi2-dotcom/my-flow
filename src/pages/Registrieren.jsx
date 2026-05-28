@@ -6,7 +6,7 @@ function Registrieren({ onNavigate }) {
 
   return (
     <section className="screen login-screen auth-detail-screen">
-      <button className="login-back" onClick={() => onNavigate('login')} aria-label="Zurück">
+      <button className="login-back" onClick={() => onNavigate('start')} aria-label="Zurück">
         ←
       </button>
       <header className="login-header">
