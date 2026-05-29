@@ -596,12 +596,92 @@ input {
   margin-top: 18px;
 }
 
+.routine-picker {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.routine-category-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.routine-category {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 9px 14px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #5f5b7c;
+  border: 1px solid rgba(118, 92, 255, 0.16);
+  box-shadow: 0 8px 18px rgba(110, 90, 170, 0.08);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.routine-category.active {
+  background: linear-gradient(135deg, #f7b3df, #8b63ff);
+  color: white;
+  border-color: transparent;
+}
+
+.routine-suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.routine-suggestion {
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+  min-height: 96px;
+  padding: 13px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #17133f;
+  border: 1px solid rgba(118, 92, 255, 0.12);
+  box-shadow: 0 10px 22px rgba(110, 90, 170, 0.1);
+  text-align: left;
+}
+
+.routine-suggestion span {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.routine-suggestion strong {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.routine-suggestion small {
+  color: #6f6a8b;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.routine-suggestion:disabled {
+  color: #827c9f;
+  cursor: default;
+  opacity: 0.72;
+}
+
 .routine-form {
   background: rgba(255, 255, 255, 0.86);
   border-radius: 24px;
   padding: 18px;
   margin-top: 18px;
   box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+}
+
+.form-title {
+  margin: 0 0 12px;
+  color: #17133f;
+  font-weight: 900;
 }
 
 .routine-form label {
@@ -616,10 +696,11 @@ input {
 }
 
 .habit-card {
+  position: relative;
   display: flex;
   justify-content: space-between;
   gap: 14px;
-  align-items: center;
+  align-items: flex-start;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
@@ -628,13 +709,43 @@ input {
   box-shadow: 0 10px 24px rgba(110, 90, 170, 0.08);
 }
 
+.habit-remove-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 999px;
+  background: #fff4f8;
+  color: #b23a68;
+  border: 1px solid rgba(178, 58, 104, 0.16);
+  box-shadow: none;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.habit-remove-button:hover {
+  background: #ffe7f0;
+  transform: translateY(-1px);
+}
+
 .habit-main {
   min-width: 0;
+  padding-right: 24px;
 }
 
 .habit-card h2 {
   font-size: 17px;
   margin: 0;
+}
+
+.habit-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .habit-card p {
@@ -667,6 +778,122 @@ input {
 
 .habit-actions .habit-button {
   margin-top: 0;
+}
+
+.mood-tracker {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.mood-tracker p {
+  margin: 0;
+  color: #302c5a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.mood-options {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.mood-option {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(118, 92, 255, 0.18);
+  box-shadow: 0 8px 16px rgba(110, 90, 170, 0.1);
+  font-size: 20px;
+}
+
+.mood-option.selected {
+  background: linear-gradient(135deg, #ffcae7, #8b63ff);
+  border-color: transparent;
+  box-shadow: 0 12px 22px rgba(123, 97, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+.period-tracker {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.period-tracker label {
+  gap: 7px;
+  margin: 0;
+  color: #302c5a;
+  font-size: 13px;
+}
+
+.period-tracker input {
+  width: 130px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.period-tracker p {
+  margin: 0 0 8px;
+  color: #302c5a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.period-scale {
+  display: grid;
+  gap: 8px;
+}
+
+.period-scale-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.period-scale-header p {
+  margin: 0;
+}
+
+.period-scale-header span {
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.period-bars {
+  display: flex;
+  align-items: end;
+  gap: 5px;
+  height: 38px;
+}
+
+.period-bars span {
+  width: 14px;
+  border-radius: 2px;
+  background: #eee7ff;
+}
+
+.period-bars span.active {
+  background: linear-gradient(180deg, #ff9fd2, #8b63ff);
+}
+
+.period-slider {
+  width: 100%;
+  height: 26px;
+  padding: 0;
+  accent-color: #8b63ff;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
 .habit-step-button {
@@ -723,27 +950,47 @@ input {
 }
 
 .habit-side {
-  min-width: 110px;
+  display: grid;
+  justify-items: end;
+  min-width: 96px;
+  padding-top: 18px;
 }
 
-.pill {
-  font-size: 12px;
-  color: #765cff;
-  font-weight: 800;
+.progress-ring {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  position: relative;
 }
 
-.progress {
-  height: 8px;
-  background: #eee7ff;
-  border-radius: 999px;
-  overflow: hidden;
-  margin-top: 10px;
-}
-
-.progress span {
-  display: block;
+.progress-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #ff9fd2, #7b61ff, #73cfff);
+  transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+  fill: none;
+  stroke-width: 2;
+}
+
+.progress-ring-track {
+  stroke: #eee7ff;
+}
+
+.progress-ring-value {
+  stroke: #765cff;
+  stroke-linecap: round;
+}
+
+.progress-ring span {
+  position: relative;
+  color: #5c4bd8;
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .chart-card {

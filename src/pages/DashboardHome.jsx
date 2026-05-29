@@ -1,6 +1,6 @@
 import HabitCard from '../commponents/HabitCard'
 
-function DashboardHome({ habits, tone, onIncrement, onDecrement, onToggleDone }) {
+function DashboardHome({ habits, tone, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onToggleDone }) {
   const completedHabits = habits.filter((habit) => habit.done || habit.progress >= 100).length
   const totalProgress = habits.reduce((sum, habit) => sum + habit.progress, 0)
   const dayProgress = habits.length ? Math.round(totalProgress / habits.length) : 0
@@ -31,6 +31,8 @@ function DashboardHome({ habits, tone, onIncrement, onDecrement, onToggleDone })
             key={habit.id}
             onIncrement={onIncrement}
             onDecrement={onDecrement}
+            onSetMood={onSetMood}
+            onUpdatePeriod={onUpdatePeriod}
             onToggleDone={onToggleDone}
           />
         ))}
