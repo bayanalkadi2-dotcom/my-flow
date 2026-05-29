@@ -64,8 +64,8 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('8')
   const [unit, setUnit] = useState('Gläser')
-  const [activeCategory, setActiveCategory] = useState(routineCategories[0].title)
-  const selectedCategory = routineCategories.find((category) => category.title === activeCategory)
+  const [addPanelOpen, setAddPanelOpen] = useState(false)
+  const [openCategory, setOpenCategory] = useState('')
   const existingTitles = new Set(habits.map((habit) => habit.title.toLowerCase()))
 
   function handleSubmit(event) {
@@ -84,17 +84,21 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
     setTitle('')
     setTarget('8')
     setUnit('Gläser')
+    setAddPanelOpen(false)
   }
 
-  function addSuggestedRoutine(routine) {
+  function addSuggestedRoutine(routine, categoryTitle) {
     if (existingTitles.has(routine.title.toLowerCase())) {
       return
     }
 
     onAddHabit({
       ...routine,
-      category: activeCategory,
+      category: categoryTitle,
     })
+
+    setAddPanelOpen(false)
+    setOpenCategory('')
   }
 
   return (
@@ -102,72 +106,6 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
       <p className="eyebrow">Routinen</p>
       <h1>Meine Routinen</h1>
 
-      <div className="routine-picker">
-        <div className="routine-category-list" aria-label="Routinen Kategorien">
-          {routineCategories.map((category) => (
-            <button
-              className={`routine-category ${category.title === activeCategory ? 'active' : ''}`}
-              key={category.title}
-              onClick={() => setActiveCategory(category.title)}
-              type="button"
-            >
-              {category.title}
-            </button>
-          ))}
-        </div>
-
-        <div className="routine-suggestions">
-          {selectedCategory.routines.map((routine) => {
-            const isAdded = existingTitles.has(routine.title.toLowerCase())
-
-            return (
-              <button
-                className="routine-suggestion"
-                disabled={isAdded}
-                key={routine.title}
-                onClick={() => addSuggestedRoutine(routine)}
-                type="button"
-              >
-                <span>{routine.icon}</span>
-                <strong>{routine.title}</strong>
-                <small>{isAdded ? 'Hinzugefügt' : `Ziel: ${routine.target} ${routine.unit}`}</small>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      <form className="routine-form" onSubmit={handleSubmit}>
-        <p className="form-title">Eigene Routine</p>
-        <label>
-          Routine
-          <input
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="z. B. Wasser trinken"
-          />
-        </label>
-        <div className="routine-form-row">
-          <label>
-            Ziel
-            <input
-              min="1"
-              type="number"
-              value={target}
-              onChange={(event) => setTarget(event.target.value)}
-            />
-          </label>
-          <label>
-            Einheit
-            <input
-              value={unit}
-              onChange={(event) => setUnit(event.target.value)}
-              placeholder="Gläser"
-            />
-          </label>
-        </div>
-        <button className="wide-button" type="submit">Routine hinzufügen</button>
-      </form>
       <div className="habit-list">
         {habits.map((habit) => (
           <HabitCard
@@ -182,6 +120,91 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
           />
         ))}
       </div>
+
+      <button
+        className="add-routine-toggle"
+        onClick={() => setAddPanelOpen((open) => !open)}
+        type="button"
+      >
+        {addPanelOpen ? 'Hinzufügen schließen' : '+ Routine hinzufügen'}
+      </button>
+
+      {addPanelOpen && (
+        <div className="routine-add-panel">
+          <div className="routine-picker">
+            {routineCategories.map((category) => {
+              const isOpen = openCategory === category.title
+
+              return (
+                <div className="routine-category-group" key={category.title}>
+                  <button
+                    className={`routine-category ${isOpen ? 'active' : ''}`}
+                    onClick={() => setOpenCategory(isOpen ? '' : category.title)}
+                    type="button"
+                  >
+                    <span>{category.title}</span>
+                    <strong aria-hidden="true">{isOpen ? '−' : '+'}</strong>
+                  </button>
+
+                  {isOpen && (
+                    <div className="routine-suggestions">
+                      {category.routines.map((routine) => {
+                        const isAdded = existingTitles.has(routine.title.toLowerCase())
+
+                        return (
+                          <button
+                            className="routine-suggestion"
+                            disabled={isAdded}
+                            key={routine.title}
+                            onClick={() => addSuggestedRoutine(routine, category.title)}
+                            type="button"
+                          >
+                            <span>{routine.icon}</span>
+                            <strong>{routine.title}</strong>
+                            <small>{isAdded ? 'Hinzugefügt' : `Ziel: ${routine.target} ${routine.unit}`}</small>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          <form className="routine-form" onSubmit={handleSubmit}>
+            <p className="form-title">Eigene Routine</p>
+            <label>
+              Routine
+              <input
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="z. B. Wasser trinken"
+              />
+            </label>
+            <div className="routine-form-row">
+              <label>
+                Ziel
+                <input
+                  min="1"
+                  type="number"
+                  value={target}
+                  onChange={(event) => setTarget(event.target.value)}
+                />
+              </label>
+              <label>
+                Einheit
+                <input
+                  value={unit}
+                  onChange={(event) => setUnit(event.target.value)}
+                  placeholder="Gläser"
+                />
+              </label>
+            </div>
+            <button className="wide-button" type="submit">Routine hinzufügen</button>
+          </form>
+        </div>
+      )}
     </section>
   )
 }
