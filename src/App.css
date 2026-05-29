@@ -141,6 +141,173 @@ input {
   box-shadow: none;
 }
 
+.settings-gear-button {
+  position: absolute;
+  top: 25px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  color: #765cff;
+  border: 1px solid rgba(118, 92, 255, 0.18);
+  font-size: 20px;
+  box-shadow: 0 10px 22px rgba(110, 90, 170, 0.12);
+}
+
+.register-settings-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 30px rgba(110, 90, 170, 0.14);
+}
+
+.register-settings-header,
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.register-settings-header strong {
+  color: #18143f;
+}
+
+.register-settings-header button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: #f3efff;
+  color: #765cff;
+  box-shadow: none;
+}
+
+.register-settings-panel label {
+  margin: 0;
+  color: #302c5a;
+  font-size: 13px;
+}
+
+.register-settings-panel input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.settings-toggle-row span {
+  color: #302c5a;
+  font-weight: 800;
+}
+
+.settings-toggle {
+  min-width: 72px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: white;
+  color: #765cff;
+  border: 1px solid rgba(118, 92, 255, 0.25);
+  box-shadow: none;
+}
+
+.settings-toggle.active {
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff);
+  color: white;
+  border-color: transparent;
+}
+
+.payment-settings {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.payment-settings-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.payment-settings-title span {
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.payment-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.payment-option {
+  display: grid;
+  gap: 4px;
+  min-height: 70px;
+  padding: 10px 8px;
+  border-radius: 16px;
+  background: white;
+  color: #302c5a;
+  border: 1px solid rgba(118, 92, 255, 0.18);
+  box-shadow: none;
+}
+
+.payment-option span {
+  font-size: 12px;
+}
+
+.payment-option strong {
+  color: #765cff;
+  font-size: 13px;
+}
+
+.payment-option.selected {
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff);
+  color: white;
+  border-color: transparent;
+}
+
+.payment-option.selected strong {
+  color: white;
+}
+
+.payment-settings p {
+  margin: 0;
+  color: #65607f;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.payment-method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.payment-method {
+  padding: 10px 8px;
+  border-radius: 14px;
+  background: white;
+  color: #302c5a;
+  border: 1px solid rgba(118, 92, 255, 0.18);
+  box-shadow: none;
+  font-size: 12px;
+}
+
+.payment-method.selected {
+  background: #f3efff;
+  color: #765cff;
+  border-color: rgba(118, 92, 255, 0.35);
+}
+
 .login-header h1 {
   margin: 0;
   color: #141334;
