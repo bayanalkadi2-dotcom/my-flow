@@ -594,12 +594,27 @@ input {
 
 .settings-list {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
-.settings-list div {
-  display: flex;
-  justify-content: space-between;
+.profile-setting-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-setting-row span {
+  color: #65607f;
+}
+
+.profile-setting-row button {
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: white;
+  color: #765cff;
+  border: 1px solid rgba(118, 92, 255, 0.25);
+  box-shadow: none;
 }
 
 .profile-picture-card {
@@ -645,6 +660,86 @@ input {
   color: #765cff;
   border: 1px solid rgba(118, 92, 255, 0.25);
   box-shadow: none;
+}
+
+.profile-edit-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(245, 241, 255, 0.78);
+}
+
+.profile-edit-panel p {
+  margin: 0;
+  color: #65607f;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.profile-edit-panel label {
+  margin: 0;
+}
+
+.profile-edit-panel input {
+  width: 100%;
+}
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.profile-choice {
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #302c5a;
+  border: 1px solid rgba(118, 92, 255, 0.18);
+  box-shadow: 0 10px 22px rgba(110, 90, 170, 0.09);
+}
+
+.profile-choice.selected {
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff);
+  color: white;
+  border-color: transparent;
+}
+
+.bmi-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 16px;
+  margin: 16px 0 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+}
+
+.bmi-card div {
+  min-width: 0;
+}
+
+.bmi-card span {
+  display: block;
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.bmi-card strong {
+  display: block;
+  margin-top: 7px;
+  color: #7b61ff;
+  font-size: 22px;
+}
+
+.bmi-card p {
+  margin: 5px 0 0;
+  color: #65607f;
+  font-size: 12px;
+  line-height: 1.3;
 }
 
 .profile-style-button {

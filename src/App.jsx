@@ -44,7 +44,14 @@ function App() {
       case 'progress':
         return <Statistik />
       case 'profile':
-        return <Profil tone={tone} onNavigate={setScreen} />
+        return (
+          <Profil
+            languageStyle={languageStyle}
+            tone={tone}
+            onNavigate={setScreen}
+            onSelectStyle={setLanguageStyle}
+          />
+        )
       case 'freunde':
         return <Freunde />
 
