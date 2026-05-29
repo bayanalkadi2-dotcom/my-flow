@@ -2,12 +2,14 @@ import { useState } from 'react'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
 
 const paymentPlans = [
-  { id: 'free', label: 'Kostenlos', price: '0 €' },
-  { id: 'plus', label: 'Plus Tools', price: '4,99 €' },
-  { id: 'pro', label: 'Pro Tools', price: '9,99 €' },
+  { id: 'free', label: 'Kostenlos', price: '0 EUR' },
+  { id: 'plus', label: 'Plus Tools', price: '4,99 EUR' },
+  { id: 'pro', label: 'Pro Tools', price: '9,99 EUR' },
 ]
 
 const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 'Google Pay']
+
+const billingCycles = ['Monatlich', 'Jährlich']
 
 function Registrieren({ onNavigate }) {
   const [showPassword, setShowPassword] = useState(false)
@@ -15,8 +17,11 @@ function Registrieren({ onNavigate }) {
   const [username, setUsername] = useState('')
   const [accountEmail, setAccountEmail] = useState('')
   const [reminders, setReminders] = useState(true)
+  const [newsletter, setNewsletter] = useState(false)
+  const [twoFactor, setTwoFactor] = useState(false)
   const [paymentPlan, setPaymentPlan] = useState('free')
   const [paymentMethod, setPaymentMethod] = useState('PayPal')
+  const [billingCycle, setBillingCycle] = useState('Monatlich')
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
 
   return (
@@ -30,7 +35,10 @@ function Registrieren({ onNavigate }) {
         type="button"
         aria-label="App-Einstellungen öffnen"
       >
-        ⚙
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" />
+          <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3 1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 0 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8 1.6 1.6 0 0 0 1.5 1h.2a2 2 0 0 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1Z" />
+        </svg>
       </button>
       <header className="login-header">
         <h1>Konto erstellen</h1>
@@ -39,47 +47,95 @@ function Registrieren({ onNavigate }) {
       {showSettings && (
         <section className="register-settings-panel" aria-label="App-Einstellungen">
           <div className="register-settings-header">
-            <strong>App-Einstellungen</strong>
+            <div>
+              <strong>Einstellungen</strong>
+              <p>Account, Sicherheit und Bezahlung</p>
+            </div>
             <button type="button" onClick={() => setShowSettings(false)} aria-label="Einstellungen schließen">
-              ×
+              x
             </button>
           </div>
-          <label>
-            Benutzername ändern
-            <input
-              type="text"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              placeholder="Neuer Benutzername"
-            />
-          </label>
-          <label>
-            E-Mail ändern
-            <input
-              type="email"
-              value={accountEmail}
-              onChange={(event) => setAccountEmail(event.target.value)}
-              placeholder="name@beispiel.de"
-            />
-          </label>
-          <label>
-            Neues Passwort
-            <input type="password" placeholder="Neues Passwort" />
-          </label>
-          <div className="settings-toggle-row">
-            <span>Erinnerungen</span>
-            <button
-              className={`settings-toggle ${reminders ? 'active' : ''}`}
-              onClick={() => setReminders((current) => !current)}
-              type="button"
-            >
-              {reminders ? 'Aktiv' : 'Aus'}
-            </button>
+
+          <div className="settings-group">
+            <span className="settings-group-title">Account</span>
+            <label>
+              Benutzername ändern
+              <input
+                type="text"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                placeholder="Neuer Benutzername"
+              />
+            </label>
+            <label>
+              E-Mail ändern
+              <input
+                type="email"
+                value={accountEmail}
+                onChange={(event) => setAccountEmail(event.target.value)}
+                placeholder="name@beispiel.de"
+              />
+            </label>
           </div>
-          <div className="payment-settings">
+
+          <div className="settings-group">
+            <span className="settings-group-title">Sicherheit</span>
+            <label>
+              Neues Passwort
+              <input type="password" placeholder="Neues Passwort" />
+            </label>
+            <div className="settings-toggle-row">
+              <span>2-Faktor-Schutz</span>
+              <button
+                className={`settings-toggle ${twoFactor ? 'active' : ''}`}
+                onClick={() => setTwoFactor((current) => !current)}
+                type="button"
+              >
+                {twoFactor ? 'Aktiv' : 'Aus'}
+              </button>
+            </div>
+          </div>
+
+          <div className="settings-group">
+            <span className="settings-group-title">Benachrichtigungen</span>
+            <div className="settings-toggle-row">
+              <span>Erinnerungen</span>
+              <button
+                className={`settings-toggle ${reminders ? 'active' : ''}`}
+                onClick={() => setReminders((current) => !current)}
+                type="button"
+              >
+                {reminders ? 'Aktiv' : 'Aus'}
+              </button>
+            </div>
+            <div className="settings-toggle-row">
+              <span>Newsletter</span>
+              <button
+                className={`settings-toggle ${newsletter ? 'active' : ''}`}
+                onClick={() => setNewsletter((current) => !current)}
+                type="button"
+              >
+                {newsletter ? 'Aktiv' : 'Aus'}
+              </button>
+            </div>
+          </div>
+
+          <div className="settings-group payment-settings">
             <div className="payment-settings-title">
               <strong>Bezahlung</strong>
-              <span>{selectedPlan.label} · {selectedPlan.price}</span>
+              <span>{selectedPlan.label} / {selectedPlan.price}</span>
+            </div>
+            <div className="payment-method-grid">
+              {billingCycles.map((cycle) => (
+                <button
+                  className={`payment-method ${billingCycle === cycle ? 'selected' : ''}`}
+                  key={cycle}
+                  onClick={() => setBillingCycle(cycle)}
+                  type="button"
+                >
+                  {cycle}
+                </button>
+              ))}
             </div>
             <div className="payment-plan-grid">
               {paymentPlans.map((plan) => (
