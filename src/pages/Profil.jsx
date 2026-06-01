@@ -10,9 +10,22 @@ const languageOptions = [
 const genderOptions = [
   { id: 'male', label: 'Männlich', name: 'Student' },
   { id: 'female', label: 'Weiblich', name: 'Studentin' },
+  { id: 'none', label: 'Keine Angabe', name: 'Student' },
 ]
 
 const designOptions = ['Hell', 'Dunkel']
+
+const paymentPlans = [
+  { id: 'free', label: 'Kostenlos', price: '0 EUR' },
+  { id: 'plus', label: 'Plus Tools', price: '4,99 EUR' },
+  { id: 'pro', label: 'Pro Tools', price: '9,99 EUR' },
+]
+
+const billingCycles = ['Monatlich', 'Jährlich']
+
+const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 'Google Pay']
+
+const paidTools = ['KI-Coach', 'Erweiterte Statistik', 'Premium-Routinen']
 
 function getBmiCategory(bmi) {
   if (bmi < 18.5) {
@@ -49,6 +62,7 @@ function getHealthRecommendation(bmi, weight) {
 }
 
 function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
+  const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
   const [name, setName] = useState('Student')
   const [gender, setGender] = useState('male')
@@ -56,7 +70,11 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
   const [design, setDesign] = useState('Hell')
   const [weight, setWeight] = useState(70)
   const [height, setHeight] = useState(175)
+  const [paymentPlan, setPaymentPlan] = useState('free')
+  const [billingCycle, setBillingCycle] = useState('Monatlich')
+  const [paymentMethod, setPaymentMethod] = useState('PayPal')
   const selectedGender = genderOptions.find((option) => option.id === gender)
+  const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
   const profileInitial = name.trim().charAt(0).toUpperCase() || 'S'
   const heightInMeters = height / 100
   const bmi = weight > 0 && height > 0 ? weight / (heightInMeters * heightInMeters) : 0
@@ -69,10 +87,20 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
   }
 
   return (
-    <section className="screen compact-screen">
+    <section className="screen compact-screen profile-screen">
       <img src={logo} alt="MyFlow Logo" className="small-logo" />
-      <p className="eyebrow">Einstellungen</p>
       <h1>Profil</h1>
+      <button
+        className="settings-gear-button"
+        onClick={() => setShowProfileSettings((current) => !current)}
+        type="button"
+        aria-label="Profil-Einstellungen öffnen"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" />
+          <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3 1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 0 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8 1.6 1.6 0 0 0 1.5 1h.2a2 2 0 0 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1Z" />
+        </svg>
+      </button>
       <div className="profile-picture-card">
         <div className="profile-picture" aria-label="Profilbild">
           {profileInitial}
@@ -81,16 +109,22 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
           <strong>{name}</strong>
           <p>Profilbild</p>
         </div>
-        <button className="profile-picture-button" type="button" onClick={() => toggleEditor('picture')}>
-          Ändern
-        </button>
       </div>
-      {activeEditor === 'picture' && (
-        <div className="profile-edit-panel">
-          <p>Aktuell wird der erste Buchstabe deines Namens als Profilbild angezeigt.</p>
-        </div>
-      )}
-      <div className="settings-list">
+      {showProfileSettings && (
+        <section className="register-settings-panel profile-settings-panel" aria-label="Profil-Einstellungen">
+          <div className="register-settings-header">
+            <div>
+              <strong>Profil-Einstellungen</strong>
+              <p>Persönliche Daten und App-Verhalten</p>
+            </div>
+            <button type="button" onClick={() => setShowProfileSettings(false)} aria-label="Einstellungen schließen">
+              x
+            </button>
+          </div>
+          <div className="profile-edit-panel">
+            <p>Dein Profilbild nutzt aktuell automatisch den ersten Buchstaben deines Namens.</p>
+          </div>
+          <div className="settings-list">
         <div className="profile-setting-row">
           <span>Name</span>
           <strong>{name}</strong>
@@ -228,7 +262,65 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
             ))}
           </div>
         )}
-      </div>
+        <div className="profile-setting-row">
+          <span>Abo</span>
+          <strong>{selectedPlan.label}</strong>
+          <button type="button" onClick={() => toggleEditor('payment')}>Ändern</button>
+        </div>
+        {activeEditor === 'payment' && (
+          <div className="settings-group payment-settings">
+            <div className="payment-settings-title">
+              <strong>Bezahlung</strong>
+              <span>{selectedPlan.label} / {selectedPlan.price}</span>
+            </div>
+            <div className="paid-tools-list">
+              {paidTools.map((tool) => (
+                <span key={tool}>{tool}</span>
+              ))}
+            </div>
+            <div className="payment-method-grid">
+              {billingCycles.map((cycle) => (
+                <button
+                  className={`payment-method ${billingCycle === cycle ? 'selected' : ''}`}
+                  key={cycle}
+                  onClick={() => setBillingCycle(cycle)}
+                  type="button"
+                >
+                  {cycle}
+                </button>
+              ))}
+            </div>
+            <div className="payment-plan-grid">
+              {paymentPlans.map((plan) => (
+                <button
+                  className={`payment-option ${paymentPlan === plan.id ? 'selected' : ''}`}
+                  key={plan.id}
+                  onClick={() => setPaymentPlan(plan.id)}
+                  type="button"
+                >
+                  <span>{plan.label}</span>
+                  <strong>{plan.price}</strong>
+                </button>
+              ))}
+            </div>
+            <p>Plus und Pro schalten die Abo-Tools frei. Bezahlt wird mit der ausgewählten Zahlungsart.</p>
+            <div className="payment-method-grid">
+              {paymentMethods.map((method) => (
+                <button
+                  className={`payment-method ${paymentMethod === method ? 'selected' : ''}`}
+                  key={method}
+                  onClick={() => setPaymentMethod(method)}
+                  type="button"
+                >
+                  {method}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+          </div>
+        </section>
+      )}
       <div className="bmi-card">
         <div>
           <span>BMI</span>

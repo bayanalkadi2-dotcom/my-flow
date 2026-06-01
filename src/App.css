@@ -194,7 +194,12 @@ input {
   gap: 12px;
 }
 
+.register-settings-header div {
+  text-align: left;
+}
+
 .register-settings-header strong {
+  display: block;
   color: #18143f;
 }
 
@@ -323,6 +328,22 @@ input {
   color: #65607f;
   font-size: 12px;
   line-height: 1.4;
+}
+
+.paid-tools-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.paid-tools-list span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: white;
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid rgba(118, 92, 255, 0.16);
 }
 
 .payment-method-grid {
@@ -1095,6 +1116,11 @@ input {
   gap: 12px;
 }
 
+.profile-screen {
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+
 .profile-setting-row {
   display: grid;
   grid-template-columns: 1fr auto auto;
@@ -1117,7 +1143,7 @@ input {
 
 .profile-picture-card {
   display: grid;
-  grid-template-columns: 72px 1fr auto;
+  grid-template-columns: 72px 1fr;
   align-items: center;
   gap: 14px;
   padding: 16px;
@@ -1185,7 +1211,7 @@ input {
 
 .option-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 10px;
 }
 
