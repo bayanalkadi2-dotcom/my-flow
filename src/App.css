@@ -368,6 +368,54 @@ input {
   border-color: rgba(118, 92, 255, 0.35);
 }
 
+.payment-checkout {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 18px;
+  background: white;
+  border: 1px solid rgba(118, 92, 255, 0.14);
+}
+
+.payment-checkout span {
+  display: block;
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.payment-checkout strong {
+  display: block;
+  margin-top: 4px;
+  color: #18143f;
+}
+
+.payment-checkout p {
+  margin: 5px 0 0;
+}
+
+.payment-checkout label {
+  margin: 0;
+  font-size: 13px;
+}
+
+.payment-checkout input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.wallet-note {
+  padding: 10px;
+  border-radius: 14px;
+  background: #f3efff;
+}
+
+.payment-submit {
+  width: 100%;
+  border-radius: 18px;
+}
+
 .login-header h1 {
   margin: 0;
   color: #141334;
@@ -686,8 +734,9 @@ input {
 .routine-suggestion {
   display: grid;
   justify-items: start;
-  gap: 5px;
-  min-height: 96px;
+  align-content: center;
+  gap: 6px;
+  min-height: 78px;
   padding: 13px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.88);
@@ -695,11 +744,6 @@ input {
   border: 1px solid rgba(118, 92, 255, 0.12);
   box-shadow: 0 10px 22px rgba(110, 90, 170, 0.1);
   text-align: left;
-}
-
-.routine-suggestion span {
-  font-size: 22px;
-  line-height: 1;
 }
 
 .routine-suggestion strong {

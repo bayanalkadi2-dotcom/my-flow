@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-const moodOptions = ['😞', '😕', '😐', '🙂', '😄']
-const wellbeingOptions = ['😞', '😕', '😐', '🙂', '😄']
+const moodOptions = ['Schlecht', 'Eher schlecht', 'Okay', 'Gut', 'Sehr gut']
+const wellbeingOptions = ['Schlecht', 'Eher schlecht', 'Okay', 'Gut', 'Sehr gut']
 const periodScaleLabels = ['sehr leicht', 'leicht', 'mittel', 'stark', 'sehr stark']
 
 function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone }) {
@@ -23,10 +23,7 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
         </button>
       )}
       <div className="habit-main">
-        <h2 className="habit-title">
-          {habit.icon && <span aria-hidden="true">{habit.icon}</span>}
-          {habit.title}
-        </h2>
+        <h2 className="habit-title">{habit.title}</h2>
         <p>{habit.detail}</p>
 
         {hasDetails ? (

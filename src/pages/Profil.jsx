@@ -27,6 +27,25 @@ const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 
 
 const paidTools = ['KI-Coach', 'Erweiterte Statistik', 'Premium-Routinen']
 
+function getPaymentInstruction(method) {
+  switch (method) {
+    case 'PayPal':
+      return 'Du wirst mit deinem PayPal-Konto verbunden.'
+    case 'Klarna':
+      return 'Klarna prüft deine Zahlung und bestätigt den Kauf.'
+    case 'Kreditkarte':
+      return 'Gib deine Kartendaten ein, um die Zahlung zu bestätigen.'
+    case 'SEPA':
+      return 'Gib deine IBAN ein, damit das Abo per Lastschrift bezahlt wird.'
+    case 'Apple Pay':
+      return 'Bestätige die Zahlung mit Apple Pay.'
+    case 'Google Pay':
+      return 'Bestätige die Zahlung mit Google Pay.'
+    default:
+      return 'Wähle eine Zahlungsart aus.'
+  }
+}
+
 function getBmiCategory(bmi) {
   if (bmi < 18.5) {
     return 'Untergewicht'
@@ -73,6 +92,10 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
   const [paymentPlan, setPaymentPlan] = useState('free')
   const [billingCycle, setBillingCycle] = useState('Monatlich')
   const [paymentMethod, setPaymentMethod] = useState('PayPal')
+  const [paymentStatus, setPaymentStatus] = useState('Nicht gestartet')
+  const [cardNumber, setCardNumber] = useState('')
+  const [iban, setIban] = useState('')
+  const [paymentEmail, setPaymentEmail] = useState('')
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
   const profileInitial = name.trim().charAt(0).toUpperCase() || 'S'
@@ -84,6 +107,15 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
 
   function toggleEditor(editor) {
     setActiveEditor((currentEditor) => (currentEditor === editor ? null : editor))
+  }
+
+  function handlePaymentSubmit() {
+    if (paymentPlan === 'free') {
+      setPaymentStatus('Kostenloser Plan aktiv')
+      return
+    }
+
+    setPaymentStatus(`${selectedPlan.label} mit ${paymentMethod} aktiviert`)
   }
 
   return (
@@ -315,6 +347,51 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
                   {method}
                 </button>
               ))}
+            </div>
+            <div className="payment-checkout">
+              <div>
+                <span>Zahlung ausführen</span>
+                <strong>{paymentStatus}</strong>
+                <p>{getPaymentInstruction(paymentMethod)}</p>
+              </div>
+              {['PayPal', 'Klarna'].includes(paymentMethod) && (
+                <label>
+                  Zahlungs-E-Mail
+                  <input
+                    type="email"
+                    value={paymentEmail}
+                    onChange={(event) => setPaymentEmail(event.target.value)}
+                    placeholder="name@beispiel.de"
+                  />
+                </label>
+              )}
+              {paymentMethod === 'Kreditkarte' && (
+                <label>
+                  Kartennummer
+                  <input
+                    inputMode="numeric"
+                    value={cardNumber}
+                    onChange={(event) => setCardNumber(event.target.value)}
+                    placeholder="1234 5678 9012 3456"
+                  />
+                </label>
+              )}
+              {paymentMethod === 'SEPA' && (
+                <label>
+                  IBAN
+                  <input
+                    value={iban}
+                    onChange={(event) => setIban(event.target.value)}
+                    placeholder="DE00 0000 0000 0000 0000 00"
+                  />
+                </label>
+              )}
+              {['Apple Pay', 'Google Pay'].includes(paymentMethod) && (
+                <p className="wallet-note">Für Wallet-Zahlungen nutzt die App später die Zahlung auf deinem Gerät.</p>
+              )}
+              <button className="payment-submit" type="button" onClick={handlePaymentSubmit}>
+                {paymentPlan === 'free' ? 'Kostenlosen Plan aktivieren' : 'Zahlung bestätigen'}
+              </button>
             </div>
           </div>
         )}
