@@ -20,6 +20,104 @@ body {
   padding-bottom: 95px;
 }
 
+.app.theme-dark {
+  color: #f8f6ff;
+}
+
+.app.theme-dark .screen,
+.app.theme-dark .login-screen,
+.app.theme-dark .friends-page {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(123, 97, 255, 0.22), transparent 30%),
+    linear-gradient(155deg, #171329 0%, #211a35 56%, #101827 100%);
+  color: #f8f6ff;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 70px rgba(10, 8, 28, 0.34);
+}
+
+.app.theme-dark h1,
+.app.theme-dark h2,
+.app.theme-dark h3,
+.app.theme-dark strong,
+.app.theme-dark .friend-info h2,
+.app.theme-dark .challenge-header h2 {
+  color: #ffffff;
+}
+
+.app.theme-dark p,
+.app.theme-dark .lead,
+.app.theme-dark .friends-subtitle,
+.app.theme-dark .friend-info p,
+.app.theme-dark .score small,
+.app.theme-dark .challenge-card p,
+.app.theme-dark .profile-edit-panel p,
+.app.theme-dark .home-status-grid p,
+.app.theme-dark .daily-focus-card p,
+.app.theme-dark .day-plan-card p,
+.app.theme-dark .home-motivation-card p {
+  color: #c8c1e4;
+}
+
+.app.theme-dark .stat-card,
+.app.theme-dark .habit-card,
+.app.theme-dark .chart-card,
+.app.theme-dark .settings-list,
+.app.theme-dark .profile-picture-card,
+.app.theme-dark .bmi-card,
+.app.theme-dark .profile-level-card,
+.app.theme-dark .flow-tree-card,
+.app.theme-dark .day-overview-card,
+.app.theme-dark .daily-focus-card,
+.app.theme-dark .day-plan-card,
+.app.theme-dark .home-motivation-card,
+.app.theme-dark .home-status-grid article,
+.app.theme-dark .challenge-form,
+.app.theme-dark .challenge-card,
+.app.theme-dark .friend-card,
+.app.theme-dark .invite-panel,
+.app.theme-dark .register-settings-panel {
+  background: rgba(31, 25, 52, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 14px 34px rgba(7, 5, 18, 0.28);
+}
+
+.app.theme-dark input,
+.app.theme-dark select,
+.app.theme-dark .profile-edit-panel,
+.app.theme-dark .daily-focus-list div,
+.app.theme-dark .invite-link-box,
+.app.theme-dark .payment-checkout,
+.app.theme-dark .settings-group,
+.app.theme-dark .payment-option,
+.app.theme-dark .payment-method,
+.app.theme-dark .profile-choice,
+.app.theme-dark .routine-category,
+.app.theme-dark .routine-suggestion,
+.app.theme-dark .routine-form,
+.app.theme-dark .bottom-nav {
+  background: #241d3a;
+  color: #f8f6ff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.app.theme-dark .secondary-button,
+.app.theme-dark .settings-gear-button,
+.app.theme-dark .profile-setting-row button,
+.app.theme-dark .profile-picture-button,
+.app.theme-dark .add-routine-toggle {
+  background: #241d3a;
+  color: #a996ff;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.app.theme-dark .bottom-item {
+  color: #bdb5dc;
+}
+
+.app.theme-dark .bottom-item.active {
+  color: #ffffff;
+}
+
 .screen {
   min-height: calc(100vh - 40px);
   padding: 34px 24px;

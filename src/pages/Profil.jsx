@@ -137,12 +137,11 @@ function getHealthRecommendation(bmi, weight) {
   return { water: waterLiters, steps: '7.500', note: 'sanft anfangen' }
 }
 
-function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameChange, onSelectStyle }) {
+function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, onNavigate, onProfileNameChange, onSelectStyle }) {
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
   const [gender, setGender] = useState('male')
   const [reminders, setReminders] = useState(true)
-  const [design, setDesign] = useState('Hell')
   const [weight, setWeight] = useState(70)
   const [height, setHeight] = useState(175)
   const [paymentPlan, setPaymentPlan] = useState('free')
@@ -160,7 +159,7 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
     height,
     reminders,
     languageStyle,
-    design,
+    design: appTheme,
   })
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
@@ -189,7 +188,7 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
       height,
       reminders,
       languageStyle,
-      design,
+      design: appTheme,
     })
     setActiveEditor(editor)
   }
@@ -222,7 +221,7 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
         onSelectStyle(draftSettings.languageStyle)
         break
       case 'design':
-        setDesign(draftSettings.design)
+        onAppThemeChange(draftSettings.design)
         break
       default:
         break
@@ -411,7 +410,7 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
 
         <div className="profile-setting-row">
           <span>Design</span>
-          <strong>{design}</strong>
+          <strong>{appTheme}</strong>
           <button type="button" onClick={() => openEditor('design')}>Ändern</button>
         </div>
         {activeEditor === 'design' && (

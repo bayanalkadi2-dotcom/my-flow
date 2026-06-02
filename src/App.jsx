@@ -122,6 +122,7 @@ function App() {
   const [screen, setScreen] = useState('start')
   const [languageStyle, setLanguageStyle] = useState('german')
   const [profileName, setProfileName] = useState('Nina')
+  const [appTheme, setAppTheme] = useState('Hell')
   const [routineItems, setRoutineItems] = useState(loadRoutines)
   const [deletedRoutineTitles, setDeletedRoutineTitles] = useState(loadDeletedRoutineTitles)
   const tone = languageStyles[languageStyle]
@@ -314,9 +315,11 @@ function App() {
       case 'profile':
         return (
           <Profil
+            appTheme={appTheme}
             languageStyle={languageStyle}
             profileName={profileName}
             tone={tone}
+            onAppThemeChange={setAppTheme}
             onNavigate={setScreen}
             onProfileNameChange={setProfileName}
             onSelectStyle={setLanguageStyle}
@@ -331,7 +334,7 @@ default:
   }
 
   return (
-    <main className="app">
+    <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'}`}>
       {renderScreen()}
 
       {!authScreens.includes(screen) && (
