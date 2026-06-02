@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Freunde() {
+function Freunde({ habits }) {
   const freunde = [
     {
       name: "Lena",
@@ -40,6 +40,37 @@ function Freunde() {
   ];
 
   const [selectedFriend, setSelectedFriend] = useState(freunde[1]);
+  const [challengeRoutine, setChallengeRoutine] = useState(habits[0]?.title ?? "Wasser trinken");
+  const [challengeDays, setChallengeDays] = useState("14");
+  const [challengeFriend, setChallengeFriend] = useState("Lena");
+  const [challenges, setChallenges] = useState([
+    {
+      id: 1,
+      routine: "Wasser trinken",
+      days: 14,
+      friend: "Lena",
+      progress: 36,
+    },
+  ]);
+
+  function addChallenge(event) {
+    event.preventDefault();
+
+    if (!challengeRoutine) {
+      return;
+    }
+
+    setChallenges((currentChallenges) => [
+      {
+        id: Date.now(),
+        routine: challengeRoutine,
+        days: Number(challengeDays) || 14,
+        friend: challengeFriend,
+        progress: 0,
+      },
+      ...currentChallenges,
+    ]);
+  }
 
   return (
     <div className="friends-page">
@@ -63,6 +94,67 @@ function Freunde() {
           ))}
         </div>
       </div>
+
+      <section className="challenge-section">
+        <div className="challenge-header">
+          <div>
+            <p className="friends-subtitle">Gemeinsame Ziele</p>
+            <h2>Challenges</h2>
+          </div>
+        </div>
+
+        <form className="challenge-form" onSubmit={addChallenge}>
+          <label>
+            Routine
+            <select value={challengeRoutine} onChange={(event) => setChallengeRoutine(event.target.value)}>
+              {habits.map((habit) => (
+                <option value={habit.title} key={habit.id}>
+                  {habit.title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="challenge-form-row">
+            <label>
+              Dauer
+              <select value={challengeDays} onChange={(event) => setChallengeDays(event.target.value)}>
+                <option value="7">7 Tage</option>
+                <option value="14">14 Tage</option>
+                <option value="30">30 Tage</option>
+              </select>
+            </label>
+            <label>
+              Mit
+              <select value={challengeFriend} onChange={(event) => setChallengeFriend(event.target.value)}>
+                {freunde
+                  .filter((freund) => freund.name !== "Du")
+                  .map((freund) => (
+                    <option value={freund.name} key={freund.name}>
+                      {freund.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+          </div>
+          <button type="submit">Challenge starten</button>
+        </form>
+
+        <div className="challenge-list">
+          {challenges.map((challenge) => (
+            <article className="challenge-card" key={challenge.id}>
+              <div>
+                <span>{challenge.days} Tage</span>
+                <h3>{challenge.routine}</h3>
+                <p>Du gegen {challenge.friend}</p>
+              </div>
+              <strong>{challenge.progress}%</strong>
+              <div className="challenge-progress">
+                <span style={{ width: `${challenge.progress}%` }} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <div className="leaderboard">
         {freunde.map((freund, index) => (

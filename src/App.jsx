@@ -319,7 +319,7 @@ function App() {
           />
         )
       case 'freunde':
-        return <Freunde />
+        return <Freunde habits={preparedHabits} />
 
 default:
   return <Startseite onNavigate={setScreen} />

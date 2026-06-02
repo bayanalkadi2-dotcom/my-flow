@@ -1103,6 +1103,68 @@ input {
   font-weight: 900;
 }
 
+.period-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 5px;
+  margin-top: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 22px rgba(110, 90, 170, 0.08);
+}
+
+.period-toggle button {
+  min-height: 40px;
+  padding: 10px;
+  border-radius: 14px;
+  background: transparent;
+  color: #65607f;
+  box-shadow: none;
+}
+
+.period-toggle button.selected {
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff);
+  color: white;
+}
+
+.stat-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.summary-card {
+  margin-top: 0;
+  padding: 14px 12px;
+  border-radius: 18px;
+}
+
+.summary-card span {
+  color: #65607f;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 7px;
+  color: #7b61ff;
+  font-size: 20px;
+}
+
+.summary-card p {
+  margin: 5px 0 0;
+  color: #65607f;
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.improvement-card strong {
+  color: #22a86f;
+}
+
 .chart-card {
   height: 260px;
   display: flex;
@@ -1153,6 +1215,77 @@ input {
   color: #65607f;
   font-size: 13px;
   line-height: 1.35;
+}
+
+.motivation-card {
+  padding: 18px;
+  margin-top: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+}
+
+.motivation-bubble {
+  position: relative;
+  padding: 17px;
+  border-radius: 22px 22px 22px 8px;
+  background: linear-gradient(135deg, #f7f2ff, #eef8ff);
+  border: 1px solid rgba(118, 92, 255, 0.14);
+}
+
+.motivation-bubble::after {
+  position: absolute;
+  left: 18px;
+  bottom: -10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #eef8ff;
+  content: "";
+}
+
+.motivation-bubble span {
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.motivation-bubble h2 {
+  margin: 8px 0 6px;
+  color: #18143f;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.motivation-bubble p {
+  margin: 0;
+  color: #5f5b7c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.motivation-progress {
+  height: 9px;
+  margin-top: 18px;
+  border-radius: 999px;
+  background: #eee7ff;
+  overflow: hidden;
+}
+
+.motivation-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff, #73cfff);
+}
+
+.motivation-card small {
+  display: block;
+  margin-top: 8px;
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .settings-list {
@@ -1923,6 +2056,108 @@ input {
   background: linear-gradient(135deg, #8b5cf6, #ec4899);
   color: white;
   font-weight: 700;
+}
+
+.challenge-section {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 22px;
+}
+
+.challenge-header h2 {
+  margin: 5px 0 0;
+  color: #15133c;
+  font-size: 24px;
+}
+
+.challenge-form,
+.challenge-card,
+.friend-detail-card {
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.12);
+}
+
+.challenge-form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.challenge-form label {
+  margin: 0;
+  color: #302c5a;
+  font-size: 13px;
+}
+
+.challenge-form select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(130, 100, 255, 0.18);
+  background: white;
+  color: #17133f;
+  font-weight: 700;
+}
+
+.challenge-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.challenge-form button {
+  border-radius: 18px;
+}
+
+.challenge-list {
+  display: grid;
+  gap: 12px;
+}
+
+.challenge-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 16px;
+}
+
+.challenge-card span {
+  color: #7c3aed;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.challenge-card h3 {
+  margin: 5px 0;
+  color: #15133c;
+  font-size: 18px;
+}
+
+.challenge-card p {
+  margin: 0;
+  color: #68618f;
+  font-size: 13px;
+}
+
+.challenge-card strong {
+  color: #7c3aed;
+  font-size: 20px;
+}
+
+.challenge-progress {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: 999px;
+  background: #ebe7ff;
+  overflow: hidden;
+}
+
+.challenge-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
 }
 
 .leaderboard {
