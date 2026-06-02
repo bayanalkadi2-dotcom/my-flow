@@ -1558,6 +1558,13 @@ input {
   border-color: transparent;
 }
 
+.profile-confirm-button {
+  justify-self: end;
+  min-width: 82px;
+  padding: 11px 18px;
+  border-radius: 16px;
+}
+
 .bmi-card {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2364,6 +2371,82 @@ input {
   background: linear-gradient(135deg, #8b5cf6, #ec4899);
   color: white;
   font-weight: 700;
+}
+
+.invite-bottom-button {
+  width: 100%;
+  margin: 0 0 14px;
+}
+
+.invite-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  margin: 0 0 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.12);
+}
+
+.invite-panel span {
+  color: #7c3aed;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.invite-panel p {
+  margin: 5px 0 0;
+  color: #68618f;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.invite-link-box {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 16px;
+  background: white;
+  border: 1px solid rgba(124, 58, 237, 0.14);
+}
+
+.invite-link-box strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #15133c;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invite-link-box button {
+  padding: 9px 12px;
+  border-radius: 14px;
+}
+
+.invite-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.invite-actions a {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  border-radius: 16px;
+  background: #f2ecff;
+  color: #7c3aed;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.invite-panel small {
+  color: #22a86f;
+  font-weight: 900;
 }
 
 .challenge-section {

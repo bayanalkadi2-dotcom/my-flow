@@ -153,6 +153,15 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
   const [iban, setIban] = useState('')
   const [paymentEmail, setPaymentEmail] = useState('')
   const [treeType, setTreeType] = useState('oak')
+  const [draftSettings, setDraftSettings] = useState({
+    name: profileName || 'Nina',
+    gender,
+    weight,
+    height,
+    reminders,
+    languageStyle,
+    design,
+  })
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
   const name = profileName || 'Nina'
@@ -167,8 +176,59 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
   const flowTree = getFlowTree(challengePoints, treeType)
   const treeChoiceUnlocked = challengePoints >= 800
 
-  function toggleEditor(editor) {
-    setActiveEditor((currentEditor) => (currentEditor === editor ? null : editor))
+  function openEditor(editor) {
+    if (activeEditor === editor) {
+      setActiveEditor(null)
+      return
+    }
+
+    setDraftSettings({
+      name,
+      gender,
+      weight,
+      height,
+      reminders,
+      languageStyle,
+      design,
+    })
+    setActiveEditor(editor)
+  }
+
+  function updateDraft(key, value) {
+    setDraftSettings((currentDraft) => ({
+      ...currentDraft,
+      [key]: value,
+    }))
+  }
+
+  function confirmEditor() {
+    switch (activeEditor) {
+      case 'name':
+        onProfileNameChange(draftSettings.name)
+        break
+      case 'gender':
+        setGender(draftSettings.gender)
+        break
+      case 'weight':
+        setWeight(Number(draftSettings.weight) || weight)
+        break
+      case 'height':
+        setHeight(Number(draftSettings.height) || height)
+        break
+      case 'reminders':
+        setReminders(draftSettings.reminders)
+        break
+      case 'language':
+        onSelectStyle(draftSettings.languageStyle)
+        break
+      case 'design':
+        setDesign(draftSettings.design)
+        break
+      default:
+        break
+    }
+
+    setActiveEditor(null)
   }
 
   function handlePaymentSubmit() {
@@ -222,41 +282,45 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
         <div className="profile-setting-row">
           <span>Name</span>
           <strong>{name}</strong>
-          <button type="button" onClick={() => toggleEditor('name')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('name')}>Ändern</button>
         </div>
         {activeEditor === 'name' && (
           <div className="profile-edit-panel">
             <label>
               Neuer Name
-              <input value={name} onChange={(event) => onProfileNameChange(event.target.value)} />
+              <input value={draftSettings.name} onChange={(event) => updateDraft('name', event.target.value)} />
             </label>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
 
         <div className="profile-setting-row">
           <span>Geschlecht</span>
           <strong>{selectedGender.label}</strong>
-          <button type="button" onClick={() => toggleEditor('gender')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('gender')}>Ändern</button>
         </div>
         {activeEditor === 'gender' && (
-          <div className="profile-edit-panel option-grid">
-            {genderOptions.map((option) => (
-              <button
-                className={`profile-choice ${gender === option.id ? 'selected' : ''}`}
-                key={option.id}
-                onClick={() => setGender(option.id)}
-                type="button"
-              >
-                {option.label}
-              </button>
-            ))}
+          <div className="profile-edit-panel">
+            <div className="option-grid">
+              {genderOptions.map((option) => (
+                <button
+                  className={`profile-choice ${draftSettings.gender === option.id ? 'selected' : ''}`}
+                  key={option.id}
+                  onClick={() => updateDraft('gender', option.id)}
+                  type="button"
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
 
         <div className="profile-setting-row">
           <span>Gewicht</span>
           <strong>{weight} kg</strong>
-          <button type="button" onClick={() => toggleEditor('weight')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('weight')}>Ändern</button>
         </div>
         {activeEditor === 'weight' && (
           <div className="profile-edit-panel">
@@ -266,17 +330,18 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
                 min="30"
                 max="250"
                 type="number"
-                value={weight}
-                onChange={(event) => setWeight(Number(event.target.value))}
+                value={draftSettings.weight}
+                onChange={(event) => updateDraft('weight', event.target.value)}
               />
             </label>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
 
         <div className="profile-setting-row">
           <span>Größe</span>
           <strong>{height} cm</strong>
-          <button type="button" onClick={() => toggleEditor('height')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('height')}>Ändern</button>
         </div>
         {activeEditor === 'height' && (
           <div className="profile-edit-panel">
@@ -286,80 +351,90 @@ function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameCha
                 min="120"
                 max="230"
                 type="number"
-                value={height}
-                onChange={(event) => setHeight(Number(event.target.value))}
+                value={draftSettings.height}
+                onChange={(event) => updateDraft('height', event.target.value)}
               />
             </label>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
 
         <div className="profile-setting-row">
           <span>Erinnerungen</span>
           <strong>{reminders ? 'Aktiv' : 'Aus'}</strong>
-          <button type="button" onClick={() => toggleEditor('reminders')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('reminders')}>Ändern</button>
         </div>
         {activeEditor === 'reminders' && (
-          <div className="profile-edit-panel option-grid">
-            <button
-              className={`profile-choice ${reminders ? 'selected' : ''}`}
-              onClick={() => setReminders(true)}
-              type="button"
-            >
-              Aktiv
-            </button>
-            <button
-              className={`profile-choice ${!reminders ? 'selected' : ''}`}
-              onClick={() => setReminders(false)}
-              type="button"
-            >
-              Aus
-            </button>
+          <div className="profile-edit-panel">
+            <div className="option-grid">
+              <button
+                className={`profile-choice ${draftSettings.reminders ? 'selected' : ''}`}
+                onClick={() => updateDraft('reminders', true)}
+                type="button"
+              >
+                Aktiv
+              </button>
+              <button
+                className={`profile-choice ${!draftSettings.reminders ? 'selected' : ''}`}
+                onClick={() => updateDraft('reminders', false)}
+                type="button"
+              >
+                Aus
+              </button>
+            </div>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
 
         <div className="profile-setting-row">
           <span>Sprache</span>
           <strong>{tone.label}</strong>
-          <button type="button" onClick={() => toggleEditor('language')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('language')}>Ändern</button>
         </div>
         {activeEditor === 'language' && (
-          <div className="profile-edit-panel option-grid">
-            {languageOptions.map((option) => (
-              <button
-                className={`profile-choice ${languageStyle === option.id ? 'selected' : ''}`}
-                key={option.id}
-                onClick={() => onSelectStyle(option.id)}
-                type="button"
-              >
-                {option.label}
-              </button>
-            ))}
+          <div className="profile-edit-panel">
+            <div className="option-grid">
+              {languageOptions.map((option) => (
+                <button
+                  className={`profile-choice ${draftSettings.languageStyle === option.id ? 'selected' : ''}`}
+                  key={option.id}
+                  onClick={() => updateDraft('languageStyle', option.id)}
+                  type="button"
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
 
         <div className="profile-setting-row">
           <span>Design</span>
           <strong>{design}</strong>
-          <button type="button" onClick={() => toggleEditor('design')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('design')}>Ändern</button>
         </div>
         {activeEditor === 'design' && (
-          <div className="profile-edit-panel option-grid">
-            {designOptions.map((option) => (
-              <button
-                className={`profile-choice ${design === option ? 'selected' : ''}`}
-                key={option}
-                onClick={() => setDesign(option)}
-                type="button"
-              >
-                {option}
-              </button>
-            ))}
+          <div className="profile-edit-panel">
+            <div className="option-grid">
+              {designOptions.map((option) => (
+                <button
+                  className={`profile-choice ${draftSettings.design === option ? 'selected' : ''}`}
+                  key={option}
+                  onClick={() => updateDraft('design', option)}
+                  type="button"
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
         <div className="profile-setting-row">
           <span>Abo</span>
           <strong>{selectedPlan.label}</strong>
-          <button type="button" onClick={() => toggleEditor('payment')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('payment')}>Ändern</button>
         </div>
         {activeEditor === 'payment' && (
           <div className="settings-group payment-settings">

@@ -49,6 +49,7 @@ function getLevel(score) {
 }
 
 function Freunde({ habits }) {
+  const inviteLink = "https://myflow.app/invite/nina-flow";
   const freunde = [
     {
       name: "Lena",
@@ -88,6 +89,8 @@ function Freunde({ habits }) {
   ];
 
   const [selectedFriend, setSelectedFriend] = useState(freunde[1]);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteStatus, setInviteStatus] = useState("");
   const [challengeRoutine, setChallengeRoutine] = useState(habits[0]?.title ?? "Wasser trinken");
   const [challengeDays, setChallengeDays] = useState("14");
   const [challengeFriend, setChallengeFriend] = useState("Lena");
@@ -120,18 +123,26 @@ function Freunde({ habits }) {
     ]);
   }
 
+  function copyInviteLink() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(inviteLink);
+    }
+
+    setInviteStatus("Einladungslink kopiert");
+  }
+
   const selectedLevel = getLevel(selectedFriend.score);
   const selectedTree = getFlowTree(selectedFriend.score);
+  const inviteText = encodeURIComponent(`Hey, komm zu MyFlow und mach mit mir Challenges: ${inviteLink}`);
+  const mailSubject = encodeURIComponent("Einladung zu MyFlow");
 
   return (
     <div className="friends-page">
       <div className="friends-header">
         <div>
           <p className="friends-subtitle">Gemeinsam motiviert bleiben</p>
-          <h1>Freunde & Rangliste</h1>
+          <h1>Freunde und Rangliste</h1>
         </div>
-
-        <button className="add-friend-button">+ Freund hinzufügen</button>
       </div>
 
       <div className="friend-detail-card">
@@ -162,6 +173,28 @@ function Freunde({ habits }) {
           ))}
         </div>
       </div>
+
+      <button className="add-friend-button invite-bottom-button" onClick={() => setInviteOpen((open) => !open)} type="button">
+        Freunde einladen
+      </button>
+
+      {inviteOpen && (
+        <section className="invite-panel">
+          <div>
+            <span>Freund einladen</span>
+            <p>Teile deinen Link per WhatsApp, E-Mail oder kopiere ihn direkt.</p>
+          </div>
+          <div className="invite-link-box">
+            <strong>{inviteLink}</strong>
+            <button type="button" onClick={copyInviteLink}>Kopieren</button>
+          </div>
+          <div className="invite-actions">
+            <a href={`https://wa.me/?text=${inviteText}`} target="_blank" rel="noreferrer">WhatsApp</a>
+            <a href={`mailto:?subject=${mailSubject}&body=${inviteText}`}>E-Mail</a>
+          </div>
+          {inviteStatus && <small>{inviteStatus}</small>}
+        </section>
+      )}
 
       <section className="challenge-section">
         <div className="challenge-header">
