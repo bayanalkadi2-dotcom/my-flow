@@ -659,6 +659,157 @@ input {
   margin-top: 10px;
 }
 
+.home-screen {
+  overflow-y: auto;
+}
+
+.day-overview-card,
+.daily-focus-card,
+.day-plan-card,
+.home-motivation-card {
+  padding: 20px;
+  margin-top: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+}
+
+.day-overview-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(123, 97, 255, 0.92), rgba(115, 207, 255, 0.86)),
+    #7b61ff;
+  color: white;
+}
+
+.day-overview-card span,
+.daily-focus-header span,
+.day-plan-card > span,
+.home-motivation-card span {
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.day-overview-card h2 {
+  margin: 8px 0 6px;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.day-overview-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.day-overview-card > strong {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  font-size: 22px;
+}
+
+.home-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.home-status-grid article {
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 12px 26px rgba(110, 90, 170, 0.09);
+}
+
+.home-status-grid span,
+.daily-focus-header small,
+.home-motivation-card span {
+  color: #765cff;
+}
+
+.home-status-grid strong {
+  display: block;
+  margin-top: 8px;
+  color: #18143f;
+  font-size: 34px;
+}
+
+.home-status-grid p,
+.daily-focus-card p,
+.day-plan-card p,
+.home-motivation-card p {
+  margin: 5px 0 0;
+  color: #65607f;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.daily-focus-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.daily-focus-list {
+  display: grid;
+  gap: 10px;
+}
+
+.daily-focus-list div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 16px;
+  background: #f5f1ff;
+}
+
+.daily-focus-list strong {
+  color: #18143f;
+  font-size: 14px;
+}
+
+.daily-focus-list span {
+  color: #765cff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.day-plan-card {
+  display: grid;
+  gap: 12px;
+}
+
+.day-plan-card > span {
+  color: #765cff;
+}
+
+.day-plan-card div {
+  padding-left: 12px;
+  border-left: 3px solid rgba(123, 97, 255, 0.28);
+}
+
+.day-plan-card strong {
+  color: #18143f;
+}
+
+.home-motivation-card {
+  background: linear-gradient(135deg, #fff7fb, #eef8ff);
+}
+
 .habit-list {
   display: grid;
   gap: 14px;

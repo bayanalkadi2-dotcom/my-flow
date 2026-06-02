@@ -121,6 +121,7 @@ function loadDeletedRoutineTitles() {
 function App() {
   const [screen, setScreen] = useState('start')
   const [languageStyle, setLanguageStyle] = useState('german')
+  const [profileName, setProfileName] = useState('Nina')
   const [routineItems, setRoutineItems] = useState(loadRoutines)
   const [deletedRoutineTitles, setDeletedRoutineTitles] = useState(loadDeletedRoutineTitles)
   const tone = languageStyles[languageStyle]
@@ -285,6 +286,7 @@ function App() {
         return (
           <DashboardHome
             habits={preparedHabits}
+            profileName={profileName}
             tone={tone}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
@@ -313,8 +315,10 @@ function App() {
         return (
           <Profil
             languageStyle={languageStyle}
+            profileName={profileName}
             tone={tone}
             onNavigate={setScreen}
+            onProfileNameChange={setProfileName}
             onSelectStyle={setLanguageStyle}
           />
         )

@@ -137,10 +137,9 @@ function getHealthRecommendation(bmi, weight) {
   return { water: waterLiters, steps: '7.500', note: 'sanft anfangen' }
 }
 
-function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
+function Profil({ languageStyle, profileName, tone, onNavigate, onProfileNameChange, onSelectStyle }) {
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
-  const [name, setName] = useState('Student')
   const [gender, setGender] = useState('male')
   const [reminders, setReminders] = useState(true)
   const [design, setDesign] = useState('Hell')
@@ -156,7 +155,8 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
   const [treeType, setTreeType] = useState('oak')
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
-  const profileInitial = name.trim().charAt(0).toUpperCase() || 'S'
+  const name = profileName || 'Nina'
+  const profileInitial = name.trim().charAt(0).toUpperCase() || 'N'
   const heightInMeters = height / 100
   const bmi = weight > 0 && height > 0 ? weight / (heightInMeters * heightInMeters) : 0
   const bmiLabel = bmi.toFixed(1)
@@ -228,7 +228,7 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
           <div className="profile-edit-panel">
             <label>
               Neuer Name
-              <input value={name} onChange={(event) => setName(event.target.value)} />
+              <input value={name} onChange={(event) => onProfileNameChange(event.target.value)} />
             </label>
           </div>
         )}
