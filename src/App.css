@@ -1443,6 +1443,163 @@ input {
   line-height: 1.3;
 }
 
+.profile-level-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 18px;
+  margin: 0 0 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+}
+
+.profile-level-card span {
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.profile-level-card h2 {
+  margin: 6px 0 4px;
+  color: #18143f;
+  font-size: 24px;
+}
+
+.profile-level-card p {
+  margin: 0;
+  color: #65607f;
+  font-size: 13px;
+}
+
+.profile-level-card strong {
+  color: #22a86f;
+  font-size: 24px;
+}
+
+.profile-level-progress {
+  grid-column: 1 / -1;
+  height: 9px;
+  border-radius: 999px;
+  background: #eee7ff;
+  overflow: hidden;
+}
+
+.profile-level-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #22c55e, #73cfff);
+}
+
+.profile-level-card small {
+  grid-column: 1 / -1;
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.flow-tree-card {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 14px;
+  padding: 18px;
+  margin: 0 0 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(115, 207, 255, 0.22), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(241, 255, 247, 0.88));
+  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+}
+
+.flow-tree-visual {
+  display: grid;
+  place-items: center;
+  min-height: 92px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(34, 197, 94, 0.16);
+  font-size: 38px;
+  line-height: 1;
+}
+
+.flow-tree-visual span {
+  filter: drop-shadow(0 8px 12px rgba(34, 197, 94, 0.18));
+}
+
+.flow-tree-info span {
+  color: #22a86f;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.flow-tree-info h2 {
+  margin: 7px 0 5px;
+  color: #18143f;
+  font-size: 24px;
+}
+
+.flow-tree-info p {
+  margin: 0;
+  color: #65607f;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.flow-tree-progress {
+  grid-column: 1 / -1;
+  height: 9px;
+  border-radius: 999px;
+  background: #dff6e7;
+  overflow: hidden;
+}
+
+.flow-tree-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #22c55e, #73cfff);
+}
+
+.flow-tree-card small {
+  grid-column: 1 / -1;
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tree-choice-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.tree-choice-row button {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  padding: 10px 8px;
+  border-radius: 16px;
+  background: white;
+  color: #302c5a;
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  box-shadow: none;
+  font-size: 12px;
+}
+
+.tree-choice-row button.selected {
+  background: linear-gradient(135deg, #22c55e, #73cfff);
+  color: white;
+}
+
+.tree-choice-row button:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+
 .profile-style-button {
   width: 100%;
   margin-bottom: 14px;
@@ -2074,8 +2231,114 @@ input {
 .challenge-card,
 .friend-detail-card {
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.78);
   box-shadow: 0 12px 30px rgba(124, 58, 237, 0.12);
+}
+
+.friend-detail-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  margin-bottom: 20px;
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(236, 72, 153, 0.88)),
+    #7c3aed;
+  color: white;
+}
+
+.friend-detail-top {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.friend-detail-top h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.friend-detail-top p {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+}
+
+.friend-detail-top strong {
+  font-size: 24px;
+}
+
+.detail-avatar {
+  width: 54px;
+  height: 54px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+}
+
+.friend-level-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.friend-level-row span,
+.friend-level-row small {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.friend-level-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+  overflow: hidden;
+}
+
+.friend-level-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: white;
+}
+
+.friend-tree-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.friend-tree-status span {
+  font-size: 24px;
+}
+
+.friend-tree-status p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.detail-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-list span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.challenge-card,
+.challenge-form {
+  background: rgba(255, 255, 255, 0.78);
 }
 
 .challenge-form {
@@ -2167,9 +2430,9 @@ input {
 
 .friend-card {
   display: grid;
-  grid-template-columns: 34px 52px 1fr 70px;
+  grid-template-columns: 30px 48px 34px 1fr 66px;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   padding: 16px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.78);
@@ -2196,6 +2459,18 @@ input {
   place-items: center;
   color: white;
   font-weight: 800;
+}
+
+.friend-tree-badge {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  font-size: 19px;
+  box-shadow: 0 8px 16px rgba(110, 90, 170, 0.09);
 }
 
 .friend-info h2 {

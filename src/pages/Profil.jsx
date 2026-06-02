@@ -27,6 +27,63 @@ const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 
 
 const paidTools = ['KI-Coach', 'Erweiterte Statistik', 'Premium-Routinen']
 
+const levelSteps = [
+  { name: 'Starter', min: 0 },
+  { name: 'Bronze', min: 250 },
+  { name: 'Silber', min: 500 },
+  { name: 'Gold', min: 800 },
+  { name: 'Flow Pro', min: 1200 },
+]
+
+const treeOptions = [
+  { id: 'oak', label: 'Eiche', symbol: '🌳' },
+  { id: 'pine', label: 'Tanne', symbol: '🌲' },
+  { id: 'flower', label: 'Bluete', symbol: '🌸' },
+]
+
+function getFlowTree(score, treeType = 'oak') {
+  const selectedTree = treeOptions.find((tree) => tree.id === treeType) ?? treeOptions[0]
+
+  if (score < 100) {
+    return { stage: 'Blatt', symbol: '🍃', progress: Math.round(score), next: 'Spross ab 100 Punkten', count: 1 }
+  }
+
+  if (score < 250) {
+    return { stage: 'Spross', symbol: '🌱', progress: Math.round(((score - 100) / 150) * 100), next: 'Pflanze ab 250 Punkten', count: 1 }
+  }
+
+  if (score < 500) {
+    return { stage: 'Pflanze', symbol: '🪴', progress: Math.round(((score - 250) / 250) * 100), next: 'Blume ab 500 Punkten', count: 1 }
+  }
+
+  if (score < 800) {
+    return { stage: 'Blume', symbol: '🌸', progress: Math.round(((score - 500) / 300) * 100), next: 'Baum ab 800 Punkten', count: 1 }
+  }
+
+  if (score < 1200) {
+    return { stage: selectedTree.label, symbol: selectedTree.symbol, progress: Math.round(((score - 800) / 400) * 100), next: 'zweiter Baum ab 1200 Punkten', count: 1 }
+  }
+
+  return { stage: 'Flow-Wald', symbol: selectedTree.symbol, progress: 100, next: 'Maximale Stufe erreicht', count: Math.min(3, Math.floor(score / 600)) }
+}
+
+function getLevel(score) {
+  const currentLevel = [...levelSteps].reverse().find((level) => score >= level.min)
+  const nextLevel = levelSteps.find((level) => level.min > score)
+  const currentMin = currentLevel?.min ?? 0
+  const nextMin = nextLevel?.min ?? currentMin
+  const progress = nextLevel
+    ? Math.round(((score - currentMin) / (nextMin - currentMin)) * 100)
+    : 100
+
+  return {
+    current: currentLevel?.name ?? 'Starter',
+    next: nextLevel?.name ?? 'Max Level',
+    nextMin,
+    progress,
+  }
+}
+
 function getPaymentInstruction(method) {
   switch (method) {
     case 'PayPal':
@@ -96,6 +153,7 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
   const [cardNumber, setCardNumber] = useState('')
   const [iban, setIban] = useState('')
   const [paymentEmail, setPaymentEmail] = useState('')
+  const [treeType, setTreeType] = useState('oak')
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
   const profileInitial = name.trim().charAt(0).toUpperCase() || 'S'
@@ -104,6 +162,10 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
   const bmiLabel = bmi.toFixed(1)
   const bmiCategory = getBmiCategory(bmi)
   const recommendation = getHealthRecommendation(bmi, weight)
+  const challengePoints = 650
+  const level = getLevel(challengePoints)
+  const flowTree = getFlowTree(challengePoints, treeType)
+  const treeChoiceUnlocked = challengePoints >= 800
 
   function toggleEditor(editor) {
     setActiveEditor((currentEditor) => (currentEditor === editor ? null : editor))
@@ -413,6 +475,48 @@ function Profil({ languageStyle, tone, onNavigate, onSelectStyle }) {
           <span>Schritte</span>
           <strong>{recommendation.steps}</strong>
           <p>{recommendation.note}</p>
+        </div>
+      </div>
+      <div className="profile-level-card">
+        <div>
+          <span>Challenge-Level</span>
+          <h2>{level.current}</h2>
+          <p>{challengePoints} Punkte gesammelt</p>
+        </div>
+        <strong>{level.progress}%</strong>
+        <div className="profile-level-progress">
+          <span style={{ width: `${level.progress}%` }} />
+        </div>
+        <small>Naechstes Level: {level.next} ab {level.nextMin} Punkten</small>
+      </div>
+      <div className="flow-tree-card">
+        <div className="flow-tree-visual" aria-label={`FlowTree Stufe ${flowTree.stage}`}>
+          {Array.from({ length: flowTree.count }).map((_, index) => (
+            <span key={index}>{flowTree.symbol}</span>
+          ))}
+        </div>
+        <div className="flow-tree-info">
+          <span>FlowTree</span>
+          <h2>{flowTree.stage}</h2>
+          <p>{flowTree.next}</p>
+        </div>
+        <div className="flow-tree-progress">
+          <span style={{ width: `${flowTree.progress}%` }} />
+        </div>
+        <small>{flowTree.progress}% Wachstum bis zur naechsten Stufe</small>
+        <div className="tree-choice-row">
+          {treeOptions.map((tree) => (
+            <button
+              className={treeType === tree.id ? 'selected' : ''}
+              disabled={!treeChoiceUnlocked}
+              key={tree.id}
+              onClick={() => setTreeType(tree.id)}
+              type="button"
+            >
+              <span>{tree.symbol}</span>
+              {tree.label}
+            </button>
+          ))}
         </div>
       </div>
       <button onClick={() => onNavigate('start')}>Abmelden</button>

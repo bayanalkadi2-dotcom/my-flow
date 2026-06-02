@@ -1,5 +1,53 @@
 import { useState } from "react";
 
+const levelSteps = [
+  { name: "Starter", min: 0 },
+  { name: "Bronze", min: 250 },
+  { name: "Silber", min: 500 },
+  { name: "Gold", min: 800 },
+  { name: "Flow Pro", min: 1200 },
+]
+
+function getFlowTree(score) {
+  if (score < 100) {
+    return { label: "Blatt", symbols: "🍃" }
+  }
+
+  if (score < 250) {
+    return { label: "Spross", symbols: "🌱" }
+  }
+
+  if (score < 500) {
+    return { label: "Pflanze", symbols: "🪴" }
+  }
+
+  if (score < 800) {
+    return { label: "Blume", symbols: "🌸" }
+  }
+
+  if (score < 1200) {
+    return { label: "Baum", symbols: "🌳" }
+  }
+
+  return { label: "Flow-Wald", symbols: "🌳🌳" }
+}
+
+function getLevel(score) {
+  const currentLevel = [...levelSteps].reverse().find((level) => score >= level.min)
+  const nextLevel = levelSteps.find((level) => level.min > score)
+  const currentMin = currentLevel?.min ?? 0
+  const nextMin = nextLevel?.min ?? currentMin
+  const progress = nextLevel
+    ? Math.round(((score - currentMin) / (nextMin - currentMin)) * 100)
+    : 100
+
+  return {
+    current: currentLevel?.name ?? "Starter",
+    next: nextLevel?.name ?? "Max Level",
+    progress,
+  }
+}
+
 function Freunde({ habits }) {
   const freunde = [
     {
@@ -72,21 +120,41 @@ function Freunde({ habits }) {
     ]);
   }
 
+  const selectedLevel = getLevel(selectedFriend.score);
+  const selectedTree = getFlowTree(selectedFriend.score);
+
   return (
     <div className="friends-page">
       <div className="friends-header">
         <div>
           <p className="friends-subtitle">Gemeinsam motiviert bleiben</p>
-          <h1>Freunde & Rangliste 🏆</h1>
+          <h1>Freunde & Rangliste</h1>
         </div>
 
         <button className="add-friend-button">+ Freund hinzufügen</button>
       </div>
 
       <div className="friend-detail-card">
-        <h2>{selectedFriend.name}</h2>
-        <p>{selectedFriend.progress}% Wochenfortschritt</p>
-        <strong>{selectedFriend.score} Punkte</strong>
+        <div className="friend-detail-top">
+          <div className="avatar detail-avatar">{selectedFriend.name.charAt(0)}</div>
+          <div>
+            <h2>{selectedFriend.name}</h2>
+            <p>{selectedFriend.progress}% Wochenfortschritt</p>
+          </div>
+          <strong>{selectedFriend.score}</strong>
+        </div>
+
+        <div className="friend-level-row">
+          <span>Level {selectedLevel.current}</span>
+          <small>naechstes Level: {selectedLevel.next}</small>
+        </div>
+        <div className="friend-tree-status">
+          <span>{selectedTree.symbols}</span>
+          <p>FlowTree: {selectedTree.label}</p>
+        </div>
+        <div className="friend-level-progress">
+          <span style={{ width: `${selectedLevel.progress}%` }} />
+        </div>
 
         <div className="detail-list">
           {selectedFriend.details.map((detail) => (
@@ -167,6 +235,9 @@ function Freunde({ habits }) {
           >
             <div className="rank">{index + 1}</div>
             <div className="avatar">{freund.name.charAt(0)}</div>
+            <div className="friend-tree-badge" aria-label={`FlowTree ${getFlowTree(freund.score).label}`}>
+              {getFlowTree(freund.score).symbols}
+            </div>
 
             <div className="friend-info">
               <h2>{freund.name}</h2>
@@ -185,7 +256,7 @@ function Freunde({ habits }) {
 
             <div className="score">
               <span>{freund.score}</span>
-              <small>Punkte</small>
+              <small>{getLevel(freund.score).current}</small>
             </div>
           </button>
         ))}
