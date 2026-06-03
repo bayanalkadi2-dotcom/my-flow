@@ -54,7 +54,9 @@ body {
 .app.theme-dark .home-status-grid p,
 .app.theme-dark .daily-focus-card p,
 .app.theme-dark .day-plan-card p,
-.app.theme-dark .home-motivation-card p {
+.app.theme-dark .home-motivation-card p,
+.app.theme-dark .flow-coach-card p,
+.app.theme-dark .flow-reason {
   color: #c8c1e4;
 }
 
@@ -70,6 +72,7 @@ body {
 .app.theme-dark .daily-focus-card,
 .app.theme-dark .day-plan-card,
 .app.theme-dark .home-motivation-card,
+.app.theme-dark .flow-coach-card,
 .app.theme-dark .home-status-grid article,
 .app.theme-dark .challenge-form,
 .app.theme-dark .challenge-card,
@@ -85,6 +88,8 @@ body {
 .app.theme-dark select,
 .app.theme-dark .profile-edit-panel,
 .app.theme-dark .daily-focus-list div,
+.app.theme-dark .flow-segment div,
+.app.theme-dark .flow-recommendation,
 .app.theme-dark .invite-link-box,
 .app.theme-dark .payment-checkout,
 .app.theme-dark .settings-group,
@@ -759,28 +764,54 @@ input {
 
 .home-screen {
   overflow-y: auto;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 159, 210, 0.24), transparent 28%),
+    radial-gradient(circle at 92% 14%, rgba(115, 207, 255, 0.28), transparent 32%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.78), rgba(247, 244, 255, 0.68) 52%, rgba(239, 249, 255, 0.72));
+}
+
+.home-screen .page-header {
+  padding: 4px 2px 2px;
+}
+
+.home-screen .page-header h1 {
+  max-width: 320px;
+  margin: 8px 0 10px;
+  font-size: 38px;
+  line-height: 1.02;
+}
+
+.home-screen .lead {
+  max-width: 330px;
+  margin-bottom: 0;
+  color: #514b73;
+  font-size: 15px;
+  line-height: 1.55;
 }
 
 .day-overview-card,
 .daily-focus-card,
 .day-plan-card,
 .home-motivation-card {
-  padding: 20px;
+  padding: 19px;
   margin-top: 18px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  box-shadow: 0 16px 36px rgba(87, 70, 145, 0.12);
 }
 
 .day-overview-card {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 14px;
+  gap: 16px;
   align-items: center;
   background:
-    linear-gradient(135deg, rgba(123, 97, 255, 0.92), rgba(115, 207, 255, 0.86)),
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.34), transparent 28%),
+    linear-gradient(135deg, rgba(116, 82, 255, 0.96), rgba(255, 132, 202, 0.86) 48%, rgba(72, 184, 255, 0.88)),
     #7b61ff;
   color: white;
+  overflow: hidden;
 }
 
 .day-overview-card span,
@@ -794,7 +825,7 @@ input {
 
 .day-overview-card h2 {
   margin: 8px 0 6px;
-  font-size: 24px;
+  font-size: 25px;
   line-height: 1.15;
 }
 
@@ -808,12 +839,39 @@ input {
 .day-overview-card > strong {
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 72px;
+  width: 78px;
+  height: 78px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.34);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08)),
+    rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   font-size: 22px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38);
+}
+
+.day-overview-card > strong span {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.day-progress-track {
+  height: 8px;
+  margin-top: 15px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.day-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: white;
 }
 
 .home-status-grid {
@@ -824,10 +882,30 @@ input {
 }
 
 .home-status-grid article {
-  padding: 16px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: 0 12px 26px rgba(110, 90, 170, 0.09);
+  position: relative;
+  min-height: 112px;
+  padding: 17px;
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(247, 244, 255, 0.76));
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 28px rgba(110, 90, 170, 0.1);
+  overflow: hidden;
+}
+
+.home-status-grid article::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.12);
+}
+
+.home-status-grid .status-card-open::after {
+  background: rgba(255, 159, 210, 0.22);
 }
 
 .home-status-grid span,
@@ -840,7 +918,8 @@ input {
   display: block;
   margin-top: 8px;
   color: #18143f;
-  font-size: 34px;
+  font-size: 38px;
+  line-height: 1;
 }
 
 .home-status-grid p,
@@ -851,6 +930,135 @@ input {
   color: #65607f;
   font-size: 13px;
   line-height: 1.4;
+}
+
+.flow-coach-card {
+  display: grid;
+  gap: 16px;
+  padding: 19px;
+  margin-top: 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(115, 207, 255, 0.26), transparent 35%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(246, 241, 255, 0.78)),
+    #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 18px 42px rgba(98, 76, 170, 0.14);
+}
+
+.flow-coach-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.flow-coach-header span,
+.flow-segment > span,
+.flow-recommendation span {
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.flow-coach-header h2 {
+  margin: 6px 0 0;
+  color: #18143f;
+  font-size: 25px;
+  line-height: 1.15;
+}
+
+.flow-coach-header > strong {
+  max-width: 112px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 159, 210, 0.22), rgba(123, 97, 255, 0.16));
+  color: #765cff;
+  font-size: 11px;
+  line-height: 1.15;
+  text-align: center;
+  border: 1px solid rgba(123, 97, 255, 0.13);
+}
+
+.flow-checkin-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.flow-segment {
+  display: grid;
+  gap: 8px;
+}
+
+.flow-segment div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(118, 92, 255, 0.1);
+}
+
+.flow-segment button {
+  min-height: 38px;
+  padding: 8px 6px;
+  border-radius: 14px;
+  background: transparent;
+  color: #5f5b7c;
+  box-shadow: none;
+  font-size: 12px;
+}
+
+.flow-segment button.selected {
+  background: linear-gradient(135deg, #ff8ac9, #7b61ff);
+  color: white;
+  box-shadow: 0 8px 18px rgba(123, 97, 255, 0.18);
+}
+
+.flow-recommendation {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(118, 92, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.flow-recommendation p,
+.flow-reason {
+  margin: 0;
+  color: #5f5b7c;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.flow-recommendation div {
+  min-width: 96px;
+  text-align: right;
+}
+
+.flow-recommendation strong {
+  display: block;
+  margin-top: 4px;
+  color: #18143f;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.flow-recommendation small {
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.flow-reason {
+  padding-left: 12px;
+  border-left: 3px solid rgba(123, 97, 255, 0.25);
 }
 
 .daily-focus-header {
@@ -865,14 +1073,19 @@ input {
   gap: 10px;
 }
 
-.daily-focus-list div {
+.daily-focus-list > div {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 10px;
   padding: 11px 12px;
   border-radius: 16px;
-  background: #f5f1ff;
+  background: rgba(245, 241, 255, 0.76);
+  border: 1px solid rgba(118, 92, 255, 0.08);
+}
+
+.daily-focus-list > div > div {
+  min-width: 0;
 }
 
 .daily-focus-list strong {
@@ -880,10 +1093,76 @@ input {
   font-size: 14px;
 }
 
+.daily-focus-list small {
+  display: block;
+  margin-top: 3px;
+  color: #7a7396;
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .daily-focus-list span {
   color: #765cff;
   font-size: 13px;
   font-weight: 900;
+}
+
+.focus-progress-track {
+  grid-column: 1 / -1;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.12);
+  overflow: hidden;
+}
+
+.focus-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #ff8ac9, #73cfff);
+}
+
+.app.theme-dark .home-screen {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(123, 97, 255, 0.18), transparent 30%),
+    radial-gradient(circle at 90% 12%, rgba(115, 207, 255, 0.12), transparent 32%),
+    linear-gradient(165deg, #171329 0%, #211a35 58%, #101827 100%);
+}
+
+.app.theme-dark .home-screen .lead,
+.app.theme-dark .daily-focus-list small,
+.app.theme-dark .flow-recommendation small {
+  color: #bdb5dc;
+}
+
+.app.theme-dark .day-overview-card {
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.16), transparent 28%),
+    linear-gradient(135deg, rgba(123, 97, 255, 0.88), rgba(236, 72, 153, 0.58) 52%, rgba(37, 99, 235, 0.74));
+}
+
+.app.theme-dark .home-status-grid article,
+.app.theme-dark .daily-focus-card,
+.app.theme-dark .day-plan-card,
+.app.theme-dark .home-motivation-card,
+.app.theme-dark .flow-coach-card {
+  background: rgba(31, 25, 52, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.app.theme-dark .daily-focus-list > div,
+.app.theme-dark .flow-recommendation,
+.app.theme-dark .flow-segment div {
+  background: rgba(36, 29, 58, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.app.theme-dark .flow-coach-header > strong {
+  background: rgba(123, 97, 255, 0.18);
+  color: #c9bcff;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .day-plan-card {
