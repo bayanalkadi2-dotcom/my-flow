@@ -416,13 +416,20 @@ input {
   font-size: 13px;
 }
 
+.payment-option small {
+  color: #7a7396;
+  font-size: 10px;
+  font-weight: 800;
+}
+
 .payment-option.selected {
   background: linear-gradient(135deg, #ff9fd2, #7b61ff);
   color: white;
   border-color: transparent;
 }
 
-.payment-option.selected strong {
+.payment-option.selected strong,
+.payment-option.selected small {
   color: white;
 }
 

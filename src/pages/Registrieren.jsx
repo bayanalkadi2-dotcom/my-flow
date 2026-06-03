@@ -2,14 +2,17 @@ import { useState } from 'react'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
 
 const paymentPlans = [
-  { id: 'free', label: 'Kostenlos', price: '0 EUR' },
-  { id: 'plus', label: 'Plus Tools', price: '4,99 EUR' },
-  { id: 'pro', label: 'Pro Tools', price: '9,99 EUR' },
+  { id: 'free', label: 'Kostenlos', prices: { monthly: '0 EUR', yearly: '0 EUR' } },
+  { id: 'plus', label: 'Plus Tools', prices: { monthly: '4,99 EUR', yearly: '59,88 EUR' } },
+  { id: 'pro', label: 'Pro Tools', prices: { monthly: '9,99 EUR', yearly: '119,88 EUR' } },
 ]
 
 const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 'Google Pay']
 
-const billingCycles = ['Monatlich', 'Jährlich']
+const billingCycles = [
+  { id: 'monthly', label: 'Monatlich', priceLabel: 'monatlich' },
+  { id: 'yearly', label: 'Jaehrlich', priceLabel: 'jaehrlich' },
+]
 
 function Registrieren({ onNavigate }) {
   const [showPassword, setShowPassword] = useState(false)
@@ -21,8 +24,10 @@ function Registrieren({ onNavigate }) {
   const [twoFactor, setTwoFactor] = useState(false)
   const [paymentPlan, setPaymentPlan] = useState('free')
   const [paymentMethod, setPaymentMethod] = useState('PayPal')
-  const [billingCycle, setBillingCycle] = useState('Monatlich')
+  const [billingCycle, setBillingCycle] = useState('monthly')
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
+  const selectedCycle = billingCycles.find((cycle) => cycle.id === billingCycle)
+  const selectedPrice = selectedPlan.prices[billingCycle]
 
   return (
     <section className="screen login-screen auth-detail-screen">
@@ -123,17 +128,17 @@ function Registrieren({ onNavigate }) {
           <div className="settings-group payment-settings">
             <div className="payment-settings-title">
               <strong>Bezahlung</strong>
-              <span>{selectedPlan.label} / {selectedPlan.price}</span>
+              <span>{selectedPlan.label} / {selectedPrice}</span>
             </div>
             <div className="payment-method-grid">
               {billingCycles.map((cycle) => (
                 <button
-                  className={`payment-method ${billingCycle === cycle ? 'selected' : ''}`}
-                  key={cycle}
-                  onClick={() => setBillingCycle(cycle)}
+                  className={`payment-method ${billingCycle === cycle.id ? 'selected' : ''}`}
+                  key={cycle.id}
+                  onClick={() => setBillingCycle(cycle.id)}
                   type="button"
                 >
-                  {cycle}
+                  {cycle.label}
                 </button>
               ))}
             </div>
@@ -146,7 +151,8 @@ function Registrieren({ onNavigate }) {
                   type="button"
                 >
                   <span>{plan.label}</span>
-                  <strong>{plan.price}</strong>
+                  <strong>{plan.prices[billingCycle]}</strong>
+                  <small>{selectedCycle.priceLabel}</small>
                 </button>
               ))}
             </div>
