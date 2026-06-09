@@ -137,7 +137,7 @@ function getHealthRecommendation(bmi, weight) {
   return { water: waterLiters, steps: '7.500', note: 'sanft anfangen' }
 }
 
-function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, onNavigate, onProfileNameChange, onSelectStyle }) {
+function Profil({ appTheme, languageStyle, profileName, tone, t, onAppThemeChange, onNavigate, onProfileNameChange, onSelectStyle }) {
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
   const [gender, setGender] = useState('male')
@@ -242,7 +242,7 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
   return (
     <section className="screen compact-screen profile-screen">
       <img src={logo} alt="MyFlow Logo" className="small-logo" />
-      <h1>Profil</h1>
+      <h1>{t.profile.title}</h1>
       <button
         className="settings-gear-button"
         onClick={() => setShowProfileSettings((current) => !current)}
@@ -260,33 +260,33 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
         </div>
         <div>
           <strong>{name}</strong>
-          <p>Profilbild</p>
+          <p>{t.profile.picture}</p>
         </div>
       </div>
       {showProfileSettings && (
         <section className="register-settings-panel profile-settings-panel" aria-label="Profil-Einstellungen">
           <div className="register-settings-header">
             <div>
-              <strong>Profil-Einstellungen</strong>
-              <p>Persönliche Daten und App-Verhalten</p>
+              <strong>{t.profile.settings}</strong>
+              <p>{t.profile.settingsText}</p>
             </div>
             <button type="button" onClick={() => setShowProfileSettings(false)} aria-label="Einstellungen schließen">
               x
             </button>
           </div>
           <div className="profile-edit-panel">
-            <p>Dein Profilbild nutzt aktuell automatisch den ersten Buchstaben deines Namens.</p>
+            <p>{t.profile.pictureText}</p>
           </div>
           <div className="settings-list">
         <div className="profile-setting-row">
-          <span>Name</span>
+          <span>{t.profile.name}</span>
           <strong>{name}</strong>
-          <button type="button" onClick={() => openEditor('name')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('name')}>{t.common.change}</button>
         </div>
         {activeEditor === 'name' && (
           <div className="profile-edit-panel">
             <label>
-              Neuer Name
+              {t.profile.newName}
               <input value={draftSettings.name} onChange={(event) => updateDraft('name', event.target.value)} />
             </label>
             <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
@@ -294,9 +294,9 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
         )}
 
         <div className="profile-setting-row">
-          <span>Geschlecht</span>
+          <span>{t.profile.gender}</span>
           <strong>{selectedGender.label}</strong>
-          <button type="button" onClick={() => openEditor('gender')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('gender')}>{t.common.change}</button>
         </div>
         {activeEditor === 'gender' && (
           <div className="profile-edit-panel">
@@ -317,14 +317,14 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
         )}
 
         <div className="profile-setting-row">
-          <span>Gewicht</span>
+          <span>{t.profile.weight}</span>
           <strong>{weight} kg</strong>
-          <button type="button" onClick={() => openEditor('weight')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('weight')}>{t.common.change}</button>
         </div>
         {activeEditor === 'weight' && (
           <div className="profile-edit-panel">
             <label>
-              Gewicht in kg
+              {t.profile.weight} in kg
               <input
                 min="30"
                 max="250"
@@ -338,14 +338,14 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
         )}
 
         <div className="profile-setting-row">
-          <span>Größe</span>
+          <span>{t.profile.height}</span>
           <strong>{height} cm</strong>
-          <button type="button" onClick={() => openEditor('height')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('height')}>{t.common.change}</button>
         </div>
         {activeEditor === 'height' && (
           <div className="profile-edit-panel">
             <label>
-              Größe in cm
+              {t.profile.height} in cm
               <input
                 min="120"
                 max="230"
@@ -359,9 +359,9 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
         )}
 
         <div className="profile-setting-row">
-          <span>Erinnerungen</span>
-          <strong>{reminders ? 'Aktiv' : 'Aus'}</strong>
-          <button type="button" onClick={() => openEditor('reminders')}>Ändern</button>
+          <span>{t.profile.reminders}</span>
+          <strong>{reminders ? t.common.active : t.common.off}</strong>
+          <button type="button" onClick={() => openEditor('reminders')}>{t.common.change}</button>
         </div>
         {activeEditor === 'reminders' && (
           <div className="profile-edit-panel">
@@ -371,14 +371,14 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
                 onClick={() => updateDraft('reminders', true)}
                 type="button"
               >
-                Aktiv
+                {t.common.active}
               </button>
               <button
                 className={`profile-choice ${!draftSettings.reminders ? 'selected' : ''}`}
                 onClick={() => updateDraft('reminders', false)}
                 type="button"
               >
-                Aus
+                {t.common.off}
               </button>
             </div>
             <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
@@ -386,9 +386,9 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
         )}
 
         <div className="profile-setting-row">
-          <span>Sprache</span>
+          <span>{t.profile.language}</span>
           <strong>{tone.label}</strong>
-          <button type="button" onClick={() => openEditor('language')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('language')}>{t.common.change}</button>
         </div>
         {activeEditor === 'language' && (
           <div className="profile-edit-panel">
@@ -409,9 +409,9 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
         )}
 
         <div className="profile-setting-row">
-          <span>Design</span>
+          <span>{t.profile.design}</span>
           <strong>{appTheme}</strong>
-          <button type="button" onClick={() => openEditor('design')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('design')}>{t.common.change}</button>
         </div>
         {activeEditor === 'design' && (
           <div className="profile-edit-panel">
@@ -431,14 +431,14 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
           </div>
         )}
         <div className="profile-setting-row">
-          <span>Abo</span>
+          <span>{t.profile.subscription}</span>
           <strong>{selectedPlan.label}</strong>
-          <button type="button" onClick={() => openEditor('payment')}>Ändern</button>
+          <button type="button" onClick={() => openEditor('payment')}>{t.common.change}</button>
         </div>
         {activeEditor === 'payment' && (
           <div className="settings-group payment-settings">
             <div className="payment-settings-title">
-              <strong>Bezahlung</strong>
+              <strong>{t.profile.payment}</strong>
               <span>{selectedPlan.label} / {selectedPlan.price}</span>
             </div>
             <div className="paid-tools-list">
@@ -471,7 +471,7 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
                 </button>
               ))}
             </div>
-            <p>Plus und Pro schalten die Abo-Tools frei. Bezahlt wird mit der ausgewählten Zahlungsart.</p>
+            <p>{t.profile.paidText}</p>
             <div className="payment-method-grid">
               {paymentMethods.map((method) => (
                 <button
@@ -541,9 +541,9 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
           <p>{bmiCategory}</p>
         </div>
         <div>
-          <span>Wasser</span>
+          <span>{t.profile.water}</span>
           <strong>{recommendation.water} L</strong>
-          <p>pro Tag</p>
+          <p>{t.profile.perDay}</p>
         </div>
         <div>
           <span>Schritte</span>
@@ -553,15 +553,15 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
       </div>
       <div className="profile-level-card">
         <div>
-          <span>Challenge-Level</span>
+          <span>{t.profile.challengeLevel}</span>
           <h2>{level.current}</h2>
-          <p>{challengePoints} Punkte gesammelt</p>
+          <p>{t.profile.points.replace('{points}', challengePoints)}</p>
         </div>
         <strong>{level.progress}%</strong>
         <div className="profile-level-progress">
           <span style={{ width: `${level.progress}%` }} />
         </div>
-        <small>Naechstes Level: {level.next} ab {level.nextMin} Punkten</small>
+        <small>{t.profile.nextLevel.replace('{level}', level.next).replace('{points}', level.nextMin)}</small>
       </div>
       <div className="flow-tree-card">
         <div className="flow-tree-visual" aria-label={`FlowTree Stufe ${flowTree.stage}`}>
@@ -593,7 +593,7 @@ function Profil({ appTheme, languageStyle, profileName, tone, onAppThemeChange, 
           ))}
         </div>
       </div>
-      <button onClick={() => onNavigate('start')}>Abmelden</button>
+      <button onClick={() => onNavigate('start')}>{t.profile.logout}</button>
     </section>
   )
 }

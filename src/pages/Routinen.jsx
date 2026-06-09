@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import HabitCard from '../commponents/HabitCard'
+import { translateCategory, translateHabitTitle } from '../i18n'
 
 const routineCategories = [
   {
@@ -60,7 +61,7 @@ const routineCategories = [
   },
 ]
 
-function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone }) {
+function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('8')
   const [unit, setUnit] = useState('Glaeser')
@@ -103,8 +104,8 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
 
   return (
     <section className="screen">
-      <p className="eyebrow">Routinen</p>
-      <h1>Meine Routinen</h1>
+      <p className="eyebrow">{t.routines.eyebrow}</p>
+      <h1>{t.routines.title}</h1>
 
       <div className="habit-list">
         {habits.map((habit) => (
@@ -117,6 +118,7 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
             onUpdatePeriod={onUpdatePeriod}
             onRemove={onRemove}
             onToggleDone={onToggleDone}
+            t={t}
           />
         ))}
       </div>
@@ -126,7 +128,7 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
         onClick={() => setAddPanelOpen((open) => !open)}
         type="button"
       >
-        {addPanelOpen ? 'Hinzufuegen schliessen' : '+ Routine hinzufuegen'}
+        {addPanelOpen ? t.routines.closeAdd : t.routines.add}
       </button>
 
       {addPanelOpen && (
@@ -142,7 +144,7 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
                     onClick={() => setOpenCategory(isOpen ? '' : category.title)}
                     type="button"
                   >
-                    <span>{category.title}</span>
+                    <span>{translateCategory(category.title, languageStyle)}</span>
                     <strong aria-hidden="true">{isOpen ? '-' : '+'}</strong>
                   </button>
 
@@ -159,8 +161,12 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
                             onClick={() => addSuggestedRoutine(routine, category.title)}
                             type="button"
                           >
-                            <strong>{routine.title}</strong>
-                            <small>{isAdded ? 'Hinzugefuegt' : `Ziel: ${routine.target} ${routine.unit}`}</small>
+                            <strong>{translateHabitTitle(routine.title, languageStyle)}</strong>
+                            <small>
+                              {isAdded
+                                ? t.routines.added
+                                : `${t.routines.target}: ${routine.target} ${translateUnit(routine.unit)}`}
+                            </small>
                           </button>
                         )
                       })}
@@ -172,18 +178,18 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
           </div>
 
           <form className="routine-form" onSubmit={handleSubmit}>
-            <p className="form-title">Eigene Routine</p>
+            <p className="form-title">{t.routines.custom}</p>
             <label>
-              Routine
+              {t.routines.routine}
               <input
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
-                placeholder="z. B. Wasser trinken"
+                placeholder={t.routines.placeholder}
               />
             </label>
             <div className="routine-form-row">
               <label>
-                Ziel
+                {t.routines.target}
                 <input
                   min="1"
                   type="number"
@@ -192,15 +198,15 @@ function Routinen({ habits, onAddHabit, onIncrement, onDecrement, onSetMood, onU
                 />
               </label>
               <label>
-                Einheit
+                {t.routines.unit}
                 <input
                   value={unit}
                   onChange={(event) => setUnit(event.target.value)}
-                  placeholder="Glaeser"
+                  placeholder={translateUnit('Glaeser')}
                 />
               </label>
             </div>
-            <button className="wide-button" type="submit">Routine hinzufuegen</button>
+            <button className="wide-button" type="submit">{t.routines.addRoutine}</button>
           </form>
         </div>
       )}

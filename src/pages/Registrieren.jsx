@@ -14,7 +14,7 @@ const billingCycles = [
   { id: 'yearly', label: 'Jaehrlich', priceLabel: 'jaehrlich' },
 ]
 
-function Registrieren({ onNavigate }) {
+function Registrieren({ onNavigate, t }) {
   const [showPassword, setShowPassword] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [username, setUsername] = useState('')
@@ -31,14 +31,14 @@ function Registrieren({ onNavigate }) {
 
   return (
     <section className="screen login-screen auth-detail-screen">
-      <button className="login-back" onClick={() => onNavigate('start')} aria-label="Zurück">
-        ←
+      <button className="login-back" onClick={() => onNavigate('start')} aria-label={t.common.back}>
+        &larr;
       </button>
       <button
         className="settings-gear-button"
         onClick={() => setShowSettings((current) => !current)}
         type="button"
-        aria-label="App-Einstellungen öffnen"
+        aria-label={t.common.change}
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" />
@@ -46,8 +46,8 @@ function Registrieren({ onNavigate }) {
         </svg>
       </button>
       <header className="login-header">
-        <h1>Konto erstellen</h1>
-        <p>Erstelle dein Konto, um MyFlow vollständig zu nutzen.</p>
+        <h1>{t.auth.registerTitle}</h1>
+        <p>{t.auth.registerText}</p>
       </header>
       {showSettings && (
         <section className="register-settings-panel" aria-label="App-Einstellungen">
@@ -178,10 +178,10 @@ function Registrieren({ onNavigate }) {
             <circle cx="12" cy="8" r="3.5" />
             <path d="M5.5 19.5c.7-4 3.1-6 6.5-6s5.8 2 6.5 6" />
           </svg>
-          <span>Benutzername</span>
+          <span>{t.auth.username}</span>
           <input
             type="text"
-            placeholder="Dein Benutzername"
+            placeholder={t.auth.usernamePlaceholder}
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             required
@@ -192,7 +192,7 @@ function Registrieren({ onNavigate }) {
             <rect x="3.5" y="5.5" width="17" height="13" rx="3" />
             <path d="m5 7 7 5.4L19 7" />
           </svg>
-          <span>E-Mail</span>
+          <span>{t.auth.email}</span>
           <input
             type="email"
             placeholder="name@beispiel.de"
@@ -202,23 +202,23 @@ function Registrieren({ onNavigate }) {
           />
         </label>
         <PasswordField
-          label="Passwort"
-          placeholder="Eigenes Passwort"
+          label={t.auth.password}
+          placeholder={t.auth.ownPassword}
           showPassword={showPassword}
           onToggle={() => setShowPassword((current) => !current)}
         />
         <PasswordField
-          label="Passwort wiederholen"
-          placeholder="Passwort wiederholen"
+          label={t.auth.repeatPassword}
+          placeholder={t.auth.repeatPassword}
           showPassword={showPassword}
           onToggle={() => setShowPassword((current) => !current)}
         />
         <button className="login-submit register-submit" type="button" onClick={() => onNavigate('languageStyle')}>
-          Registrieren
+          {t.start.register}
         </button>
       </form>
       <p className="register-copy">
-        Bereits ein Konto? <button type="button" onClick={() => onNavigate('login')}>Einloggen</button>
+        {t.auth.hasAccount} <button type="button" onClick={() => onNavigate('login')}>{t.start.login}</button>
       </p>
     </section>
   )

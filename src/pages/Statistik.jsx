@@ -43,45 +43,45 @@ const todaySteps = 3200
 const stepGoal = 8000
 const stepProgress = Math.round((todaySteps / stepGoal) * 100)
 
-function Statistik() {
+function Statistik({ languageStyle, t }) {
   const [period, setPeriod] = useState('week')
   const activeStats = periodStats[period]
 
   return (
     <section className="screen">
-      <p className="eyebrow">Statistik</p>
-      <h1>Dein Fortschritt</h1>
-      <div className="period-toggle" aria-label="Statistik Zeitraum auswählen">
+      <p className="eyebrow">{t.stats.eyebrow}</p>
+      <h1>{t.stats.title}</h1>
+      <div className="period-toggle" aria-label={t.stats.periodLabel}>
         <button
           className={period === 'week' ? 'selected' : ''}
           onClick={() => setPeriod('week')}
           type="button"
         >
-          Woche
+          {t.stats.week}
         </button>
         <button
           className={period === 'month' ? 'selected' : ''}
           onClick={() => setPeriod('month')}
           type="button"
         >
-          Monat
+          {t.stats.month}
         </button>
       </div>
       <div className="stat-summary-grid">
         <article className="stat-card summary-card">
-          <span>Durchschnitt</span>
+          <span>{t.stats.average}</span>
           <strong>{activeStats.average}%</strong>
-          <p>{activeStats.label} im Flow</p>
+          <p>{t.stats.inFlow.replace('{period}', period === 'week' ? t.stats.week : t.stats.month)}</p>
         </article>
         <article className="stat-card summary-card">
-          <span>Schritte</span>
-          <strong>{activeStats.steps.toLocaleString('de-DE')}</strong>
-          <p>gesamt</p>
+          <span>{t.stats.steps}</span>
+          <strong>{activeStats.steps.toLocaleString(languageStyle === 'german' ? 'de-DE' : 'en-US')}</strong>
+          <p>{t.stats.total}</p>
         </article>
         <article className="stat-card summary-card improvement-card">
-          <span>Verbesserung</span>
+          <span>{t.stats.improvement}</span>
           <strong>+{activeStats.improvement}%</strong>
-          <p>gegenüber vorher</p>
+          <p>{t.stats.compared}</p>
         </article>
       </div>
       <div className="chart-card">
@@ -93,27 +93,30 @@ function Statistik() {
         ))}
       </div>
       <div className="smoking-stats">
-        {smokingProgress.map((entry) => (
+        {smokingProgress.map((entry, index) => (
           <article className="stat-card smoking-card" key={entry.label}>
-            <span>{entry.label}</span>
+            <span>{index === 0 ? t.stats.today : t.stats.week}</span>
             <strong>{entry.value}</strong>
-            <p>{entry.detail}</p>
+            <p>{index === 0 ? t.stats.cigarettesAvoided : t.stats.fewerCigarettes}</p>
           </article>
         ))}
       </div>
       <article className="motivation-card">
         <div className="motivation-bubble">
-          <span>Gedankenblase</span>
-          <h2>Heute war es etwas ruhiger.</h2>
+          <span>{t.stats.thoughtBubble}</span>
+          <h2>{t.stats.quietDay}</h2>
           <p>
-            Du bist heute {todaySteps.toLocaleString('de-DE')} Schritte gelaufen.
-            Ein kurzer Spaziergang bringt dich deinem Ziel schon naeher.
+            {t.stats.stepText.replace('{steps}', todaySteps.toLocaleString(languageStyle === 'german' ? 'de-DE' : 'en-US'))}
           </p>
         </div>
         <div className="motivation-progress" aria-label={`${stepProgress}% vom Schrittziel erreicht`}>
           <span style={{ width: `${stepProgress}%` }} />
         </div>
-        <small>{stepProgress}% von {stepGoal.toLocaleString('de-DE')} Schritten</small>
+        <small>
+          {t.stats.stepGoal
+            .replace('{progress}', stepProgress)
+            .replace('{goal}', stepGoal.toLocaleString(languageStyle === 'german' ? 'de-DE' : 'en-US'))}
+        </small>
       </article>
     </section>
   )

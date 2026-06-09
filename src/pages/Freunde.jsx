@@ -48,7 +48,7 @@ function getLevel(score) {
   }
 }
 
-function Freunde({ habits }) {
+function Freunde({ habits, t }) {
   const inviteLink = "https://myflow.app/invite/nina-flow";
   const freunde = [
     {
@@ -91,7 +91,7 @@ function Freunde({ habits }) {
   const [selectedFriend, setSelectedFriend] = useState(freunde[1]);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteStatus, setInviteStatus] = useState("");
-  const [challengeRoutine, setChallengeRoutine] = useState(habits[0]?.title ?? "Wasser trinken");
+  const [challengeRoutine, setChallengeRoutine] = useState(habits[0]?.displayTitle ?? habits[0]?.title ?? "Wasser trinken");
   const [challengeDays, setChallengeDays] = useState("14");
   const [challengeFriend, setChallengeFriend] = useState("Lena");
   const [challenges, setChallenges] = useState([
@@ -128,20 +128,20 @@ function Freunde({ habits }) {
       navigator.clipboard.writeText(inviteLink);
     }
 
-    setInviteStatus("Einladungslink kopiert");
+    setInviteStatus(t.friends.copied);
   }
 
   const selectedLevel = getLevel(selectedFriend.score);
   const selectedTree = getFlowTree(selectedFriend.score);
-  const inviteText = encodeURIComponent(`Hey, komm zu MyFlow und mach mit mir Challenges: ${inviteLink}`);
+  const inviteText = encodeURIComponent(`MyFlow: ${inviteLink}`);
   const mailSubject = encodeURIComponent("Einladung zu MyFlow");
 
   return (
     <div className="friends-page">
       <div className="friends-header">
         <div>
-          <p className="friends-subtitle">Gemeinsam motiviert bleiben</p>
-          <h1>Freunde und Rangliste</h1>
+          <p className="friends-subtitle">{t.friends.subtitle}</p>
+          <h1>{t.friends.title}</h1>
         </div>
       </div>
 
@@ -150,14 +150,14 @@ function Freunde({ habits }) {
           <div className="avatar detail-avatar">{selectedFriend.name.charAt(0)}</div>
           <div>
             <h2>{selectedFriend.name}</h2>
-            <p>{selectedFriend.progress}% Wochenfortschritt</p>
+            <p>{t.friends.weekly.replace('{progress}', selectedFriend.progress)}</p>
           </div>
           <strong>{selectedFriend.score}</strong>
         </div>
 
         <div className="friend-level-row">
           <span>Level {selectedLevel.current}</span>
-          <small>naechstes Level: {selectedLevel.next}</small>
+          <small>{t.friends.nextLevel.replace('{level}', selectedLevel.next)}</small>
         </div>
         <div className="friend-tree-status">
           <span>{selectedTree.symbols}</span>
@@ -175,18 +175,18 @@ function Freunde({ habits }) {
       </div>
 
       <button className="add-friend-button invite-bottom-button" onClick={() => setInviteOpen((open) => !open)} type="button">
-        Freunde einladen
+        {t.friends.invite}
       </button>
 
       {inviteOpen && (
         <section className="invite-panel">
           <div>
-            <span>Freund einladen</span>
-            <p>Teile deinen Link per WhatsApp, E-Mail oder kopiere ihn direkt.</p>
+            <span>{t.friends.inviteFriend}</span>
+            <p>{t.friends.inviteText}</p>
           </div>
           <div className="invite-link-box">
             <strong>{inviteLink}</strong>
-            <button type="button" onClick={copyInviteLink}>Kopieren</button>
+            <button type="button" onClick={copyInviteLink}>{t.common.save}</button>
           </div>
           <div className="invite-actions">
             <a href={`https://wa.me/?text=${inviteText}`} target="_blank" rel="noreferrer">WhatsApp</a>
@@ -199,25 +199,25 @@ function Freunde({ habits }) {
       <section className="challenge-section">
         <div className="challenge-header">
           <div>
-            <p className="friends-subtitle">Gemeinsame Ziele</p>
-            <h2>Challenges</h2>
+            <p className="friends-subtitle">{t.friends.goals}</p>
+            <h2>{t.friends.challenges}</h2>
           </div>
         </div>
 
         <form className="challenge-form" onSubmit={addChallenge}>
           <label>
-            Routine
+            {t.routines.routine}
             <select value={challengeRoutine} onChange={(event) => setChallengeRoutine(event.target.value)}>
               {habits.map((habit) => (
                 <option value={habit.title} key={habit.id}>
-                  {habit.title}
+                  {habit.displayTitle ?? habit.title}
                 </option>
               ))}
             </select>
           </label>
           <div className="challenge-form-row">
             <label>
-              Dauer
+              {t.friends.duration}
               <select value={challengeDays} onChange={(event) => setChallengeDays(event.target.value)}>
                 <option value="7">7 Tage</option>
                 <option value="14">14 Tage</option>
@@ -225,7 +225,7 @@ function Freunde({ habits }) {
               </select>
             </label>
             <label>
-              Mit
+              {t.friends.with}
               <select value={challengeFriend} onChange={(event) => setChallengeFriend(event.target.value)}>
                 {freunde
                   .filter((freund) => freund.name !== "Du")
@@ -237,16 +237,16 @@ function Freunde({ habits }) {
               </select>
             </label>
           </div>
-          <button type="submit">Challenge starten</button>
+          <button type="submit">{t.friends.start}</button>
         </form>
 
         <div className="challenge-list">
           {challenges.map((challenge) => (
             <article className="challenge-card" key={challenge.id}>
               <div>
-                <span>{challenge.days} Tage</span>
+                <span>{t.friends.days.replace('{days}', challenge.days)}</span>
                 <h3>{challenge.routine}</h3>
-                <p>Du gegen {challenge.friend}</p>
+                <p>{t.friends.against.replace('{friend}', challenge.friend)}</p>
               </div>
               <strong>{challenge.progress}%</strong>
               <div className="challenge-progress">
@@ -274,7 +274,7 @@ function Freunde({ habits }) {
 
             <div className="friend-info">
               <h2>{freund.name}</h2>
-              <p>{freund.progress}% Wochenfortschritt</p>
+              <p>{t.friends.weekly.replace('{progress}', freund.progress)}</p>
 
               <div className="progress-bar">
                 <div

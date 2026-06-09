@@ -1,21 +1,41 @@
 import { useMemo, useState } from 'react'
 
-const checkInOptions = {
-  energy: [
-    { label: 'Niedrig', value: 1 },
-    { label: 'Mittel', value: 2 },
-    { label: 'Hoch', value: 3 },
-  ],
-  stress: [
-    { label: 'Ruhig', value: 1 },
-    { label: 'Angespannt', value: 2 },
-    { label: 'Stressig', value: 3 },
-  ],
-  time: [
-    { label: '2 Min', value: 2 },
-    { label: '5 Min', value: 5 },
-    { label: '10 Min', value: 10 },
-  ],
+const checkInValues = {
+  energy: [1, 2, 3],
+  stress: [1, 2, 3],
+  time: [2, 5, 10],
+}
+
+function getCheckInOptions(t) {
+  return {
+    energy: t.dashboard.checkIn.energy.map((label, index) => ({ label, value: checkInValues.energy[index] })),
+    stress: t.dashboard.checkIn.stress.map((label, index) => ({ label, value: checkInValues.stress[index] })),
+    time: t.dashboard.checkIn.time.map((label, index) => ({ label, value: checkInValues.time[index] })),
+  }
+}
+
+function localizeDuration(duration, languageStyle) {
+  if (languageStyle === 'english') {
+    return duration
+      .replace('1 Minute', '1 minute')
+      .replace('2 Minuten', '2 minutes')
+      .replace('5 Minuten', '5 minutes')
+      .replace('10 Minuten', '10 minutes')
+      .replace('5-10 Minuten', '5-10 minutes')
+      .replace('2-5 Minuten', '2-5 minutes')
+  }
+
+  if (languageStyle === 'turkish') {
+    return duration
+      .replace('1 Minute', '1 dk')
+      .replace('2 Minuten', '2 dk')
+      .replace('5 Minuten', '5 dk')
+      .replace('10 Minuten', '10 dk')
+      .replace('5-10 Minuten', '5-10 dk')
+      .replace('2-5 Minuten', '2-5 dk')
+  }
+
+  return duration
 }
 
 function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
@@ -71,8 +91,8 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       action: 'continue',
       title: 'Dranbleiben',
       badge: 'Weiter machen',
-      recommendation: `Fuehre "${almostDoneHabit.title}" weiter, weil du dort schon nah am Ziel bist.`,
-      activity: almostDoneHabit.title,
+      recommendation: `Fuehre "${almostDoneHabit.displayTitle ?? almostDoneHabit.title}" weiter, weil du dort schon nah am Ziel bist.`,
+      activity: almostDoneHabit.displayTitle ?? almostDoneHabit.title,
       duration: time >= 10 ? '5-10 Minuten' : '2-5 Minuten',
       reason: 'Eine fast fertige Routine gibt schnell sichtbaren Fortschritt.',
     }
@@ -84,7 +104,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       title: 'Klein anfangen',
       badge: 'Priorisieren',
       recommendation: 'Waehle eine kurze Routine, damit der Tag uebersichtlich bleibt.',
-      activity: openHabits[0]?.title ?? 'Mini-Routine',
+      activity: openHabits[0]?.displayTitle ?? openHabits[0]?.title ?? 'Mini-Routine',
       duration: '2-5 Minuten',
       reason: 'Es sind mehrere Routinen offen. Die KI empfiehlt einen kleinen naechsten Schritt.',
     }
@@ -95,13 +115,85 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
     title: 'Weiter im Flow',
     badge: 'Weiter machen',
     recommendation: 'Eine weitere Aktivitaet passt gerade gut zu deiner Tagesform.',
-    activity: openHabits[0]?.title ?? 'Freie Aktivitaet',
+    activity: openHabits[0]?.displayTitle ?? openHabits[0]?.title ?? 'Freie Aktivitaet',
     duration: time >= 10 ? '10 Minuten' : '5 Minuten',
     reason: 'Energie, Stress und Fortschritt wirken stabil genug fuer einen naechsten Schritt.',
   }
 }
 
-function DashboardHome({ habits, profileName, tone }) {
+function localizeFlowDecision(decision, languageStyle) {
+  if (languageStyle === 'english') {
+    const text = {
+      end_session: {
+        title: 'Wrap up flow',
+        badge: 'End session',
+        recommendation: 'You have done enough for today. A calm finish fits better than more pressure.',
+        activity: 'Short reflection',
+        reason: 'Your progress is very high or all routines are complete.',
+      },
+      pause: {
+        title: 'Pause instead of more tasks',
+        badge: 'Pause',
+        recommendation: 'Do not start another intense activity. A small breathing or rest break is better now.',
+        activity: 'Breathing reset',
+        reason: 'Energy is low and stress is high. The app reduces the load.',
+      },
+      switch_activity: {
+        title: 'Switch gently',
+        badge: 'Alternative',
+        recommendation: 'Start with a short, simple activity instead of a big routine.',
+        activity: decision.activity === 'Atemuebung' ? 'Breathing exercise' : decision.activity === 'Mini-Fokus' ? 'Mini focus' : decision.activity,
+        reason: 'A small next step keeps the flow realistic.',
+      },
+      continue: {
+        title: 'Keep going',
+        badge: 'Continue',
+        recommendation: `Continue with "${decision.activity}" because it fits your current day.`,
+        reason: 'Energy, stress and progress look stable enough for a next step.',
+      },
+    }
+
+    return { ...decision, ...text[decision.action], duration: localizeDuration(decision.duration, languageStyle) }
+  }
+
+  if (languageStyle === 'turkish') {
+    const text = {
+      end_session: {
+        title: 'Akisi tamamla',
+        badge: 'Oturumu bitir',
+        recommendation: 'Bugun icin yeterince yaptin. Sakin bir kapanis daha iyi olur.',
+        activity: 'Kisa yansitma',
+        reason: 'Ilerlemen cok yuksek veya tum rutinler tamamlandi.',
+      },
+      pause: {
+        title: 'Daha fazla gorev yerine mola',
+        badge: 'Mola',
+        recommendation: 'Yeni yogun bir aktiviteye baslama. Kisa bir nefes veya dinlenme molasi daha iyi.',
+        activity: 'Nefes molasi',
+        reason: 'Enerji dusuk ve stres yuksek. App bu yuzden yuku azaltir.',
+      },
+      switch_activity: {
+        title: 'Yumusak gecis',
+        badge: 'Alternatif',
+        recommendation: 'Buyuk bir rutin yerine kisa ve kolay bir aktiviteyle basla.',
+        activity: decision.activity === 'Atemuebung' ? 'Nefes egzersizi' : decision.activity === 'Mini-Fokus' ? 'Mini odak' : decision.activity,
+        reason: 'Kucuk bir sonraki adim akisi gercekci tutar.',
+      },
+      continue: {
+        title: 'Devam et',
+        badge: 'Devam',
+        recommendation: `"${decision.activity}" ile devam et; su anki gunune uyuyor.`,
+        reason: 'Enerji, stres ve ilerleme sonraki adim icin yeterince dengeli gorunuyor.',
+      },
+    }
+
+    return { ...decision, ...text[decision.action], duration: localizeDuration(decision.duration, languageStyle) }
+  }
+
+  return decision
+}
+
+function DashboardHome({ habits, languageStyle, profileName, t }) {
   const [flowCheckIn, setFlowCheckIn] = useState({
     energy: 2,
     stress: 2,
@@ -115,18 +207,22 @@ function DashboardHome({ habits, profileName, tone }) {
     .filter((habit) => !habit.done && habit.progress < 100)
     .sort((firstHabit, secondHabit) => secondHabit.progress - firstHabit.progress)
     .slice(0, 3)
-  const dashboardMessage = tone.dashboardMessage
+  const dashboardMessage = t.dashboard.message
     .replace('{count}', completedHabits)
     .replace('{total}', habits.length)
   const firstName = profileName.trim() || 'Nina'
+  const checkInOptions = getCheckInOptions(t)
   const flowDecision = useMemo(
     () =>
-      getFlowCoachDecision({
-        habits,
-        dayProgress,
-        ...flowCheckIn,
-      }),
-    [dayProgress, flowCheckIn, habits],
+      localizeFlowDecision(
+        getFlowCoachDecision({
+          habits,
+          dayProgress,
+          ...flowCheckIn,
+        }),
+        languageStyle,
+      ),
+    [dayProgress, flowCheckIn, habits, languageStyle],
   )
 
   function updateFlowCheckIn(key, value) {
@@ -140,17 +236,17 @@ function DashboardHome({ habits, profileName, tone }) {
     <section className="screen home-screen">
       <div className="page-header">
         <div>
-          <p className="eyebrow">Hey {firstName}, schön dass du da bist!</p>
-          <h1>Wie läuft dein Tag?</h1>
+          <p className="eyebrow">{t.dashboard.hello.replace('{name}', firstName)}</p>
+          <h1>{t.dashboard.title}</h1>
           <p className="lead">{dashboardMessage}</p>
         </div>
       </div>
 
       <article className="day-overview-card">
         <div>
-          <span>Tagesgefühl</span>
-          <h2>{dayProgress >= 70 ? 'Du bist gut im Flow.' : 'Heute ist noch Luft nach oben.'}</h2>
-          <p>{tone.progressMessage}</p>
+          <span>{t.dashboard.dayFeeling}</span>
+          <h2>{dayProgress >= 70 ? t.dashboard.goodFlow : t.dashboard.moreRoom}</h2>
+          <p>{t.dashboard.progressMessage}</p>
           <div className="day-progress-track" aria-label={`${dayProgress}% Tagesfortschritt`}>
             <span style={{ width: `${dayProgress}%` }} />
           </div>
@@ -162,21 +258,21 @@ function DashboardHome({ habits, profileName, tone }) {
 
       <div className="home-status-grid">
         <article className="status-card-done">
-          <span>Erledigt</span>
+          <span>{t.dashboard.done}</span>
           <strong>{completedHabits}</strong>
-          <p>Routinen geschafft</p>
+          <p>{t.dashboard.doneText}</p>
         </article>
         <article className="status-card-open">
-          <span>Offen</span>
+          <span>{t.dashboard.open}</span>
           <strong>{openHabits}</strong>
-          <p>noch im Tag</p>
+          <p>{t.dashboard.openText}</p>
         </article>
       </div>
 
       <section className={`flow-coach-card flow-coach-${flowDecision.action}`}>
         <div className="flow-coach-header">
           <div>
-            <span>MyFlow KI Coach</span>
+            <span>{t.dashboard.coach}</span>
             <h2>{flowDecision.title}</h2>
           </div>
           <strong>{flowDecision.badge}</strong>
@@ -184,19 +280,19 @@ function DashboardHome({ habits, profileName, tone }) {
 
         <div className="flow-checkin-grid">
           <FlowSegment
-            label="Energie"
+            label={t.dashboard.energy}
             options={checkInOptions.energy}
             value={flowCheckIn.energy}
             onChange={(value) => updateFlowCheckIn('energy', value)}
           />
           <FlowSegment
-            label="Stress"
+            label={t.dashboard.stress}
             options={checkInOptions.stress}
             value={flowCheckIn.stress}
             onChange={(value) => updateFlowCheckIn('stress', value)}
           />
           <FlowSegment
-            label="Zeit"
+            label={t.dashboard.time}
             options={checkInOptions.time}
             value={flowCheckIn.time}
             onChange={(value) => updateFlowCheckIn('time', value)}
@@ -206,7 +302,7 @@ function DashboardHome({ habits, profileName, tone }) {
         <div className="flow-recommendation">
           <p>{flowDecision.recommendation}</p>
           <div>
-            <span>Empfehlung</span>
+            <span>{t.dashboard.recommendation}</span>
             <strong>{flowDecision.activity}</strong>
             <small>{flowDecision.duration}</small>
           </div>
@@ -217,16 +313,16 @@ function DashboardHome({ habits, profileName, tone }) {
 
       <section className="daily-focus-card">
         <div className="daily-focus-header">
-          <span>Heute wichtig</span>
-          <small>Top Fokus</small>
+          <span>{t.dashboard.focus}</span>
+          <small>{t.dashboard.topFocus}</small>
         </div>
         {topFocus.length > 0 ? (
           <div className="daily-focus-list">
             {topFocus.map((habit) => (
               <div key={habit.id}>
                 <div>
-                  <strong>{habit.title}</strong>
-                  <small>{habit.detail}</small>
+                  <strong>{habit.displayTitle}</strong>
+                  <small>{habit.displayDetail}</small>
                 </div>
                 <span>{habit.progress}%</span>
                 <div className="focus-progress-track" aria-hidden="true">
@@ -236,29 +332,29 @@ function DashboardHome({ habits, profileName, tone }) {
             ))}
           </div>
         ) : (
-          <p>Alles erledigt. Heute darf sich leicht anfühlen.</p>
+          <p>{t.dashboard.allDone}</p>
         )}
       </section>
 
       <section className="day-plan-card">
-        <span>Tagesplan</span>
+        <span>{t.dashboard.dayPlan}</span>
         <div>
-          <strong>Morgen</strong>
-          <p>kurz starten und Wasser nicht vergessen</p>
+          <strong>{t.dashboard.morning}</strong>
+          <p>{t.dashboard.morningText}</p>
         </div>
         <div>
-          <strong>Mittag</strong>
-          <p>eine kleine Bewegungspause einbauen</p>
+          <strong>{t.dashboard.noon}</strong>
+          <p>{t.dashboard.noonText}</p>
         </div>
         <div>
-          <strong>Abend</strong>
-          <p>den Tag ruhig abschließen und Fortschritt ansehen</p>
+          <strong>{t.dashboard.evening}</strong>
+          <p>{t.dashboard.eveningText}</p>
         </div>
       </section>
 
       <article className="home-motivation-card">
-        <span>Gedanke für heute</span>
-        <p>Du musst heute nicht perfekt sein. Ein kleiner Schritt zählt schon als Richtung.</p>
+        <span>{t.dashboard.thought}</span>
+        <p>{t.dashboard.thoughtText}</p>
       </article>
     </section>
   )

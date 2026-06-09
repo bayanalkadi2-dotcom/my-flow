@@ -1,10 +1,6 @@
 import { useState } from 'react'
 
-const moodOptions = ['Schlecht', 'Eher schlecht', 'Okay', 'Gut', 'Sehr gut']
-const wellbeingOptions = ['Schlecht', 'Eher schlecht', 'Okay', 'Gut', 'Sehr gut']
-const periodScaleLabels = ['sehr leicht', 'leicht', 'mittel', 'stark', 'sehr stark']
-
-function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone }) {
+function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const isMoodRoutine = habit.type === 'mood'
   const isPeriodRoutine = habit.type === 'period'
@@ -17,14 +13,14 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
           className="habit-remove-button"
           onClick={() => onRemove(habit)}
           type="button"
-          aria-label={`${habit.title} entfernen`}
+          aria-label={`${habit.displayTitle ?? habit.title} entfernen`}
         >
           ×
         </button>
       )}
       <div className="habit-main">
-        <h2 className="habit-title">{habit.title}</h2>
-        <p>{habit.detail}</p>
+        <h2 className="habit-title">{habit.displayTitle ?? habit.title}</h2>
+        <p>{habit.displayDetail ?? habit.detail}</p>
 
         {hasDetails ? (
           <>
@@ -33,14 +29,14 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
               onClick={() => setDetailsOpen((open) => !open)}
               type="button"
             >
-              {detailsOpen ? 'Details schließen' : isMoodRoutine ? 'Stimmung eintragen' : 'Zyklusdaten bearbeiten'}
+              {detailsOpen ? t.habitCard.closeDetails : isMoodRoutine ? t.habitCard.mood : t.habitCard.period}
             </button>
 
             {detailsOpen && isMoodRoutine && (
               <div className="mood-tracker">
-                <p>Wie fühlst du dich heute?</p>
+                <p>{t.habitCard.moodQuestion}</p>
                 <div className="mood-options">
-                  {moodOptions.map((mood) => (
+                  {t.habitCard.moods.map((mood) => (
                     <button
                       className={`mood-option ${habit.mood === mood ? 'selected' : ''}`}
                       key={mood}
@@ -57,7 +53,7 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
             {detailsOpen && isPeriodRoutine && (
               <div className="period-tracker">
                 <label>
-                  Zykluslänge
+                  {t.habitCard.cycleLength}
                   <input
                     min="1"
                     onChange={(event) => onUpdatePeriod(habit.id, { cycleLength: event.target.value })}
@@ -67,19 +63,21 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
                   />
                 </label>
                 <PeriodScale
-                  label="Stärke"
+                  label={t.habitCard.flowStrength}
+                  labels={t.habitCard.scale}
                   value={habit.period?.flowStrength ?? 3}
                   onChange={(value) => onUpdatePeriod(habit.id, { flowStrength: value })}
                 />
                 <PeriodScale
-                  label="Schmerzen"
+                  label={t.habitCard.pain}
+                  labels={t.habitCard.scale}
                   value={habit.period?.painLevel ?? 1}
                   onChange={(value) => onUpdatePeriod(habit.id, { painLevel: value })}
                 />
                 <div>
-                  <p>Wohlbefinden während der Phase</p>
+                  <p>{t.habitCard.wellbeing}</p>
                   <div className="mood-options">
-                    {wellbeingOptions.map((wellbeing) => (
+                    {t.habitCard.moods.map((wellbeing) => (
                       <button
                         className={`mood-option ${habit.period?.phaseWellbeing === wellbeing ? 'selected' : ''}`}
                         key={wellbeing}
@@ -100,7 +98,7 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
               className="habit-button habit-count-button"
               onClick={() => onDecrement(habit.id)}
               disabled={habit.current <= 0}
-              aria-label={`${habit.title} um 1 reduzieren`}
+              aria-label={`${habit.displayTitle ?? habit.title} um 1 reduzieren`}
             >
               −
             </button>
@@ -115,7 +113,7 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
             <button
               className="habit-button habit-count-button habit-done-button"
               onClick={() => onToggleDone(habit)}
-              aria-label={habit.done ? `${habit.title} nicht erledigt markieren` : `${habit.title} erledigt markieren`}
+              aria-label={habit.done ? `${habit.displayTitle ?? habit.title} nicht erledigt markieren` : `${habit.displayTitle ?? habit.title} erledigt markieren`}
             >
               ✓
             </button>
@@ -143,14 +141,14 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
   )
 }
 
-function PeriodScale({ label, value, onChange }) {
+function PeriodScale({ label, labels, value, onChange }) {
   const currentValue = Number(value)
 
   return (
     <div className="period-scale">
       <div className="period-scale-header">
         <p>{label}</p>
-        <span>{periodScaleLabels[currentValue - 1]}</span>
+        <span>{labels[currentValue - 1]}</span>
       </div>
       <div className="period-bars" aria-hidden="true">
         {[1, 2, 3, 4, 5].map((bar) => (

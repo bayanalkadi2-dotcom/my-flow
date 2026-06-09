@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Navbar from './commponents/Navbar'
-import { habits, languageStyles, navItems } from './data/appData'
+import { habits, languageStyles } from './data/appData'
+import { translations, translateHabit, translateUnit } from './i18n'
 import DashboardHome from './pages/DashboardHome'
 import Einloggen from './pages/Einloggen'
 import PasswortAendern from './pages/Passwortändern'
@@ -120,16 +121,21 @@ function loadDeletedRoutineTitles() {
 
 function App() {
   const [screen, setScreen] = useState('start')
-  const [languageStyle, setLanguageStyle] = useState('german')
+  const [languageStyle, setLanguageStyle] = useState(() => localStorage.getItem('myflow-language') || 'german')
   const [profileName, setProfileName] = useState('Nina')
   const [appTheme, setAppTheme] = useState('Hell')
   const [routineItems, setRoutineItems] = useState(loadRoutines)
   const [deletedRoutineTitles, setDeletedRoutineTitles] = useState(loadDeletedRoutineTitles)
   const tone = languageStyles[languageStyle]
+  const t = translations[languageStyle] ?? translations.german
   const preparedHabits = useMemo(
-    () => routineItems.map(prepareRoutine),
-    [routineItems],
+    () => routineItems.map((habit, index) => translateHabit(prepareRoutine(habit, index), languageStyle)),
+    [languageStyle, routineItems],
   )
+
+  useEffect(() => {
+    localStorage.setItem('myflow-language', languageStyle)
+  }, [languageStyle])
 
   useEffect(() => {
     localStorage.setItem('myflow-routines', JSON.stringify(preparedHabits))
@@ -197,6 +203,10 @@ function App() {
         }
       }),
     )
+  }
+
+  function selectLanguage(nextLanguage) {
+    setLanguageStyle(nextLanguage)
   }
 
   function setHabitMood(id, mood) {
@@ -269,26 +279,29 @@ function App() {
   function renderScreen() {
     switch (screen) {
       case 'login':
-        return <Einloggen onNavigate={setScreen} />
+        return <Einloggen onNavigate={setScreen} t={t} />
       case 'register':
-        return <Registrieren onNavigate={setScreen} />
+        return <Registrieren onNavigate={setScreen} t={t} />
       case 'resetPassword':
-        return <PasswortAendern onNavigate={setScreen} />
+        return <PasswortAendern onNavigate={setScreen} t={t} />
       case 'languageStyle':
         return (
           <Sprachstil
             languageStyle={languageStyle}
             tone={tone}
-            onSelectStyle={setLanguageStyle}
+            onSelectStyle={selectLanguage}
             onNavigate={setScreen}
+            t={t}
           />
         )
       case 'dashboard':
         return (
           <DashboardHome
             habits={preparedHabits}
+            languageStyle={languageStyle}
             profileName={profileName}
             tone={tone}
+            t={t}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
             onSetMood={setHabitMood}
@@ -301,6 +314,9 @@ function App() {
         return (
           <Routinen
             habits={preparedHabits}
+            languageStyle={languageStyle}
+            t={t}
+            translateUnit={(unit) => translateUnit(unit, languageStyle)}
             onAddHabit={addHabit}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
@@ -311,7 +327,7 @@ function App() {
           />
         )
       case 'progress':
-        return <Statistik />
+        return <Statistik languageStyle={languageStyle} t={t} />
       case 'profile':
         return (
           <Profil
@@ -319,17 +335,18 @@ function App() {
             languageStyle={languageStyle}
             profileName={profileName}
             tone={tone}
+            t={t}
             onAppThemeChange={setAppTheme}
             onNavigate={setScreen}
             onProfileNameChange={setProfileName}
-            onSelectStyle={setLanguageStyle}
+            onSelectStyle={selectLanguage}
           />
         )
       case 'freunde':
-        return <Freunde habits={preparedHabits} />
+        return <Freunde habits={preparedHabits} t={t} />
 
 default:
-  return <Startseite onNavigate={setScreen} />
+  return <Startseite onNavigate={setScreen} t={t} />
     }
   }
 
@@ -338,7 +355,7 @@ default:
       {renderScreen()}
 
       {!authScreens.includes(screen) && (
-        <Navbar activeScreen={screen} items={navItems} onNavigate={setScreen} />
+        <Navbar activeScreen={screen} items={Object.entries(t.nav).map(([id, label]) => ({ id, label }))} onNavigate={setScreen} />
       )}
     </main>
   )

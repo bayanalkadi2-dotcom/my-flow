@@ -1,17 +1,17 @@
 import { useState } from 'react'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
 
-function PasswortAendern({ onNavigate }) {
+function PasswortAendern({ onNavigate, t }) {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
     <section className="screen login-screen auth-detail-screen">
-      <button className="login-back" onClick={() => onNavigate('login')} aria-label="Zurück">
-        ←
+      <button className="login-back" onClick={() => onNavigate('login')} aria-label={t.common.back}>
+        &larr;
       </button>
       <header className="login-header">
-        <h1>Passwort zurücksetzen</h1>
-        <p>Lege ein neues Passwort für dein Konto fest.</p>
+        <h1>{t.auth.resetTitle}</h1>
+        <p>{t.auth.resetText}</p>
       </header>
       <form className="login-form" onSubmit={(event) => event.preventDefault()}>
         <label className="login-field">
@@ -19,25 +19,25 @@ function PasswortAendern({ onNavigate }) {
             <rect x="3.5" y="5.5" width="17" height="13" rx="3" />
             <path d="m5 7 7 5.4L19 7" />
           </svg>
-          <span>E-Mail</span>
+          <span>{t.auth.email}</span>
           <input type="email" placeholder="name@beispiel.de" />
         </label>
         <PasswordField
-          label="Neues Passwort"
+          label={t.auth.newPassword}
           showPassword={showPassword}
           onToggle={() => setShowPassword((current) => !current)}
         />
         <PasswordField
-          label="Passwort bestätigen"
+          label={t.auth.confirmPassword}
           showPassword={showPassword}
           onToggle={() => setShowPassword((current) => !current)}
         />
         <button className="login-submit reset-submit" type="button" onClick={() => onNavigate('login')}>
-          Passwort speichern
+          {t.auth.savePassword}
         </button>
       </form>
       <p className="register-copy">
-        Zurück zum <button type="button" onClick={() => onNavigate('login')}>Einloggen</button>
+        {t.auth.backToLogin} <button type="button" onClick={() => onNavigate('login')}>{t.start.login}</button>
       </p>
     </section>
   )
@@ -51,7 +51,7 @@ function PasswordField({ label, showPassword, onToggle }) {
         <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
       </svg>
       <span>{label}</span>
-      <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" />
+      <input type={showPassword ? 'text' : 'password'} placeholder="********" />
       <PasswordVisibilityButton visible={showPassword} onClick={onToggle} />
     </label>
   )
