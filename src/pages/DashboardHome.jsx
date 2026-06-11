@@ -51,7 +51,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
   if (dayProgress >= 85 || openHabits.length === 0) {
     return {
       action: 'end_session',
-      title: 'Flow abschliessen',
+      title: 'Flow abschließen',
       badge: 'Session beenden',
       recommendation: 'Fuer heute ist genug geschafft. Ein ruhiger Abschluss passt jetzt besser als noch mehr Druck.',
       activity: 'Kurze Reflexion',
@@ -65,7 +65,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       action: 'pause',
       title: 'Pause statt mehr Aufgaben',
       badge: 'Pause',
-      recommendation: 'Mach keine weitere intensive Aktivitaet. Eine kleine Atem- oder Ruhepause ist sinnvoller.',
+      recommendation: 'Mach keine weitere intensive Aktivität. Eine kleine Atem- oder Ruhepause ist sinnvoller.',
       activity: 'Atemreset',
       duration: '2 Minuten',
       reason: 'Energie ist niedrig und Stress ist hoch. Die App reduziert deshalb die Belastung.',
@@ -77,12 +77,12 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       action: 'switch_activity',
       title: 'Sanft wechseln',
       badge: 'Alternative',
-      recommendation: 'Starte mit einer kurzen, einfachen Aktivitaet statt einer grossen Routine.',
+      recommendation: 'Starte mit einer kurzen, einfachen Aktivität statt einer großen Routine.',
       activity: highStress ? 'Atemuebung' : 'Mini-Fokus',
       duration: shortTime ? '2 Minuten' : '5 Minuten',
       reason: highStress
-        ? 'Stress ist erhoeht. Eine beruhigende Aktivitaet hilft eher als direkt weiterzuarbeiten.'
-        : 'Du hast wenig Zeit. Ein kleiner Schritt haelt den Flow realistisch.',
+        ? 'Stress ist erhöht. Eine beruhigende Aktivität hilft eher als direkt weiterzuarbeiten.'
+        : 'Du hast wenig Zeit. Ein kleiner Schritt hält den Flow realistisch.',
     }
   }
 
@@ -91,7 +91,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       action: 'continue',
       title: 'Dranbleiben',
       badge: 'Weiter machen',
-      recommendation: `Fuehre "${almostDoneHabit.displayTitle ?? almostDoneHabit.title}" weiter, weil du dort schon nah am Ziel bist.`,
+      recommendation: `Führe "${almostDoneHabit.displayTitle ?? almostDoneHabit.title}" weiter, weil du dort schon nah am Ziel bist.`,
       activity: almostDoneHabit.displayTitle ?? almostDoneHabit.title,
       duration: time >= 10 ? '5-10 Minuten' : '2-5 Minuten',
       reason: 'Eine fast fertige Routine gibt schnell sichtbaren Fortschritt.',
@@ -106,7 +106,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       recommendation: 'Waehle eine kurze Routine, damit der Tag uebersichtlich bleibt.',
       activity: openHabits[0]?.displayTitle ?? openHabits[0]?.title ?? 'Mini-Routine',
       duration: '2-5 Minuten',
-      reason: 'Es sind mehrere Routinen offen. Die KI empfiehlt einen kleinen naechsten Schritt.',
+      reason: 'Es sind mehrere Routinen offen. Die KI empfiehlt einen kleinen nächsten Schritt.',
     }
   }
 
@@ -114,10 +114,10 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
     action: 'continue',
     title: 'Weiter im Flow',
     badge: 'Weiter machen',
-    recommendation: 'Eine weitere Aktivitaet passt gerade gut zu deiner Tagesform.',
-    activity: openHabits[0]?.displayTitle ?? openHabits[0]?.title ?? 'Freie Aktivitaet',
+    recommendation: 'Eine weitere Aktivität passt gerade gut zu deiner Tagesform.',
+    activity: openHabits[0]?.displayTitle ?? openHabits[0]?.title ?? 'Freie Aktivität',
     duration: time >= 10 ? '10 Minuten' : '5 Minuten',
-    reason: 'Energie, Stress und Fortschritt wirken stabil genug fuer einen naechsten Schritt.',
+    reason: 'Energie, Stress und Fortschritt wirken stabil genug für einen nächsten Schritt.',
   }
 }
 
@@ -125,32 +125,32 @@ function localizeFlowDecision(decision, languageStyle, communicationStyle) {
   if (languageStyle === 'german' && communicationStyle === 'formal') {
     const text = {
       end_session: {
-        title: 'Flow abschliessen',
+        title: 'Flow abschließen',
         badge: 'Sitzung beenden',
-        recommendation: 'Sie haben fuer heute genug erreicht. Ein ruhiger Abschluss ist jetzt sinnvoller als weiterer Druck.',
+        recommendation: 'Sie haben für heute genug erreicht. Ein ruhiger Abschluss ist jetzt sinnvoller als weiterer Druck.',
         activity: 'Kurze Reflexion',
         reason: 'Ihr Fortschritt ist sehr hoch oder alle Routinen sind erledigt.',
       },
       pause: {
         title: 'Pause statt weiterer Aufgaben',
         badge: 'Pause',
-        recommendation: 'Starten Sie keine weitere intensive Aktivitaet. Eine kurze Atem- oder Ruhepause ist jetzt passender.',
+        recommendation: 'Starten Sie keine weitere intensive Aktivität. Eine kurze Atem- oder Ruhepause ist jetzt passender.',
         activity: 'Atemreset',
         reason: 'Die Energie ist niedrig und der Stress ist hoch. Die App reduziert deshalb die Belastung.',
       },
       switch_activity: {
         title: 'Sanft wechseln',
         badge: 'Alternative',
-        recommendation: 'Beginnen Sie mit einer kurzen, einfachen Aktivitaet statt einer grossen Routine.',
+        recommendation: 'Beginnen Sie mit einer kurzen, einfachen Aktivität statt einer großen Routine.',
         activity: decision.activity,
-        reason: 'Ein kleiner naechster Schritt haelt den Flow realistisch.',
+        reason: 'Ein kleiner nächster Schritt hält den Flow realistisch.',
       },
       continue: {
         title: 'Weiter im Flow',
         badge: 'Fortsetzen',
-        recommendation: `Fuehren Sie "${decision.activity}" weiter, da diese Aktivitaet gut zu Ihrer aktuellen Tagesform passt.`,
+        recommendation: `Führen Sie "${decision.activity}" weiter, da diese Aktivität gut zu Ihrer aktuellen Tagesform passt.`,
         activity: decision.activity,
-        reason: 'Energie, Stress und Fortschritt wirken stabil genug fuer einen naechsten Schritt.',
+        reason: 'Energie, Stress und Fortschritt wirken stabil genug für einen nächsten Schritt.',
       },
     }
 

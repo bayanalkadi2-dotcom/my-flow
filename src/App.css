@@ -2918,6 +2918,13 @@ input {
   transition: transform 0.22s ease;
 }
 
+.start-orb svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  stroke: none;
+}
+
 .primary-cta:hover .arrow-orb,
 .login-cta:hover .login-arrow {
   transform: translateX(4px);
@@ -2925,12 +2932,22 @@ input {
 
 .arrow-orb {
   justify-self: end;
-  font-size: 30px;
-  width: auto;
-  height: auto;
+  width: 42px;
+  height: 42px;
   background: transparent;
   border: 0;
   box-shadow: none;
+}
+
+.arrow-orb svg,
+.login-arrow svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .user-orb {
@@ -2949,9 +2966,12 @@ input {
 }
 
 .login-arrow {
+  display: grid;
+  place-items: center;
   justify-self: end;
   color: #7452ff;
-  font-size: 32px;
+  width: 42px;
+  height: 42px;
   line-height: 1;
   transition: transform 0.22s ease;
 }

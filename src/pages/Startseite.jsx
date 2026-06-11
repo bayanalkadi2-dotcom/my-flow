@@ -25,9 +25,17 @@ function Startseite({ onNavigate, t }) {
       <p className="lead welcome-copy">{t.start.lead}</p>
       <div className="actions welcome-actions">
         <button className="primary-cta" onClick={() => onNavigate('dashboard')}>
-          <span className="button-orb" aria-hidden="true">*</span>
+          <span className="button-orb start-orb" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M8 5.5v13l10-6.5-10-6.5Z" />
+            </svg>
+          </span>
           <span>{t.start.start}</span>
-          <span className="button-orb arrow-orb" aria-hidden="true">-&gt;</span>
+          <span className="button-orb arrow-orb" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </span>
         </button>
         <button className="secondary-button login-cta" onClick={() => onNavigate('login')}>
           <span className="button-orb user-orb" aria-hidden="true">
@@ -37,7 +45,11 @@ function Startseite({ onNavigate, t }) {
             </svg>
           </span>
           <span>{t.start.login}</span>
-          <span className="login-arrow" aria-hidden="true">-&gt;</span>
+          <span className="login-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </span>
         </button>
         <button className="secondary-button login-cta" onClick={() => onNavigate('register')}>
           <span className="button-orb user-orb" aria-hidden="true">
@@ -47,7 +59,11 @@ function Startseite({ onNavigate, t }) {
             </svg>
           </span>
           <span>{t.start.register}</span>
-          <span className="login-arrow" aria-hidden="true">-&gt;</span>
+          <span className="login-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </span>
         </button>
       </div>
       <div className="feature-strip">

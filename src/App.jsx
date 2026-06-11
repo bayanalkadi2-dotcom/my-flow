@@ -4,7 +4,7 @@ import { habits, languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import DashboardHome from './pages/DashboardHome'
 import Einloggen from './pages/Einloggen'
-import PasswortAendern from './pages/Passwortändern'
+import PasswortÄndern from './pages/Passwortändern'
 import Profil from './pages/Profil'
 import Registrieren from './pages/Registrieren'
 import Routinen from './pages/Routinen'
@@ -55,7 +55,7 @@ function prepareRoutine(habit, index) {
   if (habit.title === 'Wasser trinken' && values.target >= 8) {
     values.current = Math.min(Math.ceil(values.current / 2), 4)
     values.target = 4
-    values.unit = 'Glaeser (500 ml)'
+    values.unit = 'Gläser (500 ml)'
   }
 
   const progress = Math.min(Math.round((values.current / values.target) * 100), 100)
@@ -297,7 +297,7 @@ function App() {
       case 'register':
         return <Registrieren onNavigate={setScreen} t={t} />
       case 'resetPassword':
-        return <PasswortAendern onNavigate={setScreen} t={t} />
+        return <PasswortÄndern onNavigate={setScreen} t={t} />
       case 'languageStyle':
         return (
           <Sprachstil

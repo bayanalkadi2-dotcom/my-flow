@@ -38,7 +38,7 @@ const levelSteps = [
 const treeOptions = [
   { id: 'oak', label: 'Eiche', symbol: '🌳' },
   { id: 'pine', label: 'Tanne', symbol: '🌲' },
-  { id: 'flower', label: 'Bluete', symbol: '🌸' },
+  { id: 'flower', label: 'Blüte', symbol: '🌸' },
 ]
 
 function getFlowTree(score, treeType = 'oak') {
@@ -617,7 +617,7 @@ function Profil({
         <div className="flow-tree-progress">
           <span style={{ width: `${flowTree.progress}%` }} />
         </div>
-        <small>{flowTree.progress}% Wachstum bis zur naechsten Stufe</small>
+        <small>{flowTree.progress}% Wachstum bis zur nächsten Stufe</small>
         <div className="tree-choice-row">
           {treeOptions.map((tree) => (
             <button

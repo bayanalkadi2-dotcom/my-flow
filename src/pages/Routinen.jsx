@@ -15,9 +15,9 @@ const routineCategories = [
     ],
   },
   {
-    title: 'Koerperliche Gesundheit',
+    title: 'Körperliche Gesundheit',
     routines: [
-      { title: 'Wasser trinken', target: 4, unit: 'Glaeser (500 ml)', incrementLabel: '500 ml Wasser getrunken' },
+      { title: 'Wasser trinken', target: 4, unit: 'Gläser (500 ml)', incrementLabel: '500 ml Wasser getrunken' },
       { title: 'Bewegung', target: 30, unit: 'Minuten', incrementLabel: '1 Minute Bewegung' },
       { title: 'Sport', target: 30, unit: 'Minuten', incrementLabel: '1 Minute Sport' },
       { title: 'Schlaf', target: 8, unit: 'Stunden', incrementLabel: '1 Stunde geschlafen' },
@@ -35,12 +35,12 @@ const routineCategories = [
     ],
   },
   {
-    title: 'Produktivitaet',
+    title: 'Produktivität',
     routines: [
       { title: 'Tagesplanung', target: 1, unit: 'Plan', incrementLabel: 'Plan erstellt' },
       { title: 'Lernen', target: 60, unit: 'Minuten', incrementLabel: '1 Minute gelernt' },
       { title: 'Fokuszeit', target: 45, unit: 'Minuten', incrementLabel: '1 Minute fokussiert' },
-      { title: 'Aufraeumen', target: 15, unit: 'Minuten', incrementLabel: '1 Minute aufgeraeumt' },
+      { title: 'Aufräumen', target: 15, unit: 'Minuten', incrementLabel: '1 Minute aufgeräumt' },
     ],
   },
   {
@@ -48,7 +48,7 @@ const routineCategories = [
     routines: [
       { title: 'Freunde kontaktieren', target: 1, unit: 'Kontakt', incrementLabel: 'Kontakt erledigt' },
       { title: 'Familie kontaktieren', target: 1, unit: 'Kontakt', incrementLabel: 'Kontakt erledigt' },
-      { title: 'Soziale Aktivitaet', target: 1, unit: 'Aktivitaet', incrementLabel: 'Aktivitaet gemacht' },
+      { title: 'Soziale Aktivität', target: 1, unit: 'Aktivität', incrementLabel: 'Aktivität gemacht' },
     ],
   },
   {
@@ -56,7 +56,7 @@ const routineCategories = [
     routines: [
       { title: 'Rauchen reduzieren', target: 5, unit: 'Zigaretten vermieden', incrementLabel: '1 Zigarette vermieden' },
       { title: 'Weniger Social Media', target: 2, unit: 'Stunden vermieden', incrementLabel: '1 Stunde vermieden' },
-      { title: 'Weniger Suessigkeiten', target: 3, unit: 'Snacks vermieden', incrementLabel: '1 Snack vermieden' },
+      { title: 'Weniger Süßigkeiten', target: 3, unit: 'Snacks vermieden', incrementLabel: '1 Snack vermieden' },
     ],
   },
 ]
@@ -64,7 +64,7 @@ const routineCategories = [
 function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('4')
-  const [unit, setUnit] = useState('Glaeser (500 ml)')
+  const [unit, setUnit] = useState('Gläser (500 ml)')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
   const [openCategory, setOpenCategory] = useState('')
   const existingTitles = new Set(habits.map((habit) => habit.title.toLowerCase()))
@@ -84,7 +84,7 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
 
     setTitle('')
     setTarget('4')
-    setUnit('Glaeser (500 ml)')
+    setUnit('Gläser (500 ml)')
     setAddPanelOpen(false)
   }
 
@@ -202,7 +202,7 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
                 <input
                   value={unit}
                   onChange={(event) => setUnit(event.target.value)}
-                  placeholder={translateUnit('Glaeser (500 ml)')}
+                  placeholder={translateUnit('Gläser (500 ml)')}
                 />
               </label>
             </div>
