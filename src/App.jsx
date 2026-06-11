@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Navbar from './commponents/Navbar'
 import { habits, languageStyles } from './data/appData'
-import { translations, translateHabit, translateUnit } from './i18n'
+import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import DashboardHome from './pages/DashboardHome'
 import Einloggen from './pages/Einloggen'
 import PasswortAendern from './pages/Passwortändern'
@@ -122,12 +122,13 @@ function loadDeletedRoutineTitles() {
 function App() {
   const [screen, setScreen] = useState('start')
   const [languageStyle, setLanguageStyle] = useState(() => localStorage.getItem('myflow-language') || 'german')
+  const [communicationStyle, setCommunicationStyle] = useState(() => localStorage.getItem('myflow-communication-style') || 'casual')
   const [profileName, setProfileName] = useState('Nina')
   const [appTheme, setAppTheme] = useState('Hell')
   const [routineItems, setRoutineItems] = useState(loadRoutines)
   const [deletedRoutineTitles, setDeletedRoutineTitles] = useState(loadDeletedRoutineTitles)
   const tone = languageStyles[languageStyle]
-  const t = translations[languageStyle] ?? translations.german
+  const t = getAppTranslations(languageStyle, communicationStyle)
   const preparedHabits = useMemo(
     () => routineItems.map((habit, index) => translateHabit(prepareRoutine(habit, index), languageStyle)),
     [languageStyle, routineItems],
@@ -136,6 +137,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('myflow-language', languageStyle)
   }, [languageStyle])
+
+  useEffect(() => {
+    localStorage.setItem('myflow-communication-style', communicationStyle)
+  }, [communicationStyle])
 
   useEffect(() => {
     localStorage.setItem('myflow-routines', JSON.stringify(preparedHabits))
@@ -287,8 +292,10 @@ function App() {
       case 'languageStyle':
         return (
           <Sprachstil
+            communicationStyle={communicationStyle}
             languageStyle={languageStyle}
             tone={tone}
+            onSelectCommunicationStyle={setCommunicationStyle}
             onSelectStyle={selectLanguage}
             onNavigate={setScreen}
             t={t}
@@ -298,6 +305,7 @@ function App() {
         return (
           <DashboardHome
             habits={preparedHabits}
+            communicationStyle={communicationStyle}
             languageStyle={languageStyle}
             profileName={profileName}
             tone={tone}
@@ -333,12 +341,14 @@ function App() {
           <Profil
             appTheme={appTheme}
             languageStyle={languageStyle}
+            communicationStyle={communicationStyle}
             profileName={profileName}
             tone={tone}
             t={t}
             onAppThemeChange={setAppTheme}
             onNavigate={setScreen}
             onProfileNameChange={setProfileName}
+            onCommunicationStyleChange={setCommunicationStyle}
             onSelectStyle={selectLanguage}
           />
         )

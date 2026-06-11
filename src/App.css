@@ -673,6 +673,14 @@ input {
   line-height: 1.12;
 }
 
+.style-subtitle {
+  align-self: stretch;
+  margin: 4px 0 6px;
+  color: #17133f;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
 .style-intro {
   margin: 0 0 20px;
   color: #5f5b7c;

@@ -140,12 +140,26 @@ export const translations = {
     language: {
       eyebrow: 'Personalisierung',
       title: 'Welche Sprache moechtest du nutzen?',
-      intro: 'Du kannst spaeter in deinem Profil jederzeit zwischen den Sprachen wechseln.',
-      continue: 'Mit {language} fortfahren',
+      intro: 'Du kannst spaeter in deinem Profil jederzeit zwischen Sprache und Ton wechseln.',
+      toneTitle: 'Wie soll MyFlow mit dir sprechen?',
+      toneIntro: 'Waehle, ob die App sachlich-standardmaessig oder locker und naeher bei dir klingt.',
+      continue: 'Mit {language} und {tone} fortfahren',
       options: {
         german: { title: 'Deutsch', example: 'Hey, schoen dass du da bist!', description: 'Deutsche Texte und Hinweise in der App' },
         english: { title: 'English', example: 'Hey, good to see you!', description: 'App texts and messages in English' },
         turkish: { title: 'Turkce', example: 'Merhaba, seni gormek guzel!', description: 'Uygulama metinleri ve bildirimleri Turkce' },
+      },
+      toneOptions: {
+        casual: {
+          title: 'Locker',
+          example: 'Hey, schoen dass du da bist!',
+          description: 'Persoenlich, motivierend und etwas naeher am Alltag.',
+        },
+        formal: {
+          title: 'Foermlich',
+          example: 'Guten Tag, willkommen zurueck.',
+          description: 'Ruhig, sachlich und in Standardform formuliert.',
+        },
       },
     },
     dashboard: {
@@ -241,6 +255,7 @@ export const translations = {
       height: 'Groesse',
       reminders: 'Erinnerungen',
       language: 'Sprache',
+      communicationStyle: 'Kommunikationsstil',
       design: 'Design',
       subscription: 'Abo',
       payment: 'Bezahlung',
@@ -270,6 +285,183 @@ export const translations = {
       days: '{days} Tage',
     },
   },
+}
+
+const communicationStyleOverrides = {
+  german: {
+    formal: {
+      start: {
+        badge: 'Ihr Wohlbefinden. Ihr Flow.',
+        lead: 'Bauen Sie gesunde Gewohnheiten auf, strukturieren Sie Ihren Alltag und bleiben Sie langfristig motiviert.',
+        start: 'Starten',
+      },
+      auth: {
+        loginTitle: 'Willkommen zurueck',
+        loginText: 'Schoen, dass Sie wieder da sind.',
+        usernamePlaceholder: 'Ihr Benutzername',
+        registerText: 'Erstellen Sie Ihr Konto, um MyFlow vollstaendig zu nutzen.',
+        ownPassword: 'Ihr Passwort',
+      },
+      language: {
+        toneOptions: {
+          casual: {
+            title: 'Locker',
+            example: 'Hey, schoen dass du da bist!',
+            description: 'Persoenlich, motivierend und etwas naeher am Alltag.',
+          },
+          formal: {
+            title: 'Foermlich',
+            example: 'Guten Tag, willkommen zurueck.',
+            description: 'Ruhig, sachlich und in Standardform formuliert.',
+          },
+        },
+      },
+      dashboard: {
+        hello: 'Guten Tag {name}, schoen dass Sie da sind.',
+        title: 'Wie verlaeuft Ihr Tag?',
+        message: 'Sie haben {count} von {total} Routinen abgeschlossen. Machen Sie weiter so.',
+        progressMessage: 'Sehr gut. Sie machen heute stabile Fortschritte.',
+        goodFlow: 'Sie sind gut im Flow.',
+        moreRoom: 'Heute gibt es noch Potenzial fuer weitere Schritte.',
+        doneText: 'Routinen abgeschlossen',
+        openText: 'heute noch offen',
+        allDone: 'Alles erledigt. Der heutige Tag darf ruhig ausklingen.',
+        morningText: 'ruhig starten und Wasser nicht vergessen',
+        noonText: 'eine kurze Bewegungspause einplanen',
+        eveningText: 'den Tag ruhig abschliessen und den Fortschritt ansehen',
+        thoughtText: 'Sie muessen heute nicht perfekt sein. Ein kleiner Schritt ist bereits ein Fortschritt.',
+      },
+      routines: {
+        title: 'Ihre Routinen',
+        custom: 'Eigene Routine',
+      },
+      stats: {
+        title: 'Ihr Fortschritt',
+        stepText: 'Sie sind heute {steps} Schritte gelaufen. Ein kurzer Spaziergang bringt Sie Ihrem Ziel bereits naeher.',
+      },
+      profile: {
+        pictureText: 'Ihr Profilbild nutzt aktuell automatisch den ersten Buchstaben Ihres Namens.',
+        paidText: 'Plus und Pro schalten die Abo-Tools frei. Die Zahlung erfolgt mit der ausgewaehlten Zahlungsart.',
+      },
+      friends: {
+        subtitle: 'Gemeinsam motiviert bleiben',
+        inviteText: 'Teilen Sie Ihren Link per WhatsApp, E-Mail oder kopieren Sie ihn direkt.',
+      },
+    },
+  },
+  english: {
+    formal: {
+      start: {
+        badge: 'Your wellbeing. Your flow.',
+        lead: 'Build healthy habits, structure your day and maintain long-term motivation.',
+        start: 'Start',
+      },
+      auth: {
+        loginTitle: 'Welcome back',
+        loginText: 'It is good to see you again.',
+        registerText: 'Create your account to use the full MyFlow experience.',
+      },
+      language: {
+        toneTitle: 'How should MyFlow communicate with you?',
+        toneIntro: 'Choose whether the app should sound calm and standard, or more relaxed and personal.',
+        continue: 'Continue with {language} and {tone}',
+        toneOptions: {
+          casual: {
+            title: 'Relaxed',
+            example: 'Hey, good to see you!',
+            description: 'Personal, motivating and closer to everyday language.',
+          },
+          formal: {
+            title: 'Formal',
+            example: 'Good day, welcome back.',
+            description: 'Calm, clear and more standard in tone.',
+          },
+        },
+      },
+      dashboard: {
+        hello: 'Hello {name}, welcome back.',
+        title: 'How is your day progressing?',
+        message: 'You have completed {count} of {total} routines. Please continue at your own pace.',
+        progressMessage: 'Very good. You are making steady progress today.',
+        goodFlow: 'You are progressing well.',
+        moreRoom: 'There is still room for further progress today.',
+        doneText: 'routines completed',
+        openText: 'remaining today',
+        allDone: 'Everything is complete. You can let today end calmly.',
+        thoughtText: 'You do not need to be perfect today. One small step is already meaningful progress.',
+      },
+      stats: {
+        title: 'Your progress',
+      },
+      friends: {
+        inviteText: 'Share your link via WhatsApp or email, or copy it directly.',
+      },
+    },
+  },
+  turkish: {
+    formal: {
+      start: {
+        lead: 'Saglikli aliskanliklar olusturun, gununuzu duzenleyin ve uzun vadede motivasyonunuzu koruyun.',
+        start: 'Baslayin',
+      },
+      auth: {
+        loginTitle: 'Tekrar hos geldiniz',
+        loginText: 'Sizi yeniden gormek guzel.',
+        registerText: 'MyFlowu tam kullanmak icin hesabinizi olusturun.',
+      },
+      language: {
+        toneTitle: 'MyFlow sizinle nasil iletisim kursun?',
+        toneIntro: 'Uygulamanin daha standart ve sakin mi, yoksa daha samimi mi konusacagini secin.',
+        continue: '{language} ve {tone} ile devam et',
+        toneOptions: {
+          casual: {
+            title: 'Samimi',
+            example: 'Merhaba, seni gormek guzel!',
+            description: 'Daha yakin, motive edici ve gunluk dile uygun.',
+          },
+          formal: {
+            title: 'Resmi',
+            example: 'Iyi gunler, tekrar hos geldiniz.',
+            description: 'Daha sakin, net ve standart bir anlatim.',
+          },
+        },
+      },
+      dashboard: {
+        hello: 'Merhaba {name}, hos geldiniz.',
+        title: 'Gununuz nasil ilerliyor?',
+        message: '{total} rutinden {count} tanesini tamamladiniz. Kendi temponuzda devam edin.',
+        progressMessage: 'Cok iyi. Bugun dengeli bir ilerleme kaydediyorsunuz.',
+        thoughtText: 'Bugun mukemmel olmak zorunda degilsiniz. Kucuk bir adim bile anlamli bir ilerlemedir.',
+      },
+    },
+  },
+}
+
+function mergeDeep(base, override) {
+  if (!override) {
+    return base
+  }
+
+  return Object.entries(override).reduce((result, [key, value]) => {
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      typeof result[key] === 'object' &&
+      !Array.isArray(result[key])
+    ) {
+      result[key] = mergeDeep({ ...result[key] }, value)
+      return result
+    }
+
+    result[key] = value
+    return result
+  }, { ...base })
+}
+
+export function getAppTranslations(languageStyle, communicationStyle = 'casual') {
+  const base = translations[languageStyle] ?? translations.german
+  return mergeDeep(base, communicationStyleOverrides[languageStyle]?.[communicationStyle])
 }
 
 translations.english = {
@@ -310,7 +502,31 @@ translations.english = {
     savePassword: 'Save password',
     backToLogin: 'Back to',
   },
-  language: translations.german.language,
+  language: {
+    eyebrow: 'Personalization',
+    title: 'Which language would you like to use?',
+    intro: 'You can change language and tone later in your profile at any time.',
+    toneTitle: 'How should MyFlow talk to you?',
+    toneIntro: 'Choose whether the app should sound more standard and calm, or more relaxed and personal.',
+    continue: 'Continue with {language} and {tone}',
+    options: {
+      german: { title: 'Deutsch', example: 'Hey, schoen dass du da bist!', description: 'German texts and hints in the app' },
+      english: { title: 'English', example: 'Hey, good to see you!', description: 'App texts and messages in English' },
+      turkish: { title: 'Turkce', example: 'Merhaba, seni gormek guzel!', description: 'App texts and messages in Turkish' },
+    },
+    toneOptions: {
+      casual: {
+        title: 'Relaxed',
+        example: 'Hey, good to see you!',
+        description: 'Personal, motivating and closer to everyday language.',
+      },
+      formal: {
+        title: 'Formal',
+        example: 'Good day, welcome back.',
+        description: 'Calm, clear and more standard in tone.',
+      },
+    },
+  },
   dashboard: {
     hello: 'Hey {name}, good to see you!',
     title: 'How is your day going?',
@@ -405,6 +621,7 @@ translations.english = {
     height: 'Height',
     reminders: 'Reminders',
     language: 'Language',
+    communicationStyle: 'Communication style',
     design: 'Design',
     subscription: 'Subscription',
     payment: 'Payment',
@@ -508,6 +725,31 @@ translations.turkish = {
     thought: 'Bugunun dusuncesi',
     thoughtText: 'Bugun mukemmel olmak zorunda degilsin. Kucuk bir adim bile yon sayilir.',
   },
+  language: {
+    eyebrow: 'Kisisellestirme',
+    title: 'Hangi dili kullanmak istersin?',
+    intro: 'Dili ve tonu daha sonra profilinden istedigin zaman degistirebilirsin.',
+    toneTitle: 'MyFlow seninle nasil konussun?',
+    toneIntro: 'Uygulamanin daha standart ve sakin mi, yoksa daha samimi mi konusacagini sec.',
+    continue: '{language} ve {tone} ile devam et',
+    options: {
+      german: { title: 'Deutsch', example: 'Hey, schoen dass du da bist!', description: 'Uygulamada Almanca metinler' },
+      english: { title: 'English', example: 'Hey, good to see you!', description: 'Uygulamada Ingilizce metinler' },
+      turkish: { title: 'Turkce', example: 'Merhaba, seni gormek guzel!', description: 'Uygulamada Turkce metinler' },
+    },
+    toneOptions: {
+      casual: {
+        title: 'Samimi',
+        example: 'Merhaba, seni gormek guzel!',
+        description: 'Daha yakin, motive edici ve gunluk dile uygun.',
+      },
+      formal: {
+        title: 'Resmi',
+        example: 'Iyi gunler, tekrar hos geldiniz.',
+        description: 'Daha sakin, net ve standart bir anlatim.',
+      },
+    },
+  },
   routines: {
     eyebrow: 'Rutinler',
     title: 'Rutinlerim',
@@ -565,6 +807,7 @@ translations.turkish = {
     height: 'Boy',
     reminders: 'Hatirlaticilar',
     language: 'Dil',
+    communicationStyle: 'Iletisim tarzi',
     design: 'Tasarim',
     subscription: 'Abonelik',
     payment: 'Odeme',

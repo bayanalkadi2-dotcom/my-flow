@@ -121,34 +121,77 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
   }
 }
 
-function localizeFlowDecision(decision, languageStyle) {
+function localizeFlowDecision(decision, languageStyle, communicationStyle) {
+  if (languageStyle === 'german' && communicationStyle === 'formal') {
+    const text = {
+      end_session: {
+        title: 'Flow abschliessen',
+        badge: 'Sitzung beenden',
+        recommendation: 'Sie haben fuer heute genug erreicht. Ein ruhiger Abschluss ist jetzt sinnvoller als weiterer Druck.',
+        activity: 'Kurze Reflexion',
+        reason: 'Ihr Fortschritt ist sehr hoch oder alle Routinen sind erledigt.',
+      },
+      pause: {
+        title: 'Pause statt weiterer Aufgaben',
+        badge: 'Pause',
+        recommendation: 'Starten Sie keine weitere intensive Aktivitaet. Eine kurze Atem- oder Ruhepause ist jetzt passender.',
+        activity: 'Atemreset',
+        reason: 'Die Energie ist niedrig und der Stress ist hoch. Die App reduziert deshalb die Belastung.',
+      },
+      switch_activity: {
+        title: 'Sanft wechseln',
+        badge: 'Alternative',
+        recommendation: 'Beginnen Sie mit einer kurzen, einfachen Aktivitaet statt einer grossen Routine.',
+        activity: decision.activity,
+        reason: 'Ein kleiner naechster Schritt haelt den Flow realistisch.',
+      },
+      continue: {
+        title: 'Weiter im Flow',
+        badge: 'Fortsetzen',
+        recommendation: `Fuehren Sie "${decision.activity}" weiter, da diese Aktivitaet gut zu Ihrer aktuellen Tagesform passt.`,
+        activity: decision.activity,
+        reason: 'Energie, Stress und Fortschritt wirken stabil genug fuer einen naechsten Schritt.',
+      },
+    }
+
+    return { ...decision, ...text[decision.action] }
+  }
+
   if (languageStyle === 'english') {
     const text = {
       end_session: {
         title: 'Wrap up flow',
         badge: 'End session',
-        recommendation: 'You have done enough for today. A calm finish fits better than more pressure.',
+        recommendation: communicationStyle === 'formal'
+          ? 'You have done enough for today. A calm finish is more appropriate than adding pressure.'
+          : 'You have done enough for today. A calm finish fits better than more pressure.',
         activity: 'Short reflection',
         reason: 'Your progress is very high or all routines are complete.',
       },
       pause: {
         title: 'Pause instead of more tasks',
         badge: 'Pause',
-        recommendation: 'Do not start another intense activity. A small breathing or rest break is better now.',
+        recommendation: communicationStyle === 'formal'
+          ? 'Please do not start another intense activity. A short breathing or rest break is more appropriate now.'
+          : 'Do not start another intense activity. A small breathing or rest break is better now.',
         activity: 'Breathing reset',
         reason: 'Energy is low and stress is high. The app reduces the load.',
       },
       switch_activity: {
         title: 'Switch gently',
         badge: 'Alternative',
-        recommendation: 'Start with a short, simple activity instead of a big routine.',
+        recommendation: communicationStyle === 'formal'
+          ? 'Start with a short, simple activity instead of a larger routine.'
+          : 'Start with a short, simple activity instead of a big routine.',
         activity: decision.activity === 'Atemuebung' ? 'Breathing exercise' : decision.activity === 'Mini-Fokus' ? 'Mini focus' : decision.activity,
         reason: 'A small next step keeps the flow realistic.',
       },
       continue: {
         title: 'Keep going',
         badge: 'Continue',
-        recommendation: `Continue with "${decision.activity}" because it fits your current day.`,
+        recommendation: communicationStyle === 'formal'
+          ? `Continue with "${decision.activity}" because it fits your current condition.`
+          : `Continue with "${decision.activity}" because it fits your current day.`,
         reason: 'Energy, stress and progress look stable enough for a next step.',
       },
     }
@@ -193,7 +236,7 @@ function localizeFlowDecision(decision, languageStyle) {
   return decision
 }
 
-function DashboardHome({ habits, languageStyle, profileName, t }) {
+function DashboardHome({ habits, communicationStyle, languageStyle, profileName, t }) {
   const [flowCheckIn, setFlowCheckIn] = useState({
     energy: 2,
     stress: 2,
@@ -221,8 +264,9 @@ function DashboardHome({ habits, languageStyle, profileName, t }) {
           ...flowCheckIn,
         }),
         languageStyle,
+        communicationStyle,
       ),
-    [dayProgress, flowCheckIn, habits, languageStyle],
+    [communicationStyle, dayProgress, flowCheckIn, habits, languageStyle],
   )
 
   function updateFlowCheckIn(key, value) {

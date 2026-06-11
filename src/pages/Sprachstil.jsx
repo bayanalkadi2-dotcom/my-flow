@@ -2,7 +2,17 @@ import logo from '../assets/Icon Gruppe H.png'
 
 const languageIds = ['german', 'english', 'turkish']
 
-function Sprachstil({ languageStyle, tone, onSelectStyle, onNavigate, t }) {
+const communicationStyleIds = ['casual', 'formal']
+
+function Sprachstil({
+  communicationStyle,
+  languageStyle,
+  tone,
+  onSelectCommunicationStyle,
+  onSelectStyle,
+  onNavigate,
+  t,
+}) {
   return (
     <section className="screen compact-screen style-screen">
       <button className="back-button" onClick={() => onNavigate('login')} aria-label={t.common.back}>
@@ -30,8 +40,30 @@ function Sprachstil({ languageStyle, tone, onSelectStyle, onNavigate, t }) {
           )
         })}
       </div>
+      <h2 className="style-subtitle">{t.language.toneTitle}</h2>
+      <p className="style-intro">{t.language.toneIntro}</p>
+      <div className="language-style-options">
+        {communicationStyleIds.map((id) => {
+          const option = t.language.toneOptions[id]
+
+          return (
+            <button
+              className={`language-style-card ${communicationStyle === id ? 'selected' : ''}`}
+              onClick={() => onSelectCommunicationStyle(id)}
+              key={id}
+            >
+              <span className="style-check">{communicationStyle === id ? '✓' : ''}</span>
+              <strong>{option.title}</strong>
+              <p>{option.example}</p>
+              <small>{option.description}</small>
+            </button>
+          )
+        })}
+      </div>
       <button className="style-continue" onClick={() => onNavigate('dashboard')}>
-        {t.language.continue.replace('{language}', tone.label)}
+        {t.language.continue
+          .replace('{language}', tone.label)
+          .replace('{tone}', t.language.toneOptions[communicationStyle].title)}
       </button>
     </section>
   )

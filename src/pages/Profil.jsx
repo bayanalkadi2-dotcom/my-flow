@@ -137,7 +137,19 @@ function getHealthRecommendation(bmi, weight) {
   return { water: waterLiters, steps: '7.500', note: 'sanft anfangen' }
 }
 
-function Profil({ appTheme, languageStyle, profileName, tone, t, onAppThemeChange, onNavigate, onProfileNameChange, onSelectStyle }) {
+function Profil({
+  appTheme,
+  communicationStyle,
+  languageStyle,
+  profileName,
+  tone,
+  t,
+  onAppThemeChange,
+  onCommunicationStyleChange,
+  onNavigate,
+  onProfileNameChange,
+  onSelectStyle,
+}) {
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
   const [gender, setGender] = useState('male')
@@ -158,6 +170,7 @@ function Profil({ appTheme, languageStyle, profileName, tone, t, onAppThemeChang
     weight,
     height,
     reminders,
+    communicationStyle,
     languageStyle,
     design: appTheme,
   })
@@ -187,6 +200,7 @@ function Profil({ appTheme, languageStyle, profileName, tone, t, onAppThemeChang
       weight,
       height,
       reminders,
+      communicationStyle,
       languageStyle,
       design: appTheme,
     })
@@ -219,6 +233,9 @@ function Profil({ appTheme, languageStyle, profileName, tone, t, onAppThemeChang
         break
       case 'language':
         onSelectStyle(draftSettings.languageStyle)
+        break
+      case 'communicationStyle':
+        onCommunicationStyleChange(draftSettings.communicationStyle)
         break
       case 'design':
         onAppThemeChange(draftSettings.design)
@@ -401,6 +418,29 @@ function Profil({ appTheme, languageStyle, profileName, tone, t, onAppThemeChang
                   type="button"
                 >
                   {option.label}
+                </button>
+              ))}
+            </div>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
+          </div>
+        )}
+
+        <div className="profile-setting-row">
+          <span>{t.profile.communicationStyle}</span>
+          <strong>{t.language.toneOptions[communicationStyle].title}</strong>
+          <button type="button" onClick={() => openEditor('communicationStyle')}>{t.common.change}</button>
+        </div>
+        {activeEditor === 'communicationStyle' && (
+          <div className="profile-edit-panel">
+            <div className="option-grid">
+              {Object.entries(t.language.toneOptions).map(([id, option]) => (
+                <button
+                  className={`profile-choice ${draftSettings.communicationStyle === id ? 'selected' : ''}`}
+                  key={id}
+                  onClick={() => updateDraft('communicationStyle', id)}
+                  type="button"
+                >
+                  {option.title}
                 </button>
               ))}
             </div>
