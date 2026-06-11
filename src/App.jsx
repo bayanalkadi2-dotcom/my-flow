@@ -344,7 +344,7 @@ function App() {
           />
         )
       case 'progress':
-        return <Statistik languageStyle={languageStyle} t={t} />
+        return <Statistik habits={preparedHabits} languageStyle={languageStyle} t={t} />
       case 'profile':
         return (
           <Profil

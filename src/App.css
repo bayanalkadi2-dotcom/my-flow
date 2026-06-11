@@ -1198,6 +1198,40 @@ input {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
+.app.theme-dark .chart-header h2,
+.app.theme-dark .chart-label {
+  color: #ffffff;
+  fill: #f8f6ff;
+}
+
+.app.theme-dark .chart-header small {
+  color: #bdb5dc;
+}
+
+.app.theme-dark .chart-band {
+  fill: rgba(255, 255, 255, 0.08);
+}
+
+.app.theme-dark .chart-grid-line {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.app.theme-dark .chart-line {
+  stroke: #7f8798;
+}
+
+.app.theme-dark .chart-dot-ring {
+  fill: #241d3a;
+}
+
+.app.theme-dark .chart-dot {
+  fill: #d8dded;
+}
+
+.app.theme-dark .chart-axis span {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .app.theme-dark .flow-coach-header > strong {
   background: rgba(123, 97, 255, 0.18);
   color: #c9bcff;
@@ -1900,6 +1934,115 @@ input {
   justify-content: space-between;
 }
 
+.success-chart-card {
+  display: grid;
+  height: auto;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.chart-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.chart-header span {
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.chart-header h2 {
+  margin: 3px 0 0;
+  color: #17133f;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.chart-header small {
+  max-width: 96px;
+  color: #7a7396;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.success-chart {
+  position: relative;
+  width: 100%;
+}
+
+.success-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.chart-band {
+  fill: rgba(77, 86, 113, 0.08);
+}
+
+.chart-grid-line {
+  stroke: rgba(70, 78, 105, 0.08);
+  stroke-width: 1.5;
+}
+
+.chart-line {
+  fill: none;
+  stroke: #c4c9d3;
+  stroke-width: 9;
+  stroke-linecap: round;
+  filter: drop-shadow(0 8px 8px rgba(72, 80, 104, 0.12));
+}
+
+.chart-pulse {
+  fill: rgba(255, 180, 36, 0.22);
+}
+
+.chart-dot-ring {
+  fill: #ffffff;
+  filter: drop-shadow(0 5px 8px rgba(54, 62, 90, 0.16));
+}
+
+.chart-dot {
+  fill: #3d4a68;
+}
+
+.chart-dot.best,
+.chart-dot.low {
+  fill: #ffb31f;
+}
+
+.chart-label {
+  fill: #4a5269;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.chart-axis {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-top: -5px;
+}
+
+.chart-axis span {
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  height: 10px;
+  border-radius: 999px;
+  background: #e9e9ec;
+  color: transparent;
+  font-size: 0;
+}
+
 .bar-wrap {
   height: 100%;
   display: flex;
@@ -1917,7 +2060,7 @@ input {
 
 .smoking-stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
   gap: 14px;
 }
 
