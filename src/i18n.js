@@ -30,6 +30,7 @@ const habitTranslations = {
 
 const unitTranslations = {
   Glaeser: { en: 'glasses', tr: 'bardak' },
+  'Glaeser (500 ml)': { en: '500 ml glasses', tr: '500 ml bardak' },
   Minuten: { en: 'minutes', tr: 'dakika' },
   Stunden: { en: 'hours', tr: 'saat' },
   Dinge: { en: 'things', tr: 'sey' },

@@ -1,10 +1,24 @@
 import { useState } from 'react'
+import waterGlassEmpty from '../assets/water-glass-empty.svg'
+import waterGlassFull from '../assets/water-glass-full.svg'
+
+const routineVisuals = {
+  'Wasser trinken': {
+    kind: 'water',
+    label: 'Ein Glas getrunken',
+  },
+  'Rauchen reduzieren': {
+    kind: 'smoking',
+    label: 'Eine Zigarette vermieden',
+  },
+}
 
 function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const isMoodRoutine = habit.type === 'mood'
   const isPeriodRoutine = habit.type === 'period'
   const hasDetails = isMoodRoutine || isPeriodRoutine
+  const routineVisual = routineVisuals[habit.title]
 
   return (
     <article className={`habit-card ${habit.done ? 'habit-card-done' : ''}`}>
@@ -137,7 +151,55 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
           <span>{habit.progress}%</span>
         </div>
       </div>
+
+      {routineVisual && !hasDetails && (
+        <RoutineVisualAction
+          habit={habit}
+          visual={routineVisual}
+          onActivate={() => onIncrement(habit.id)}
+        />
+      )}
     </article>
+  )
+}
+
+function RoutineVisualAction({ habit, visual, onActivate }) {
+  const isComplete = habit.done || Number(habit.progress ?? 0) >= 100
+  const current = Math.max(0, Math.min(Number(habit.current ?? 0), Number(habit.target ?? 1)))
+  const target = Math.max(1, Math.min(Number(habit.target ?? 1), 12))
+
+  return (
+    <button
+      className={`routine-visual-action ${visual.kind} ${current > 0 ? 'is-active' : ''}`}
+      disabled={isComplete}
+      onClick={onActivate}
+      type="button"
+      aria-label={habit.incrementLabel ?? visual.label}
+    >
+      <span className="routine-visual-grid" aria-hidden="true">
+        {Array.from({ length: target }).map((_, index) => {
+          const itemActive = index < current
+
+          return (
+            <span className={`routine-visual-stage ${itemActive ? 'is-filled' : ''}`} key={`${visual.kind}-${index}`}>
+              {visual.kind === 'water' ? (
+                <img
+                  className="routine-visual-img"
+                  src={itemActive ? waterGlassFull : waterGlassEmpty}
+                  alt=""
+                />
+              ) : (
+                <span className="cigarette-symbol">
+                  <span className="cigarette-body" />
+                  <span className="cigarette-filter" />
+                  <span className="cigarette-smoke" />
+                </span>
+              )}
+            </span>
+          )
+        })}
+      </span>
+    </button>
   )
 }
 

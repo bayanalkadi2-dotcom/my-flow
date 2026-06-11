@@ -51,6 +51,13 @@ function prepareRoutine(habit, index) {
   const type = habit.type ??
     (habit.title === 'Stimmung tracken' ? 'mood' : habit.title === 'Periode' ? 'period' : undefined)
   const values = getRoutineValues(habit, index)
+
+  if (habit.title === 'Wasser trinken' && values.target >= 8) {
+    values.current = Math.min(Math.ceil(values.current / 2), 4)
+    values.target = 4
+    values.unit = 'Glaeser (500 ml)'
+  }
+
   const progress = Math.min(Math.round((values.current / values.target) * 100), 100)
   const done = Boolean(habit.done) || progress >= 100
   const current = done ? values.target : values.current
@@ -105,7 +112,9 @@ function loadRoutines() {
         !deletedRoutineTitles.has(habit.title.toLowerCase()),
     )
 
-    return [...parsedRoutines, ...missingDefaultRoutines]
+    return [...parsedRoutines, ...missingDefaultRoutines].map((habit, index) =>
+      prepareRoutine(habit, index),
+    )
   } catch {
     return defaultRoutines
   }

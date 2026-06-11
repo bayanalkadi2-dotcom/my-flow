@@ -1,0 +1,26 @@
+<svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <filter id="shadow" x="39" y="24" width="242" height="272" filterUnits="userSpaceOnUse">
+    <feDropShadow dx="0" dy="14" stdDeviation="13" flood-color="#3185aa" flood-opacity=".24"/>
+  </filter>
+  <g filter="url(#shadow)">
+    <path d="M78 65C82 194 99 260 112 272C124 284 196 284 208 272C221 259 238 195 242 65H78Z" fill="#fff" stroke="#10141f" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M94 118C126 127 197 127 226 118C222 193 211 249 201 263C187 272 132 272 119 263C108 249 98 192 94 118Z" fill="#c9f0ff"/>
+    <ellipse cx="160" cy="118" rx="66" ry="17" fill="#d8f6ff" stroke="#10141f" stroke-width="5"/>
+    <ellipse cx="160" cy="65" rx="82" ry="24" fill="#fff" stroke="#10141f" stroke-width="6"/>
+    <path d="M88 69C111 86 209 86 232 69" stroke="#10141f" stroke-width="4" stroke-linecap="round"/>
+    <path d="M103 114C129 124 190 124 217 114" stroke="#10141f" stroke-width="5" stroke-linecap="round"/>
+    <path d="M110 116C106 164 111 225 124 249" stroke="#10141f" stroke-width="5" stroke-linecap="round"/>
+    <path d="M143 121C137 166 139 226 150 252" stroke="#10141f" stroke-width="5" stroke-linecap="round"/>
+    <path d="M177 121C183 166 181 226 170 252" stroke="#10141f" stroke-width="5" stroke-linecap="round"/>
+    <path d="M210 116C214 164 209 225 196 249" stroke="#10141f" stroke-width="5" stroke-linecap="round"/>
+    <path d="M104 251C125 260 195 260 216 251" stroke="#10141f" stroke-width="4" stroke-linecap="round"/>
+    <path d="M101 91C130 102 190 104 221 93" stroke="#10141f" stroke-width="3" stroke-linecap="round"/>
+    <path d="M102 142C113 150 124 150 135 143" stroke="#10141f" stroke-width="3" stroke-linecap="round"/>
+    <path d="M185 143C197 151 209 150 219 141" stroke="#10141f" stroke-width="3" stroke-linecap="round"/>
+    <path d="M111 145C112 176 116 220 125 247" stroke="#eaffff" stroke-width="7" stroke-linecap="round" opacity=".75"/>
+    <path d="M216 125C216 169 209 225 198 253" stroke="#78c9e8" stroke-width="7" stroke-linecap="round" opacity=".65"/>
+    <circle cx="111" cy="174" r="7" fill="#fff" opacity=".9"/>
+    <circle cx="210" cy="163" r="6" fill="#fff" opacity=".8"/>
+    <circle cx="204" cy="190" r="5" fill="#fff" opacity=".8"/>
+  </g>
+</svg>

@@ -17,7 +17,7 @@ const routineCategories = [
   {
     title: 'Koerperliche Gesundheit',
     routines: [
-      { title: 'Wasser trinken', target: 8, unit: 'Glaeser', incrementLabel: '1 Glas getrunken' },
+      { title: 'Wasser trinken', target: 4, unit: 'Glaeser (500 ml)', incrementLabel: '500 ml Wasser getrunken' },
       { title: 'Bewegung', target: 30, unit: 'Minuten', incrementLabel: '1 Minute Bewegung' },
       { title: 'Sport', target: 30, unit: 'Minuten', incrementLabel: '1 Minute Sport' },
       { title: 'Schlaf', target: 8, unit: 'Stunden', incrementLabel: '1 Stunde geschlafen' },
@@ -63,8 +63,8 @@ const routineCategories = [
 
 function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
   const [title, setTitle] = useState('')
-  const [target, setTarget] = useState('8')
-  const [unit, setUnit] = useState('Glaeser')
+  const [target, setTarget] = useState('4')
+  const [unit, setUnit] = useState('Glaeser (500 ml)')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
   const [openCategory, setOpenCategory] = useState('')
   const existingTitles = new Set(habits.map((habit) => habit.title.toLowerCase()))
@@ -83,8 +83,8 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
     })
 
     setTitle('')
-    setTarget('8')
-    setUnit('Glaeser')
+    setTarget('4')
+    setUnit('Glaeser (500 ml)')
     setAddPanelOpen(false)
   }
 
@@ -202,7 +202,7 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
                 <input
                   value={unit}
                   onChange={(event) => setUnit(event.target.value)}
-                  placeholder={translateUnit('Glaeser')}
+                  placeholder={translateUnit('Glaeser (500 ml)')}
                 />
               </label>
             </div>
