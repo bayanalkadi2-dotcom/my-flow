@@ -15,7 +15,7 @@ import Freunde from './pages/Freunde'
 import './App.css'
 
 const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle']
-
+ 
 function defaultRoutineId(index) {
   return `default-routine-${index + 1}`
 }
@@ -51,6 +51,17 @@ function prepareRoutine(habit, index) {
   const type = habit.type ??
     (habit.title === 'Stimmung tracken' ? 'mood' : habit.title === 'Periode' ? 'period' : undefined)
   const values = getRoutineValues(habit, index)
+
+  if (habit.title === 'Schlaf' && habit.detail?.includes('h')) {
+    const sleepMatch = habit.detail.match(/(\d+)\s*h(?:\s*(\d+)\s*min)?/)
+    const hours = sleepMatch
+      ? Number(sleepMatch[1]) + (Number(sleepMatch[2] ?? 0) / 60)
+      : values.current
+
+    values.current = Math.floor(hours)
+    values.target = 8
+    values.unit = 'Stunden'
+  }
 
   if (habit.title === 'Wasser trinken' && values.target >= 8) {
     values.current = Math.min(Math.ceil(values.current / 2), 4)
@@ -361,6 +372,23 @@ function App() {
             onSelectStyle={selectLanguage}
           />
         )
+      case 'profileSettings':
+        return (
+          <Profil
+            appTheme={appTheme}
+            languageStyle={languageStyle}
+            communicationStyle={communicationStyle}
+            profileName={profileName}
+            tone={tone}
+            t={t}
+            settingsPage
+            onAppThemeChange={setAppTheme}
+            onNavigate={setScreen}
+            onProfileNameChange={setProfileName}
+            onCommunicationStyleChange={setCommunicationStyle}
+            onSelectStyle={selectLanguage}
+          />
+        )
       case 'freunde':
         return <Freunde habits={preparedHabits} t={t} />
 
@@ -370,10 +398,13 @@ default:
   }
 
   return (
-    <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'}`}>
+    <main
+      className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`}
+      dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}
+    >
       {renderScreen()}
 
-      {!authScreens.includes(screen) && (
+      {!authScreens.includes(screen) && screen !== 'profileSettings' && (
         <Navbar activeScreen={screen} items={Object.entries(t.nav).map(([id, label]) => ({ id, label }))} onNavigate={setScreen} />
       )}
     </main>

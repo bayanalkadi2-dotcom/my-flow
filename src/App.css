@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap");
+
 * {
   box-sizing: border-box;
 }
@@ -18,6 +20,41 @@ body {
   margin: 0 auto;
   padding: 8px;
   padding-bottom: 95px;
+}
+
+.app.rtl {
+  font-family: "Aref Ruqaa", "Amiri", "Noto Naskh Arabic", "Segoe UI", serif;
+  letter-spacing: 0;
+}
+
+.app.rtl h1,
+.app.rtl h2,
+.app.rtl h3,
+.app.rtl strong,
+.app.rtl button,
+.app.rtl input,
+.app.rtl select {
+  font-family: "Aref Ruqaa", "Amiri", "Noto Naskh Arabic", "Segoe UI", serif;
+}
+
+.app.rtl h1 {
+  font-size: 2.35rem;
+  line-height: 1.25;
+}
+
+.app.rtl h2,
+.app.rtl h3 {
+  line-height: 1.35;
+}
+
+.app.rtl p,
+.app.rtl small,
+.app.rtl span,
+.app.rtl label,
+.app.rtl input,
+.app.rtl select,
+.app.rtl button {
+  line-height: 1.7;
 }
 
 .app.theme-dark {
@@ -2164,6 +2201,300 @@ input {
   gap: 12px;
 }
 
+.profile-settings-screen .profile-picture-card,
+.profile-settings-screen .bmi-card,
+.profile-settings-screen .profile-level-card,
+.profile-settings-screen .flow-tree-card,
+.profile-settings-screen .profile-logout-button {
+  display: none;
+}
+
+.profile-settings-screen .profile-settings-panel {
+  position: static;
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  max-height: none;
+  margin-top: 12px;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.profile-settings-screen {
+  gap: 0;
+  padding: 22px 26px 34px;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(255, 176, 226, 0.28), transparent 26%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(250, 248, 255, 0.94));
+}
+
+.profile-settings-screen h1 {
+  align-self: start;
+  margin: 6px 0 0 72px;
+  color: #15122f;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.profile-settings-screen .back-button {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  width: 48px;
+  height: 48px;
+  background: rgba(245, 240, 255, 0.95);
+  color: #765cff;
+  box-shadow: 0 12px 24px rgba(118, 92, 255, 0.12);
+}
+
+.profile-settings-screen .register-settings-header {
+  padding: 0;
+}
+
+.profile-settings-screen .register-settings-header strong {
+  display: none;
+}
+
+.profile-settings-screen .register-settings-header p {
+  margin: -6px 0 18px 72px;
+  font-size: 15px;
+}
+
+.profile-settings-screen .register-settings-header button {
+  display: none;
+}
+
+.profile-settings-screen .profile-edit-panel,
+.profile-settings-screen .settings-group {
+  border-radius: 18px;
+}
+
+.profile-settings-screen .profile-settings-panel > .profile-edit-panel {
+  position: relative;
+  min-height: 116px;
+  margin: 8px 0 22px;
+  padding: 26px 22px 24px 132px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(246, 235, 255, 0.9), rgba(245, 249, 255, 0.9));
+  box-shadow: none;
+}
+
+.profile-settings-screen .profile-settings-panel > .profile-edit-panel::before {
+  content: none;
+}
+
+.profile-settings-screen .profile-settings-panel > .profile-edit-panel strong {
+  color: #17133f;
+  font-size: 18px;
+}
+
+.profile-settings-screen .profile-settings-panel > .profile-edit-panel p {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.settings-section-label {
+  margin: 2px 0 8px 8px;
+  color: #765cff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.profile-settings-screen .settings-list {
+  gap: 0;
+  width: calc(100% + 10px);
+  margin: 0 -5px;
+}
+
+.profile-settings-screen .profile-setting-row {
+  position: relative;
+  grid-template-columns: 44px minmax(128px, 1fr) minmax(82px, max-content) 16px;
+  align-items: center;
+  min-height: 64px;
+  padding: 0 16px;
+  column-gap: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(23, 19, 63, 0.06);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.profile-settings-screen .profile-setting-row::before {
+  content: none;
+}
+
+.setting-row-icon {
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  align-self: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(246, 241, 255, 0.95);
+  color: #765cff;
+}
+
+.setting-row-icon img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.profile-settings-screen .profile-setting-row::after {
+  content: "›";
+  justify-self: end;
+  align-self: center;
+  color: #8f8aa3;
+  font-size: 26px;
+  line-height: 0.9;
+}
+
+.profile-settings-screen .profile-setting-row span {
+  min-width: 0;
+  color: #17133f;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.profile-settings-screen .profile-setting-row strong {
+  justify-self: end;
+  color: #65607f;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .profile-settings-screen .settings-list {
+    width: calc(100% + 6px);
+    margin: 0 -3px;
+  }
+
+  .profile-settings-screen .profile-setting-row {
+    grid-template-columns: 40px minmax(116px, 1fr) minmax(70px, max-content) 14px;
+    padding: 0 12px;
+    column-gap: 8px;
+  }
+
+  .profile-settings-screen .profile-setting-row span {
+    font-size: 15px;
+  }
+
+  .profile-settings-screen .profile-setting-row strong {
+    font-size: 14px;
+  }
+}
+
+.profile-settings-screen .profile-setting-row button {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  opacity: 0;
+}
+
+.profile-settings-screen .settings-section-label + .profile-setting-row {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.profile-settings-screen .profile-setting-row:has(+ .settings-section-label),
+.profile-settings-screen .settings-list > .profile-setting-row:last-of-type {
+  margin-bottom: 26px;
+  border-bottom: 0;
+  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: 18px;
+  box-shadow: 0 12px 28px rgba(110, 90, 170, 0.08);
+}
+
+.app.theme-dark .profile-settings-screen {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(144, 89, 255, 0.24), transparent 30%),
+    radial-gradient(circle at 90% 20%, rgba(73, 178, 255, 0.12), transparent 30%),
+    linear-gradient(155deg, #171025 0%, #211735 54%, #120f21 100%);
+  color: #f7f2ff;
+}
+
+.app.theme-dark .profile-settings-screen h1 {
+  color: #ffffff;
+}
+
+.app.theme-dark .profile-settings-screen .back-button {
+  background: rgba(48, 36, 78, 0.92);
+  color: #c8a8ff;
+  box-shadow: 0 14px 26px rgba(6, 4, 18, 0.32);
+}
+
+.app.theme-dark .profile-settings-screen .register-settings-header p,
+.app.theme-dark .profile-settings-screen .profile-settings-panel > .profile-edit-panel p {
+  color: #bdb4d8;
+}
+
+.app.theme-dark .profile-settings-screen .profile-settings-panel {
+  background: transparent;
+  box-shadow: none;
+}
+
+.app.theme-dark .profile-settings-screen .profile-settings-panel > .profile-edit-panel {
+  background:
+    linear-gradient(135deg, rgba(78, 55, 124, 0.74), rgba(34, 28, 58, 0.88));
+  border: 1px solid rgba(196, 170, 255, 0.14);
+  box-shadow: 0 16px 34px rgba(6, 4, 18, 0.22);
+}
+
+.app.theme-dark .profile-settings-screen .profile-settings-panel > .profile-edit-panel strong {
+  color: #ffffff;
+}
+
+.app.theme-dark .settings-section-label {
+  color: #b58cff;
+}
+
+.app.theme-dark .profile-settings-screen .profile-setting-row {
+  background: rgba(35, 27, 56, 0.96);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.app.theme-dark .profile-settings-screen .settings-section-label + .profile-setting-row,
+.app.theme-dark .profile-settings-screen .profile-setting-row:has(+ .settings-section-label),
+.app.theme-dark .profile-settings-screen .settings-list > .profile-setting-row:last-of-type {
+  box-shadow: 0 16px 34px rgba(6, 4, 18, 0.24);
+}
+
+.app.theme-dark .setting-row-icon {
+  background: rgba(77, 58, 118, 0.74);
+}
+
+.app.theme-dark .setting-row-icon img {
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.18));
+}
+
+.app.theme-dark .profile-settings-screen .profile-setting-row span {
+  color: #fffaff;
+}
+
+.app.theme-dark .profile-settings-screen .profile-setting-row strong {
+  color: #c8c1df;
+}
+
+.app.theme-dark .profile-settings-screen .profile-setting-row::after {
+  color: #9d93ba;
+}
+
 .profile-screen {
   justify-content: flex-start;
   overflow-y: auto;
@@ -2213,6 +2544,41 @@ input {
   font-size: 30px;
   font-weight: 900;
   box-shadow: 0 12px 24px rgba(123, 97, 255, 0.2);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.profile-picture img,
+.settings-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-image-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.settings-profile-avatar {
+  position: absolute;
+  left: 28px;
+  top: 28px;
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b43cff, #5b6dff);
+  color: white;
+  font-size: 26px;
+  font-weight: 900;
+  box-shadow: 0 14px 26px rgba(118, 92, 255, 0.24);
+  cursor: pointer;
+  overflow: hidden;
 }
 
 .profile-picture-card strong {
@@ -2380,30 +2746,32 @@ input {
 
 .flow-tree-card {
   display: grid;
-  grid-template-columns: 92px 1fr;
-  gap: 14px;
-  padding: 18px;
+  grid-template-columns: 52px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
   margin: 0 0 18px;
-  border-radius: 24px;
+  border-radius: 18px;
   background:
-    radial-gradient(circle at 18% 20%, rgba(115, 207, 255, 0.22), transparent 30%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(241, 255, 247, 0.88));
-  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(245, 255, 249, 0.86));
+  border: 1px solid rgba(34, 197, 94, 0.12);
+  box-shadow: 0 10px 24px rgba(110, 90, 170, 0.08);
 }
 
 .flow-tree-visual {
   display: grid;
   place-items: center;
-  min-height: 92px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(34, 197, 94, 0.16);
-  font-size: 38px;
+  width: 48px;
+  min-height: 48px;
+  border-radius: 999px;
+  background: rgba(236, 253, 245, 0.82);
+  border: 1px solid rgba(34, 197, 94, 0.14);
+  font-size: 25px;
   line-height: 1;
 }
 
 .flow-tree-visual span {
-  filter: drop-shadow(0 8px 12px rgba(34, 197, 94, 0.18));
+  filter: drop-shadow(0 4px 7px rgba(34, 197, 94, 0.14));
 }
 
 .flow-tree-info span {
@@ -2414,9 +2782,9 @@ input {
 }
 
 .flow-tree-info h2 {
-  margin: 7px 0 5px;
+  margin: 4px 0 3px;
   color: #18143f;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .flow-tree-info p {

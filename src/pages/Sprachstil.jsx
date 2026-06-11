@@ -1,6 +1,6 @@
 import logo from '../assets/Icon Gruppe H.png'
 
-const languageIds = ['german', 'english', 'turkish']
+const languageIds = ['german', 'english', 'turkish', 'arabic']
 
 const communicationStyleIds = ['casual', 'formal']
 

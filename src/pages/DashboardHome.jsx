@@ -35,6 +35,16 @@ function localizeDuration(duration, languageStyle) {
       .replace('2-5 Minuten', '2-5 dk')
   }
 
+  if (languageStyle === 'arabic') {
+    return duration
+      .replace('1 Minute', 'دقيقة واحدة')
+      .replace('2 Minuten', 'دقيقتان')
+      .replace('5 Minuten', '5 دقائق')
+      .replace('10 Minuten', '10 دقائق')
+      .replace('5-10 Minuten', '5-10 دقائق')
+      .replace('2-5 Minuten', '2-5 دقائق')
+  }
+
   return duration
 }
 
@@ -227,6 +237,40 @@ function localizeFlowDecision(decision, languageStyle, communicationStyle) {
         badge: 'Devam',
         recommendation: `"${decision.activity}" ile devam et; su anki gunune uyuyor.`,
         reason: 'Enerji, stres ve ilerleme sonraki adim icin yeterince dengeli gorunuyor.',
+      },
+    }
+
+    return { ...decision, ...text[decision.action], duration: localizeDuration(decision.duration, languageStyle) }
+  }
+
+  if (languageStyle === 'arabic') {
+    const text = {
+      end_session: {
+        title: 'إنهاء التدفق',
+        badge: 'إنهاء الجلسة',
+        recommendation: 'لقد أنجزت ما يكفي لهذا اليوم. نهاية هادئة أفضل الآن من ضغط إضافي.',
+        activity: 'تأمل قصير',
+        reason: 'تقدمك مرتفع جدا أو تم إنجاز كل الروتينات.',
+      },
+      pause: {
+        title: 'استراحة بدلا من مهام أكثر',
+        badge: 'استراحة',
+        recommendation: 'لا تبدأ نشاطا مكثفا آخر. استراحة تنفس أو راحة قصيرة أنسب الآن.',
+        activity: 'إعادة ضبط التنفس',
+        reason: 'الطاقة منخفضة والتوتر مرتفع. لذلك يقلل التطبيق الحمل عليك.',
+      },
+      switch_activity: {
+        title: 'انتقال هادئ',
+        badge: 'بديل',
+        recommendation: 'ابدأ بنشاط قصير وبسيط بدلا من روتين كبير.',
+        activity: decision.activity === 'Atemuebung' ? 'تمرين تنفس' : decision.activity === 'Mini-Fokus' ? 'تركيز قصير' : decision.activity,
+        reason: 'خطوة صغيرة تجعل التدفق واقعيا.',
+      },
+      continue: {
+        title: 'استمر',
+        badge: 'متابعة',
+        recommendation: `تابع "${decision.activity}" لأنه يناسب حالتك الآن.`,
+        reason: 'الطاقة والتوتر والتقدم تبدو مستقرة بما يكفي للخطوة التالية.',
       },
     }
 

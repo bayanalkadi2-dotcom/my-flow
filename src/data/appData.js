@@ -57,4 +57,11 @@ export const languageStyles = {
     dashboardMessage: '{total} rutinden {count} tanesini neredeyse tamamladın. Devam et!',
     progressMessage: 'Harika! Bugün iyi ilerliyorsun.',
   },
+  arabic: {
+    label: 'العربية',
+    greeting: 'أهلا، سعيد بوجودك!',
+    dashboardTitle: 'تدفق اليوم',
+    dashboardMessage: 'أكملت تقريبا {count} من {total} روتينات. استمر!',
+    progressMessage: 'رائع! أنت تتقدم بشكل جيد اليوم.',
+  },
 }

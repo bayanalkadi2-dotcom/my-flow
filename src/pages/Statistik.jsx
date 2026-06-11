@@ -22,6 +22,20 @@ const smokingProgress = [
   { label: 'Woche', value: '11', detail: 'Zigaretten weniger' },
 ]
 
+const dayLabels = {
+  german: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+  english: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  turkish: ['Pzt', 'Sal', 'Car', 'Per', 'Cum', 'Cmt', 'Paz'],
+  arabic: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'],
+}
+
+const monthLabels = {
+  german: ['W1', 'W2', 'W3', 'W4'],
+  english: ['W1', 'W2', 'W3', 'W4'],
+  turkish: ['H1', 'H2', 'H3', 'H4'],
+  arabic: ['أ1', 'أ2', 'أ3', 'أ4'],
+}
+
 const periodStats = {
   week: {
     label: 'Woche',
@@ -46,6 +60,9 @@ const stepProgress = Math.round((todaySteps / stepGoal) * 100)
 function Statistik({ languageStyle, t }) {
   const [period, setPeriod] = useState('week')
   const activeStats = periodStats[period]
+  const chartLabels = period === 'week'
+    ? dayLabels[languageStyle] ?? dayLabels.german
+    : monthLabels[languageStyle] ?? monthLabels.german
 
   return (
     <section className="screen">
@@ -85,10 +102,10 @@ function Statistik({ languageStyle, t }) {
         </article>
       </div>
       <div className="chart-card">
-        {activeStats.progress.map((entry) => (
+        {activeStats.progress.map((entry, index) => (
           <div className="bar-wrap" key={entry.day}>
             <div className="bar" style={{ height: `${entry.value}%` }} />
-            <span>{entry.day}</span>
+            <span>{chartLabels[index] ?? entry.day}</span>
           </div>
         ))}
       </div>

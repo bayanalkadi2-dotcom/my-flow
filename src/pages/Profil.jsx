@@ -1,10 +1,20 @@
 import { useState } from 'react'
 import logo from '../assets/Icon Gruppe H.png'
+import iconCommunication from '../assets/settings-icons/communication.png'
+import iconDesign from '../assets/settings-icons/design.png'
+import iconGender from '../assets/settings-icons/gender.png'
+import iconHeight from '../assets/settings-icons/height.png'
+import iconLanguage from '../assets/settings-icons/language.png'
+import iconName from '../assets/settings-icons/name.png'
+import iconReminders from '../assets/settings-icons/reminders.png'
+import iconSubscription from '../assets/settings-icons/subscription.png'
+import iconWeight from '../assets/settings-icons/weight.png'
 
 const languageOptions = [
   { id: 'german', label: 'Deutsch' },
   { id: 'english', label: 'English' },
   { id: 'turkish', label: 'Türkçe' },
+  { id: 'arabic', label: 'العربية' },
 ]
 
 const genderOptions = [
@@ -137,11 +147,32 @@ function getHealthRecommendation(bmi, weight) {
   return { water: waterLiters, steps: '7.500', note: 'sanft anfangen' }
 }
 
+function SettingIcon({ type }) {
+  const icons = {
+    name: iconName,
+    gender: iconGender,
+    weight: iconWeight,
+    height: iconHeight,
+    reminders: iconReminders,
+    language: iconLanguage,
+    communication: iconCommunication,
+    design: iconDesign,
+    subscription: iconSubscription,
+  }
+
+  return (
+    <span className="setting-row-icon" aria-hidden="true">
+      <img src={icons[type]} alt="" />
+    </span>
+  )
+}
+
 function Profil({
   appTheme,
   communicationStyle,
   languageStyle,
   profileName,
+  settingsPage = false,
   tone,
   t,
   onAppThemeChange,
@@ -164,6 +195,7 @@ function Profil({
   const [iban, setIban] = useState('')
   const [paymentEmail, setPaymentEmail] = useState('')
   const [treeType, setTreeType] = useState('oak')
+  const [profileImage, setProfileImage] = useState(() => localStorage.getItem('myflow-profile-image') || '')
   const [draftSettings, setDraftSettings] = useState({
     name: profileName || 'Nina',
     gender,
@@ -187,6 +219,7 @@ function Profil({
   const level = getLevel(challengePoints)
   const flowTree = getFlowTree(challengePoints, treeType)
   const treeChoiceUnlocked = challengePoints >= 800
+  const showSettings = settingsPage || showProfileSettings
 
   function openEditor(editor) {
     if (activeEditor === editor) {
@@ -256,13 +289,35 @@ function Profil({
     setPaymentStatus(`${selectedPlan.label} mit ${paymentMethod} aktiviert`)
   }
 
+  function handleProfileImageChange(event) {
+    const file = event.target.files?.[0]
+
+    if (!file || !file.type.startsWith('image/')) {
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const image = String(reader.result)
+      setProfileImage(image)
+      localStorage.setItem('myflow-profile-image', image)
+    }
+    reader.readAsDataURL(file)
+  }
+
   return (
-    <section className="screen compact-screen profile-screen">
-      <img src={logo} alt="MyFlow Logo" className="small-logo" />
-      <h1>{t.profile.title}</h1>
+    <section className={`screen compact-screen profile-screen ${settingsPage ? 'profile-settings-screen' : ''}`}>
+      {settingsPage && (
+        <button className="back-button" onClick={() => onNavigate('profile')} aria-label={t.common.back}>
+          &larr;
+        </button>
+      )}
+      {!settingsPage && <img src={logo} alt="MyFlow Logo" className="small-logo" />}
+      <h1>{settingsPage ? t.profile.settings.replace('Profil-', '') : t.profile.title}</h1>
       <button
         className="settings-gear-button"
-        onClick={() => setShowProfileSettings((current) => !current)}
+        style={{ display: settingsPage ? 'none' : undefined }}
+        onClick={() => onNavigate('profileSettings')}
         type="button"
         aria-label="Profil-Einstellungen öffnen"
       >
@@ -271,31 +326,45 @@ function Profil({
           <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3 1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 0 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8 1.6 1.6 0 0 0 1.5 1h.2a2 2 0 0 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1Z" />
         </svg>
       </button>
+      <input
+        id="profile-image-input"
+        className="profile-image-input"
+        type="file"
+        accept="image/*"
+        onChange={handleProfileImageChange}
+      />
       <div className="profile-picture-card">
-        <div className="profile-picture" aria-label="Profilbild">
-          {profileInitial}
-        </div>
+        <label className="profile-picture" htmlFor="profile-image-input" aria-label="Profilbild ändern">
+          {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
+        </label>
         <div>
           <strong>{name}</strong>
           <p>{t.profile.picture}</p>
+          <label className="profile-picture-button" htmlFor="profile-image-input">Bild ändern</label>
         </div>
       </div>
-      {showProfileSettings && (
+      {showSettings && (
         <section className="register-settings-panel profile-settings-panel" aria-label="Profil-Einstellungen">
           <div className="register-settings-header">
             <div>
               <strong>{t.profile.settings}</strong>
               <p>{t.profile.settingsText}</p>
             </div>
-            <button type="button" onClick={() => setShowProfileSettings(false)} aria-label="Einstellungen schließen">
+            <button type="button" onClick={() => settingsPage ? onNavigate('profile') : setShowProfileSettings(false)} aria-label="Einstellungen schließen">
               x
             </button>
           </div>
           <div className="profile-edit-panel">
+            <label className="settings-profile-avatar" htmlFor="profile-image-input" aria-label="Profilbild ändern">
+              {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
+            </label>
+            <strong>Dein Profil</strong>
             <p>{t.profile.pictureText}</p>
           </div>
           <div className="settings-list">
+        <span className="settings-section-label">Profil</span>
         <div className="profile-setting-row">
+          <SettingIcon type="name" />
           <span>{t.profile.name}</span>
           <strong>{name}</strong>
           <button type="button" onClick={() => openEditor('name')}>{t.common.change}</button>
@@ -311,6 +380,7 @@ function Profil({
         )}
 
         <div className="profile-setting-row">
+          <SettingIcon type="gender" />
           <span>{t.profile.gender}</span>
           <strong>{selectedGender.label}</strong>
           <button type="button" onClick={() => openEditor('gender')}>{t.common.change}</button>
@@ -334,6 +404,7 @@ function Profil({
         )}
 
         <div className="profile-setting-row">
+          <SettingIcon type="weight" />
           <span>{t.profile.weight}</span>
           <strong>{weight} kg</strong>
           <button type="button" onClick={() => openEditor('weight')}>{t.common.change}</button>
@@ -355,6 +426,7 @@ function Profil({
         )}
 
         <div className="profile-setting-row">
+          <SettingIcon type="height" />
           <span>{t.profile.height}</span>
           <strong>{height} cm</strong>
           <button type="button" onClick={() => openEditor('height')}>{t.common.change}</button>
@@ -376,6 +448,7 @@ function Profil({
         )}
 
         <div className="profile-setting-row">
+          <SettingIcon type="reminders" />
           <span>{t.profile.reminders}</span>
           <strong>{reminders ? t.common.active : t.common.off}</strong>
           <button type="button" onClick={() => openEditor('reminders')}>{t.common.change}</button>
@@ -402,7 +475,9 @@ function Profil({
           </div>
         )}
 
+        <span className="settings-section-label">Einstellungen</span>
         <div className="profile-setting-row">
+          <SettingIcon type="language" />
           <span>{t.profile.language}</span>
           <strong>{tone.label}</strong>
           <button type="button" onClick={() => openEditor('language')}>{t.common.change}</button>
@@ -426,6 +501,7 @@ function Profil({
         )}
 
         <div className="profile-setting-row">
+          <SettingIcon type="communication" />
           <span>{t.profile.communicationStyle}</span>
           <strong>{t.language.toneOptions[communicationStyle].title}</strong>
           <button type="button" onClick={() => openEditor('communicationStyle')}>{t.common.change}</button>
@@ -449,6 +525,7 @@ function Profil({
         )}
 
         <div className="profile-setting-row">
+          <SettingIcon type="design" />
           <span>{t.profile.design}</span>
           <strong>{appTheme}</strong>
           <button type="button" onClick={() => openEditor('design')}>{t.common.change}</button>
@@ -471,6 +548,7 @@ function Profil({
           </div>
         )}
         <div className="profile-setting-row">
+          <SettingIcon type="subscription" />
           <span>{t.profile.subscription}</span>
           <strong>{selectedPlan.label}</strong>
           <button type="button" onClick={() => openEditor('payment')}>{t.common.change}</button>
@@ -633,7 +711,7 @@ function Profil({
           ))}
         </div>
       </div>
-      <button onClick={() => onNavigate('start')}>{t.profile.logout}</button>
+      <button className="profile-logout-button" onClick={() => onNavigate('start')}>{t.profile.logout}</button>
     </section>
   )
 }
