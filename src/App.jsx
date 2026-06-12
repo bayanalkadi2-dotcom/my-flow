@@ -12,9 +12,10 @@ import Sprachstil from './pages/Sprachstil'
 import Startseite from './pages/Startseite'
 import Statistik from './pages/Statistik'
 import Freunde from './pages/Freunde'
+import Willkommen from './pages/Willkommen'
 import './App.css'
 
-const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle']
+const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter']
  
 function defaultRoutineId(index) {
   return `default-routine-${index + 1}`
@@ -325,6 +326,8 @@ function App() {
             t={t}
           />
         )
+      case 'welcomeCharacter':
+        return <Willkommen onNavigate={setScreen} profileName={profileName} t={t} />
       case 'dashboard':
         return (
           <DashboardHome

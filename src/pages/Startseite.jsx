@@ -24,7 +24,7 @@ function Startseite({ onNavigate, t }) {
       </p>
       <p className="lead welcome-copy">{t.start.lead}</p>
       <div className="actions welcome-actions">
-        <button className="primary-cta" onClick={() => onNavigate('dashboard')}>
+        <button className="primary-cta" onClick={() => onNavigate('welcomeCharacter')}>
           <span className="button-orb start-orb" aria-hidden="true">
             <svg viewBox="0 0 24 24" role="img">
               <path d="M8 5.5v13l10-6.5-10-6.5Z" />

@@ -214,6 +214,12 @@ export const translations = {
         { icon: '^', title: 'Bleib dran', text: 'Erhalte Erinnerungen.', tone: 'blue' },
       ],
     },
+    welcomeCharacter: {
+      eyebrow: 'MyFlow begleitet dich',
+      title: 'Willkommen, {name}!',
+      text: 'Ich bin dein kleiner Flow-Begleiter. Lass uns deinen Tag ruhig und motiviert starten.',
+      button: 'Weiter',
+    },
     auth: {
       loginTitle: 'Willkommen zurück!',
       loginText: 'Schön, dass du wieder da bist.',
@@ -580,6 +586,12 @@ translations.english = {
       { icon: '^', title: 'Keep going', text: 'Get reminders.', tone: 'blue' },
     ],
   },
+  welcomeCharacter: {
+    eyebrow: 'MyFlow is with you',
+    title: 'Welcome, {name}!',
+    text: 'I am your little Flow guide. Let us start your day calmly and with motivation.',
+    button: 'Continue',
+  },
   auth: {
     loginTitle: 'Welcome back!',
     loginText: 'Good to see you again.',
@@ -769,6 +781,12 @@ translations.turkish = {
       { icon: '^', title: 'Devam et', text: 'Hatirlaticilar al.', tone: 'blue' },
     ],
   },
+  welcomeCharacter: {
+    eyebrow: 'MyFlow seninle',
+    title: 'Hos geldin, {name}!',
+    text: 'Ben senin kucuk Flow rehberinim. Gunune sakin ve motive baslayalim.',
+    button: 'Devam et',
+  },
   auth: {
     loginTitle: 'Tekrar hos geldin!',
     loginText: 'Seni yeniden gormek guzel.',
@@ -954,6 +972,12 @@ translations.arabic = {
       { icon: '+', title: 'التقدم', text: 'شاهد تطورك.', tone: 'pink' },
       { icon: '^', title: 'استمر', text: 'احصل على تذكيرات.', tone: 'blue' },
     ],
+  },
+  welcomeCharacter: {
+    eyebrow: 'MyFlow معك',
+    title: 'أهلا بك، {name}!',
+    text: 'أنا مرافقك الصغير في MyFlow. لنبدأ يومك بهدوء وتحفيز.',
+    button: 'متابعة',
   },
   auth: {
     loginTitle: 'أهلا بعودتك!',
