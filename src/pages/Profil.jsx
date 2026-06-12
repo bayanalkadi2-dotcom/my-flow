@@ -247,6 +247,12 @@ function Profil({
     }))
   }
 
+  function selectDesign(option) {
+    updateDraft('design', option)
+    onAppThemeChange(option)
+    setActiveEditor(null)
+  }
+
   function confirmEditor() {
     switch (activeEditor) {
       case 'name':
@@ -537,14 +543,13 @@ function Profil({
                 <button
                   className={`profile-choice ${draftSettings.design === option ? 'selected' : ''}`}
                   key={option}
-                  onClick={() => updateDraft('design', option)}
+                  onClick={() => selectDesign(option)}
                   type="button"
                 >
                   {option}
                 </button>
               ))}
             </div>
-            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
         <div className="profile-setting-row">
