@@ -4112,6 +4112,9 @@ h3,
   min-height: 680px;
   overflow: hidden;
   border-radius: 34px;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.34), transparent 26%),
+    linear-gradient(155deg, rgba(232, 222, 255, 0.74), rgba(223, 240, 255, 0.7) 48%, rgba(255, 223, 245, 0.58));
 }
 
 .flow-character {
@@ -4125,16 +4128,15 @@ h3,
   border-radius: 0;
   overflow: hidden;
   box-shadow: none;
-  animation: none;
-  transform: scale(0.94) translateX(18px) translateY(10px);
-  transform-origin: right top;
+  animation: wallCharacterPeek 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: 88% 48%;
 }
 
 .flow-character-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 62% top;
+  object-position: 57% top;
   transform: none;
   animation: none;
 }
@@ -4158,18 +4160,34 @@ h3,
   padding: 26px 24px;
   border-radius: 28px;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.66), rgba(246, 241, 255, 0.5)),
-    rgba(255, 255, 255, 0.34);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.28), rgba(246, 241, 255, 0.14)),
+    rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   box-shadow:
-    0 22px 48px rgba(115, 84, 220, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.58);
-  backdrop-filter: blur(18px) saturate(145%);
-  -webkit-backdrop-filter: blur(18px) saturate(145%);
+    0 22px 48px rgba(115, 84, 220, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  animation: speechBubbleReveal 1s ease 0.62s both;
 }
 
 .character-speech::before {
-  content: none;
+  content: "";
+  position: absolute;
+  top: 44px;
+  right: -16px;
+  width: 38px;
+  height: 38px;
+  border-radius: 7px 16px 7px 16px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.28), rgba(246, 241, 255, 0.14)),
+    rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.34);
+  border-right: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 10px 10px 26px rgba(115, 84, 220, 0.05);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  transform: rotate(45deg);
 }
 
 .character-speech h1 {
@@ -4208,9 +4226,16 @@ h3,
 
 .app.theme-dark .character-speech {
   background:
-    linear-gradient(145deg, rgba(49, 38, 77, 0.68), rgba(24, 20, 42, 0.54)),
-    rgba(24, 20, 42, 0.36);
-  border-color: rgba(255, 255, 255, 0.14);
+    linear-gradient(145deg, rgba(49, 38, 77, 0.3), rgba(24, 20, 42, 0.2)),
+    rgba(24, 20, 42, 0.1);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.app.theme-dark .character-speech::before {
+  background:
+    linear-gradient(145deg, rgba(49, 38, 77, 0.3), rgba(24, 20, 42, 0.2)),
+    rgba(24, 20, 42, 0.1);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .app.theme-dark .character-speech h1 {
@@ -4240,5 +4265,34 @@ h3,
 
   50% {
     transform: rotate(-54deg) translateY(-4px);
+  }
+}
+
+@keyframes wallCharacterPeek {
+  0% {
+    opacity: 0.74;
+    transform: translateX(82px) rotate(2deg) scale(0.98);
+  }
+
+  58% {
+    opacity: 1;
+    transform: translateX(-8px) rotate(-0.8deg) scale(1.01);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes speechBubbleReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

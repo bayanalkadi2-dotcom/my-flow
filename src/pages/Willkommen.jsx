@@ -1,4 +1,4 @@
-import flowCharacter from '../assets/flow-character-clean-peek.jpg'
+import flowCharacter from '../assets/flow-character-wall-final.jpg'
 
 function Willkommen({ onNavigate, profileName, t }) {
   const name = profileName || 'Nina'
