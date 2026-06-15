@@ -197,7 +197,7 @@ function Profil({
   const [treeType, setTreeType] = useState('oak')
   const [profileImage, setProfileImage] = useState(() => localStorage.getItem('myflow-profile-image') || '')
   const [draftSettings, setDraftSettings] = useState({
-    name: profileName || 'Nina',
+    name: profileName || 'Gast',
     gender,
     weight,
     height,
@@ -208,8 +208,8 @@ function Profil({
   })
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
-  const name = profileName || 'Nina'
-  const profileInitial = name.trim().charAt(0).toUpperCase() || 'N'
+  const name = profileName || 'Gast'
+  const profileInitial = name.trim().charAt(0).toUpperCase() || 'G'
   const heightInMeters = height / 100
   const bmi = weight > 0 && height > 0 ? weight / (heightInMeters * heightInMeters) : 0
   const bmiLabel = bmi.toFixed(1)

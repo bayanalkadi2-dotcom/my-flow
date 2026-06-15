@@ -297,7 +297,7 @@ function DashboardHome({ habits, communicationStyle, languageStyle, profileName,
   const dashboardMessage = t.dashboard.message
     .replace('{count}', completedHabits)
     .replace('{total}', habits.length)
-  const firstName = profileName.trim() || 'Nina'
+  const firstName = profileName.trim() || 'Gast'
   const checkInOptions = getCheckInOptions(t)
   const flowDecision = useMemo(
     () =>

@@ -1,7 +1,7 @@
 import flowCharacter from '../assets/flow-character-wall-final.jpg'
 
 function Willkommen({ onNavigate, profileName, t }) {
-  const name = profileName || 'Nina'
+  const name = profileName || 'Gast'
   const welcome = t.welcomeCharacter ?? {
     eyebrow: 'MyFlow begleitet dich',
     title: `Willkommen, ${name}!`,
@@ -15,6 +15,8 @@ function Willkommen({ onNavigate, profileName, t }) {
         <p className="eyebrow">{welcome.eyebrow}</p>
         <div className="flow-character" aria-hidden="true">
           <img className="flow-character-image" src={flowCharacter} alt="" />
+          <span className="character-eye character-eye-left" />
+          <span className="character-eye character-eye-right" />
         </div>
         <div className="character-speech">
           <h1>{welcome.title.replace('{name}', name)}</h1>

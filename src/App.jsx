@@ -144,7 +144,7 @@ function App() {
   const [screen, setScreen] = useState('start')
   const [languageStyle, setLanguageStyle] = useState(() => localStorage.getItem('myflow-language') || 'german')
   const [communicationStyle, setCommunicationStyle] = useState(() => localStorage.getItem('myflow-communication-style') || 'casual')
-  const [profileName, setProfileName] = useState('Nina')
+  const [profileName, setProfileName] = useState(() => localStorage.getItem('myflow-profile-name') || 'Gast')
   const [appTheme, setAppTheme] = useState(() => localStorage.getItem('myflow-theme') || 'Hell')
   const [routineItems, setRoutineItems] = useState(loadRoutines)
   const [deletedRoutineTitles, setDeletedRoutineTitles] = useState(loadDeletedRoutineTitles)
@@ -166,6 +166,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('myflow-theme', appTheme)
   }, [appTheme])
+
+  useEffect(() => {
+    localStorage.setItem('myflow-profile-name', profileName)
+  }, [profileName])
 
   useEffect(() => {
     localStorage.setItem('myflow-routines', JSON.stringify(preparedHabits))
