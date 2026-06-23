@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import SmartRangeTrendChart from '../commponents/SmartRangeTrendChart'
+import WellbeingDashboard from '../commponents/WellbeingDashboard'
 
 const categoryByTitle = {
   'Wasser trinken': 'Koerper',
@@ -26,6 +28,51 @@ const categoryByTitle = {
   'Weniger Suessigkeiten': 'Reduktion',
 }
 
+<<<<<<< HEAD
+const monthlyProgress = [
+  { day: 'W1', value: 58 },
+  { day: 'W2', value: 64 },
+  { day: 'W3', value: 71 },
+  { day: 'W4', value: 76 },
+]
+
+const smokingProgress = [
+  { label: 'Heute', value: '2', detail: 'Zigaretten vermieden' },
+  { label: 'Woche', value: '11', detail: 'Zigaretten weniger' },
+]
+
+const chartSeries = {
+  week: {
+    normalRange: { min: 50, max: 72 },
+    data: [
+      { label: 'Mo', value: 55 },
+      { label: 'Di', value: 80 },
+      { label: 'Mi', value: 45 },
+      { label: 'Do', value: 90 },
+      { label: 'Fr', value: 65 },
+      { label: 'Sa', value: 75 },
+      { label: 'So', value: 60 },
+    ],
+  },
+  month: {
+    normalRange: { min: 62, max: 76 },
+    data: [
+      { label: 'W1', value: 58 },
+      { label: 'W2', value: 64 },
+      { label: 'W3', value: 71 },
+      { label: 'W4', value: 82 },
+    ],
+  },
+}
+
+const periodStats = {
+  week: {
+    label: 'Woche',
+    average: 68,
+    steps: 28400,
+    improvement: 12,
+    progress: weeklyProgress,
+=======
 const text = {
   german: {
     today: 'Heute',
@@ -44,6 +91,7 @@ const text = {
     nextStep: 'Naechster sinnvoller Schritt: {habit}.',
     empty: 'Lege eine Routine an, damit hier dein Fortschritt erscheint.',
     fallbackCategory: 'Alltag',
+>>>>>>> e5c3053684b9aa4cea450f1fe37dc7d00f9e4859
   },
   english: {
     today: 'Today',
@@ -226,6 +274,44 @@ function Statistik({ habits = [], languageStyle, t }) {
           <p>{copy.routines}</p>
         </article>
       </div>
+<<<<<<< HEAD
+      <WellbeingDashboard
+        title={t.stats.wellbeingTitle}
+        subtitle={t.stats.wellbeingSubtitle}
+        infoLabel={t.stats.wellbeingInfo}
+        period={period}
+        periodOptions={[
+          { value: 'week', label: t.stats.week },
+          { value: 'month', label: t.stats.month },
+        ]}
+        onPeriodChange={setPeriod}
+        metrics={[
+          { label: t.stats.wellbeingMood, value: activeStats.average, unit: '%' },
+          { label: t.stats.wellbeingStrength, value: activeStats.improvement, unit: '%' },
+          { label: t.stats.wellbeingHabits, value: smokingProgress.length },
+        ]}
+        chartData={chartSeries[period].data}
+        chartTitle={t.stats.wellbeingChart}
+        habits={smokingProgress.map((entry) => ({
+          title: entry.label,
+          detail: entry.detail,
+        }))}
+        habitsTitle={t.stats.wellbeingHabits}
+        insights={[]}
+        insightsTitle={t.stats.wellbeingInsights}
+        lastUpdated={t.stats.wellbeingLastUpdated}
+        noDataText={t.stats.wellbeingNoData}
+        noInsightsText={t.stats.wellbeingNoInsights}
+      />
+      <div className="smoking-stats">
+        {smokingProgress.map((entry, index) => (
+          <article className="stat-card smoking-card" key={entry.label}>
+            <span>{index === 0 ? t.stats.today : t.stats.week}</span>
+            <strong>{entry.value}</strong>
+            <p>{index === 0 ? t.stats.cigarettesAvoided : t.stats.fewerCigarettes}</p>
+          </article>
+        ))}
+=======
 
       <div
         className="chart-card dynamic-chart-card"
@@ -253,6 +339,7 @@ function Statistik({ habits = [], languageStyle, t }) {
             </article>
           )
         })}
+>>>>>>> e5c3053684b9aa4cea450f1fe37dc7d00f9e4859
       </div>
 
       <article className="motivation-card">

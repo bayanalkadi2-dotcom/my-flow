@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="myflow-bg" x1="18" y1="12" x2="110" y2="116" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff9fd2"/>
+      <stop offset="0.55" stop-color="#8d63ff"/>
+      <stop offset="1" stop-color="#73cfff"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="url(#myflow-bg)"/>
+  <path d="M34 75c18-41 42-41 60 0" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+  <path d="M42 54c8-12 16-18 22-18s14 6 22 18" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".78"/>
+  <circle cx="64" cy="82" r="8" fill="#fff"/>
+</svg>
