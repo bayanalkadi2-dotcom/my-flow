@@ -1,192 +1,77 @@
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
 
-const paymentPlans = [
-  { id: 'free', label: 'Kostenlos', prices: { monthly: '0 EUR', yearly: '0 EUR' } },
-  { id: 'plus', label: 'Plus Tools', prices: { monthly: '4,99 EUR', yearly: '59,88 EUR' } },
-  { id: 'pro', label: 'Pro Tools', prices: { monthly: '9,99 EUR', yearly: '119,88 EUR' } },
-]
-
-const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 'Google Pay']
-
-const billingCycles = [
-  { id: 'monthly', label: 'Monatlich', priceLabel: 'monatlich' },
-  { id: 'yearly', label: 'Jaehrlich', priceLabel: 'jaehrlich' },
-]
-
 function Registrieren({ onNavigate, t }) {
+  const { signup, error: authError } = useAuth()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [displayName, setDisplayName] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const [username, setUsername] = useState('')
-  const [accountEmail, setAccountEmail] = useState('')
-  const [reminders, setReminders] = useState(true)
-  const [newsletter, setNewsletter] = useState(false)
-  const [twoFactor, setTwoFactor] = useState(false)
-  const [paymentPlan, setPaymentPlan] = useState('free')
-  const [paymentMethod, setPaymentMethod] = useState('PayPal')
-  const [billingCycle, setBillingCycle] = useState('monthly')
-  const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
-  const selectedCycle = billingCycles.find((cycle) => cycle.id === billingCycle)
-  const selectedPrice = selectedPlan.prices[billingCycle]
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  async function handleRegister(e) {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+
+    if (!email || !password || !passwordConfirm) {
+      setError('Bitte füllen Sie alle Pflichtfelder aus.')
+      return
+    }
+
+    if (password !== passwordConfirm) {
+      setError('Die Passwörter stimmen nicht überein.')
+      return
+    }
+
+    if (password.length < 6) {
+      setError('Das Passwort muss mindestens 6 Zeichen lang sein.')
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      await signup(email, password, displayName || 'Gast')
+      setSuccess('Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mail.')
+      setEmail('')
+      setPassword('')
+      setPasswordConfirm('')
+      setDisplayName('')
+    } catch (err) {
+      setError(err.message || 'Registrierung fehlgeschlagen')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <section className="screen login-screen auth-detail-screen">
+    <section className="screen login-screen">
       <button className="login-back" onClick={() => onNavigate('start')} aria-label={t.common.back}>
         &larr;
-      </button>
-      <button
-        className="settings-gear-button"
-        onClick={() => setShowSettings((current) => !current)}
-        type="button"
-        aria-label={t.common.change}
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" />
-          <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3 1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 0 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8 1.6 1.6 0 0 0 1.5 1h.2a2 2 0 0 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1Z" />
-        </svg>
       </button>
       <header className="login-header">
         <h1>{t.auth.registerTitle}</h1>
         <p>{t.auth.registerText}</p>
       </header>
-      {showSettings && (
-        <section className="register-settings-panel" aria-label="App-Einstellungen">
-          <div className="register-settings-header">
-            <div>
-              <strong>Einstellungen</strong>
-              <p>Account, Sicherheit und Bezahlung</p>
-            </div>
-            <button type="button" onClick={() => setShowSettings(false)} aria-label="Einstellungen schließen">
-              x
-            </button>
-          </div>
-
-          <div className="settings-group">
-            <span className="settings-group-title">Account</span>
-            <label>
-              Benutzername ändern
-              <input
-                type="text"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                placeholder="Neuer Benutzername"
-              />
-            </label>
-            <label>
-              E-Mail ändern
-              <input
-                type="email"
-                value={accountEmail}
-                onChange={(event) => setAccountEmail(event.target.value)}
-                placeholder="name@beispiel.de"
-              />
-            </label>
-          </div>
-
-          <div className="settings-group">
-            <span className="settings-group-title">Sicherheit</span>
-            <label>
-              Neues Passwort
-              <input type="password" placeholder="Neues Passwort" />
-            </label>
-            <div className="settings-toggle-row">
-              <span>2-Faktor-Schutz</span>
-              <button
-                className={`settings-toggle ${twoFactor ? 'active' : ''}`}
-                onClick={() => setTwoFactor((current) => !current)}
-                type="button"
-              >
-                {twoFactor ? 'Aktiv' : 'Aus'}
-              </button>
-            </div>
-          </div>
-
-          <div className="settings-group">
-            <span className="settings-group-title">Benachrichtigungen</span>
-            <div className="settings-toggle-row">
-              <span>Erinnerungen</span>
-              <button
-                className={`settings-toggle ${reminders ? 'active' : ''}`}
-                onClick={() => setReminders((current) => !current)}
-                type="button"
-              >
-                {reminders ? 'Aktiv' : 'Aus'}
-              </button>
-            </div>
-            <div className="settings-toggle-row">
-              <span>Newsletter</span>
-              <button
-                className={`settings-toggle ${newsletter ? 'active' : ''}`}
-                onClick={() => setNewsletter((current) => !current)}
-                type="button"
-              >
-                {newsletter ? 'Aktiv' : 'Aus'}
-              </button>
-            </div>
-          </div>
-
-          <div className="settings-group payment-settings">
-            <div className="payment-settings-title">
-              <strong>Bezahlung</strong>
-              <span>{selectedPlan.label} / {selectedPrice}</span>
-            </div>
-            <div className="payment-method-grid">
-              {billingCycles.map((cycle) => (
-                <button
-                  className={`payment-method ${billingCycle === cycle.id ? 'selected' : ''}`}
-                  key={cycle.id}
-                  onClick={() => setBillingCycle(cycle.id)}
-                  type="button"
-                >
-                  {cycle.label}
-                </button>
-              ))}
-            </div>
-            <div className="payment-plan-grid">
-              {paymentPlans.map((plan) => (
-                <button
-                  className={`payment-option ${paymentPlan === plan.id ? 'selected' : ''}`}
-                  key={plan.id}
-                  onClick={() => setPaymentPlan(plan.id)}
-                  type="button"
-                >
-                  <span>{plan.label}</span>
-                  <strong>{plan.prices[billingCycle]}</strong>
-                  <small>{selectedCycle.priceLabel}</small>
-                </button>
-              ))}
-            </div>
-            <p>Kostenpflichtige Tools werden erst nach Auswahl eines Plans freigeschaltet.</p>
-            <div className="payment-method-grid">
-              {paymentMethods.map((method) => (
-                <button
-                  className={`payment-method ${paymentMethod === method ? 'selected' : ''}`}
-                  key={method}
-                  onClick={() => setPaymentMethod(method)}
-                  type="button"
-                >
-                  {method}
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-      <form className="login-form" onSubmit={(event) => event.preventDefault()}>
+      <form className="login-form" onSubmit={handleRegister}>
         <label className="login-field">
           <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="8" r="3.5" />
-            <path d="M5.5 19.5c.7-4 3.1-6 6.5-6s5.8 2 6.5 6" />
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
           </svg>
-          <span>{t.auth.username}</span>
+          <span>Name (optional)</span>
           <input
             type="text"
-            placeholder={t.auth.usernamePlaceholder}
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            required
+            placeholder="Dein Name"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            disabled={isLoading}
           />
         </label>
+
         <label className="login-field">
           <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3.5" y="5.5" width="17" height="13" rx="3" />
@@ -196,45 +81,65 @@ function Registrieren({ onNavigate, t }) {
           <input
             type="email"
             placeholder="name@beispiel.de"
-            value={accountEmail}
-            onChange={(event) => setAccountEmail(event.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
             required
           />
         </label>
-        <PasswordField
-          label={t.auth.password}
-          placeholder={t.auth.ownPassword}
-          showPassword={showPassword}
-          onToggle={() => setShowPassword((current) => !current)}
-        />
-        <PasswordField
-          label={t.auth.repeatPassword}
-          placeholder={t.auth.repeatPassword}
-          showPassword={showPassword}
-          onToggle={() => setShowPassword((current) => !current)}
-        />
-        <button className="login-submit register-submit" type="button" onClick={() => onNavigate('languageStyle')}>
-          {t.start.register}
+
+        <label className="login-field password-field">
+          <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="10" width="14" height="10" rx="2.5" />
+            <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
+          </svg>
+          <span>{t.auth.password}</span>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Mindestens 6 Zeichen"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+          <PasswordVisibilityButton
+            visible={showPassword}
+            onClick={() => setShowPassword((current) => !current)}
+          />
+        </label>
+
+        <label className="login-field password-field">
+          <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="10" width="14" height="10" rx="2.5" />
+            <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
+          </svg>
+          <span>Passwort wiederholen</span>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Passwort wiederholen"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+          <PasswordVisibilityButton
+            visible={showPassword}
+            onClick={() => setShowPassword((current) => !current)}
+          />
+        </label>
+
+        {error && <div style={{ color: '#e74c3c', fontSize: '14px', marginBottom: '10px' }}>{error}</div>}
+        {success && <div style={{ color: '#27ae60', fontSize: '14px', marginBottom: '10px' }}>{success}</div>}
+        {authError && <div style={{ color: '#e74c3c', fontSize: '14px', marginBottom: '10px' }}>Auth Error: {authError}</div>}
+
+        <button className="login-submit" type="submit" disabled={isLoading}>
+          {isLoading ? 'Wird registriert...' : t.start.register}
         </button>
       </form>
       <p className="register-copy">
-        {t.auth.hasAccount} <button type="button" onClick={() => onNavigate('login')}>{t.start.login}</button>
+        Bereits ein Konto? <button type="button" onClick={() => onNavigate('login')} disabled={isLoading}>{t.start.login}</button>
       </p>
     </section>
-  )
-}
-
-function PasswordField({ label, placeholder, showPassword, onToggle }) {
-  return (
-    <label className="login-field password-field">
-      <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="5" y="10" width="14" height="10" rx="2.5" />
-        <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
-      </svg>
-      <span>{label}</span>
-      <input type={showPassword ? 'text' : 'password'} placeholder={placeholder} required />
-      <PasswordVisibilityButton visible={showPassword} onClick={onToggle} />
-    </label>
   )
 }
 

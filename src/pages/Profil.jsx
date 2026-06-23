@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import logo from '../assets/Icon Gruppe H.png'
 import iconCommunication from '../assets/settings-icons/communication.png'
 import iconDesign from '../assets/settings-icons/design.png'
@@ -181,6 +182,7 @@ function Profil({
   onProfileNameChange,
   onSelectStyle,
 }) {
+  const { signout } = useAuth()
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
   const [gender, setGender] = useState('male')
@@ -716,7 +718,20 @@ function Profil({
           ))}
         </div>
       </div>
-      <button className="profile-logout-button" onClick={() => onNavigate('start')}>{t.profile.logout}</button>
+      <button
+        className="profile-logout-button"
+        onClick={async () => {
+          try {
+            await signout()
+            // App.jsx will automatically navigate to login screen after auth state changes
+          } catch (err) {
+            console.error('Logout error:', err)
+            alert('Abmeldung fehlgeschlagen')
+          }
+        }}
+      >
+        {t.profile.logout}
+      </button>
     </section>
   )
 }
