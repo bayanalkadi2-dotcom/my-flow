@@ -35,6 +35,16 @@ function localizeDuration(duration, languageStyle) {
       .replace('2-5 Minuten', '2-5 dk')
   }
 
+  if (languageStyle === 'arabic') {
+    return duration
+      .replace('1 Minute', 'دقيقة واحدة')
+      .replace('2 Minuten', 'دقيقتان')
+      .replace('5 Minuten', '5 دقائق')
+      .replace('10 Minuten', '10 دقائق')
+      .replace('5-10 Minuten', '5-10 دقائق')
+      .replace('2-5 Minuten', '2-5 دقائق')
+  }
+
   return duration
 }
 
@@ -51,7 +61,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
   if (dayProgress >= 85 || openHabits.length === 0) {
     return {
       action: 'end_session',
-      title: 'Flow abschliessen',
+      title: 'Flow abschließen',
       badge: 'Session beenden',
       recommendation: 'Fuer heute ist genug geschafft. Ein ruhiger Abschluss passt jetzt besser als noch mehr Druck.',
       activity: 'Kurze Reflexion',
@@ -65,7 +75,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       action: 'pause',
       title: 'Pause statt mehr Aufgaben',
       badge: 'Pause',
-      recommendation: 'Mach keine weitere intensive Aktivitaet. Eine kleine Atem- oder Ruhepause ist sinnvoller.',
+      recommendation: 'Mach keine weitere intensive Aktivität. Eine kleine Atem- oder Ruhepause ist sinnvoller.',
       activity: 'Atemreset',
       duration: '2 Minuten',
       reason: 'Energie ist niedrig und Stress ist hoch. Die App reduziert deshalb die Belastung.',
@@ -77,12 +87,12 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       action: 'switch_activity',
       title: 'Sanft wechseln',
       badge: 'Alternative',
-      recommendation: 'Starte mit einer kurzen, einfachen Aktivitaet statt einer grossen Routine.',
+      recommendation: 'Starte mit einer kurzen, einfachen Aktivität statt einer großen Routine.',
       activity: highStress ? 'Atemuebung' : 'Mini-Fokus',
       duration: shortTime ? '2 Minuten' : '5 Minuten',
       reason: highStress
-        ? 'Stress ist erhoeht. Eine beruhigende Aktivitaet hilft eher als direkt weiterzuarbeiten.'
-        : 'Du hast wenig Zeit. Ein kleiner Schritt haelt den Flow realistisch.',
+        ? 'Stress ist erhöht. Eine beruhigende Aktivität hilft eher als direkt weiterzuarbeiten.'
+        : 'Du hast wenig Zeit. Ein kleiner Schritt hält den Flow realistisch.',
     }
   }
 
@@ -91,7 +101,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       action: 'continue',
       title: 'Dranbleiben',
       badge: 'Weiter machen',
-      recommendation: `Fuehre "${almostDoneHabit.displayTitle ?? almostDoneHabit.title}" weiter, weil du dort schon nah am Ziel bist.`,
+      recommendation: `Führe "${almostDoneHabit.displayTitle ?? almostDoneHabit.title}" weiter, weil du dort schon nah am Ziel bist.`,
       activity: almostDoneHabit.displayTitle ?? almostDoneHabit.title,
       duration: time >= 10 ? '5-10 Minuten' : '2-5 Minuten',
       reason: 'Eine fast fertige Routine gibt schnell sichtbaren Fortschritt.',
@@ -106,7 +116,7 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
       recommendation: 'Waehle eine kurze Routine, damit der Tag uebersichtlich bleibt.',
       activity: openHabits[0]?.displayTitle ?? openHabits[0]?.title ?? 'Mini-Routine',
       duration: '2-5 Minuten',
-      reason: 'Es sind mehrere Routinen offen. Die KI empfiehlt einen kleinen naechsten Schritt.',
+      reason: 'Es sind mehrere Routinen offen. Die KI empfiehlt einen kleinen nächsten Schritt.',
     }
   }
 
@@ -114,10 +124,10 @@ function getFlowCoachDecision({ habits, dayProgress, energy, stress, time }) {
     action: 'continue',
     title: 'Weiter im Flow',
     badge: 'Weiter machen',
-    recommendation: 'Eine weitere Aktivitaet passt gerade gut zu deiner Tagesform.',
-    activity: openHabits[0]?.displayTitle ?? openHabits[0]?.title ?? 'Freie Aktivitaet',
+    recommendation: 'Eine weitere Aktivität passt gerade gut zu deiner Tagesform.',
+    activity: openHabits[0]?.displayTitle ?? openHabits[0]?.title ?? 'Freie Aktivität',
     duration: time >= 10 ? '10 Minuten' : '5 Minuten',
-    reason: 'Energie, Stress und Fortschritt wirken stabil genug fuer einen naechsten Schritt.',
+    reason: 'Energie, Stress und Fortschritt wirken stabil genug für einen nächsten Schritt.',
   }
 }
 
@@ -125,32 +135,32 @@ function localizeFlowDecision(decision, languageStyle, communicationStyle) {
   if (languageStyle === 'german' && communicationStyle === 'formal') {
     const text = {
       end_session: {
-        title: 'Flow abschliessen',
+        title: 'Flow abschließen',
         badge: 'Sitzung beenden',
-        recommendation: 'Sie haben fuer heute genug erreicht. Ein ruhiger Abschluss ist jetzt sinnvoller als weiterer Druck.',
+        recommendation: 'Sie haben für heute genug erreicht. Ein ruhiger Abschluss ist jetzt sinnvoller als weiterer Druck.',
         activity: 'Kurze Reflexion',
         reason: 'Ihr Fortschritt ist sehr hoch oder alle Routinen sind erledigt.',
       },
       pause: {
         title: 'Pause statt weiterer Aufgaben',
         badge: 'Pause',
-        recommendation: 'Starten Sie keine weitere intensive Aktivitaet. Eine kurze Atem- oder Ruhepause ist jetzt passender.',
+        recommendation: 'Starten Sie keine weitere intensive Aktivität. Eine kurze Atem- oder Ruhepause ist jetzt passender.',
         activity: 'Atemreset',
         reason: 'Die Energie ist niedrig und der Stress ist hoch. Die App reduziert deshalb die Belastung.',
       },
       switch_activity: {
         title: 'Sanft wechseln',
         badge: 'Alternative',
-        recommendation: 'Beginnen Sie mit einer kurzen, einfachen Aktivitaet statt einer grossen Routine.',
+        recommendation: 'Beginnen Sie mit einer kurzen, einfachen Aktivität statt einer großen Routine.',
         activity: decision.activity,
-        reason: 'Ein kleiner naechster Schritt haelt den Flow realistisch.',
+        reason: 'Ein kleiner nächster Schritt hält den Flow realistisch.',
       },
       continue: {
         title: 'Weiter im Flow',
         badge: 'Fortsetzen',
-        recommendation: `Fuehren Sie "${decision.activity}" weiter, da diese Aktivitaet gut zu Ihrer aktuellen Tagesform passt.`,
+        recommendation: `Führen Sie "${decision.activity}" weiter, da diese Aktivität gut zu Ihrer aktuellen Tagesform passt.`,
         activity: decision.activity,
-        reason: 'Energie, Stress und Fortschritt wirken stabil genug fuer einen naechsten Schritt.',
+        reason: 'Energie, Stress und Fortschritt wirken stabil genug für einen nächsten Schritt.',
       },
     }
 
@@ -233,6 +243,40 @@ function localizeFlowDecision(decision, languageStyle, communicationStyle) {
     return { ...decision, ...text[decision.action], duration: localizeDuration(decision.duration, languageStyle) }
   }
 
+  if (languageStyle === 'arabic') {
+    const text = {
+      end_session: {
+        title: 'إنهاء التدفق',
+        badge: 'إنهاء الجلسة',
+        recommendation: 'لقد أنجزت ما يكفي لهذا اليوم. نهاية هادئة أفضل الآن من ضغط إضافي.',
+        activity: 'تأمل قصير',
+        reason: 'تقدمك مرتفع جدا أو تم إنجاز كل الروتينات.',
+      },
+      pause: {
+        title: 'استراحة بدلا من مهام أكثر',
+        badge: 'استراحة',
+        recommendation: 'لا تبدأ نشاطا مكثفا آخر. استراحة تنفس أو راحة قصيرة أنسب الآن.',
+        activity: 'إعادة ضبط التنفس',
+        reason: 'الطاقة منخفضة والتوتر مرتفع. لذلك يقلل التطبيق الحمل عليك.',
+      },
+      switch_activity: {
+        title: 'انتقال هادئ',
+        badge: 'بديل',
+        recommendation: 'ابدأ بنشاط قصير وبسيط بدلا من روتين كبير.',
+        activity: decision.activity === 'Atemuebung' ? 'تمرين تنفس' : decision.activity === 'Mini-Fokus' ? 'تركيز قصير' : decision.activity,
+        reason: 'خطوة صغيرة تجعل التدفق واقعيا.',
+      },
+      continue: {
+        title: 'استمر',
+        badge: 'متابعة',
+        recommendation: `تابع "${decision.activity}" لأنه يناسب حالتك الآن.`,
+        reason: 'الطاقة والتوتر والتقدم تبدو مستقرة بما يكفي للخطوة التالية.',
+      },
+    }
+
+    return { ...decision, ...text[decision.action], duration: localizeDuration(decision.duration, languageStyle) }
+  }
+
   return decision
 }
 
@@ -253,7 +297,7 @@ function DashboardHome({ habits, communicationStyle, languageStyle, profileName,
   const dashboardMessage = t.dashboard.message
     .replace('{count}', completedHabits)
     .replace('{total}', habits.length)
-  const firstName = profileName.trim() || 'Nina'
+  const firstName = profileName.trim() || 'Gast'
   const checkInOptions = getCheckInOptions(t)
   const flowDecision = useMemo(
     () =>

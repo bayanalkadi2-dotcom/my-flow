@@ -4,7 +4,7 @@ import { habits, languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import DashboardHome from './pages/DashboardHome'
 import Einloggen from './pages/Einloggen'
-import PasswortAendern from './pages/Passwortändern'
+import PasswortÄndern from './pages/Passwortändern'
 import Profil from './pages/Profil'
 import Registrieren from './pages/Registrieren'
 import Routinen from './pages/Routinen'
@@ -12,10 +12,11 @@ import Sprachstil from './pages/Sprachstil'
 import Startseite from './pages/Startseite'
 import Statistik from './pages/Statistik'
 import Freunde from './pages/Freunde'
+import Willkommen from './pages/Willkommen'
 import './App.css'
 
-const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle']
-
+const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter']
+ 
 function defaultRoutineId(index) {
   return `default-routine-${index + 1}`
 }
@@ -52,10 +53,21 @@ function prepareRoutine(habit, index) {
     (habit.title === 'Stimmung tracken' ? 'mood' : habit.title === 'Periode' ? 'period' : undefined)
   const values = getRoutineValues(habit, index)
 
+  if (habit.title === 'Schlaf' && habit.detail?.includes('h')) {
+    const sleepMatch = habit.detail.match(/(\d+)\s*h(?:\s*(\d+)\s*min)?/)
+    const hours = sleepMatch
+      ? Number(sleepMatch[1]) + (Number(sleepMatch[2] ?? 0) / 60)
+      : values.current
+
+    values.current = Math.floor(hours)
+    values.target = 8
+    values.unit = 'Stunden'
+  }
+
   if (habit.title === 'Wasser trinken' && values.target >= 8) {
     values.current = Math.min(Math.ceil(values.current / 2), 4)
     values.target = 4
-    values.unit = 'Glaeser (500 ml)'
+    values.unit = 'Gläser (500 ml)'
   }
 
   const progress = Math.min(Math.round((values.current / values.target) * 100), 100)
@@ -132,8 +144,8 @@ function App() {
   const [screen, setScreen] = useState('start')
   const [languageStyle, setLanguageStyle] = useState(() => localStorage.getItem('myflow-language') || 'german')
   const [communicationStyle, setCommunicationStyle] = useState(() => localStorage.getItem('myflow-communication-style') || 'casual')
-  const [profileName, setProfileName] = useState('Nina')
-  const [appTheme, setAppTheme] = useState('Hell')
+  const [profileName, setProfileName] = useState(() => localStorage.getItem('myflow-profile-name') || 'Gast')
+  const [appTheme, setAppTheme] = useState(() => localStorage.getItem('myflow-theme') || 'Hell')
   const [routineItems, setRoutineItems] = useState(loadRoutines)
   const [deletedRoutineTitles, setDeletedRoutineTitles] = useState(loadDeletedRoutineTitles)
   const tone = languageStyles[languageStyle]
@@ -150,6 +162,14 @@ function App() {
   useEffect(() => {
     localStorage.setItem('myflow-communication-style', communicationStyle)
   }, [communicationStyle])
+
+  useEffect(() => {
+    localStorage.setItem('myflow-theme', appTheme)
+  }, [appTheme])
+
+  useEffect(() => {
+    localStorage.setItem('myflow-profile-name', profileName)
+  }, [profileName])
 
   useEffect(() => {
     localStorage.setItem('myflow-routines', JSON.stringify(preparedHabits))
@@ -297,7 +317,7 @@ function App() {
       case 'register':
         return <Registrieren onNavigate={setScreen} t={t} />
       case 'resetPassword':
-        return <PasswortAendern onNavigate={setScreen} t={t} />
+        return <PasswortÄndern onNavigate={setScreen} t={t} />
       case 'languageStyle':
         return (
           <Sprachstil
@@ -310,6 +330,8 @@ function App() {
             t={t}
           />
         )
+      case 'welcomeCharacter':
+        return <Willkommen onNavigate={setScreen} profileName={profileName} t={t} />
       case 'dashboard':
         return (
           <DashboardHome
@@ -361,6 +383,23 @@ function App() {
             onSelectStyle={selectLanguage}
           />
         )
+      case 'profileSettings':
+        return (
+          <Profil
+            appTheme={appTheme}
+            languageStyle={languageStyle}
+            communicationStyle={communicationStyle}
+            profileName={profileName}
+            tone={tone}
+            t={t}
+            settingsPage
+            onAppThemeChange={setAppTheme}
+            onNavigate={setScreen}
+            onProfileNameChange={setProfileName}
+            onCommunicationStyleChange={setCommunicationStyle}
+            onSelectStyle={selectLanguage}
+          />
+        )
       case 'freunde':
         return <Freunde habits={preparedHabits} t={t} />
 
@@ -370,10 +409,13 @@ default:
   }
 
   return (
-    <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'}`}>
+    <main
+      className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`}
+      dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}
+    >
       {renderScreen()}
 
-      {!authScreens.includes(screen) && (
+      {!authScreens.includes(screen) && screen !== 'profileSettings' && (
         <Navbar activeScreen={screen} items={Object.entries(t.nav).map(([id, label]) => ({ id, label }))} onNavigate={setScreen} />
       )}
     </main>

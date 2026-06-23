@@ -2,16 +2,33 @@ import { useState } from 'react'
 import SmartRangeTrendChart from '../commponents/SmartRangeTrendChart'
 import WellbeingDashboard from '../commponents/WellbeingDashboard'
 
-const weeklyProgress = [
-  { day: 'Mo', value: 55 },
-  { day: 'Di', value: 80 },
-  { day: 'Mi', value: 45 },
-  { day: 'Do', value: 90 },
-  { day: 'Fr', value: 65 },
-  { day: 'Sa', value: 75 },
-  { day: 'So', value: 60 },
-]
+const categoryByTitle = {
+  'Wasser trinken': 'Koerper',
+  Bewegung: 'Koerper',
+  Sport: 'Koerper',
+  Schlaf: 'Koerper',
+  'Gesund essen': 'Koerper',
+  Periode: 'Koerper',
+  Entspannung: 'Mental',
+  Meditation: 'Mental',
+  Dankbarkeit: 'Mental',
+  Tagebuch: 'Mental',
+  'Stimmung tracken': 'Mental',
+  Lesen: 'Mental',
+  'Digitale Pause': 'Mental',
+  Lernen: 'Produktiv',
+  Tagesplanung: 'Produktiv',
+  Fokuszeit: 'Produktiv',
+  Aufraeumen: 'Produktiv',
+  'Freunde kontaktieren': 'Sozial',
+  'Familie kontaktieren': 'Sozial',
+  'Soziale Aktivitaet': 'Sozial',
+  'Rauchen reduzieren': 'Reduktion',
+  'Weniger Social Media': 'Reduktion',
+  'Weniger Suessigkeiten': 'Reduktion',
+}
 
+<<<<<<< HEAD
 const monthlyProgress = [
   { day: 'W1', value: 58 },
   { day: 'W2', value: 64 },
@@ -55,61 +72,209 @@ const periodStats = {
     steps: 28400,
     improvement: 12,
     progress: weeklyProgress,
+=======
+const text = {
+  german: {
+    today: 'Heute',
+    areas: 'Bereiche',
+    completed: 'Erledigt',
+    open: 'Offen',
+    routines: 'Routinen',
+    averageText: 'Durchschnitt aller Routinen',
+    chartToday: 'Fortschritt pro Routine',
+    chartAreas: 'Fortschritt nach Bereichen',
+    details: 'Aktuelle Routinen',
+    summary: 'Heute-Zusammenfassung',
+    allDone: 'Alle Routinen sind geschafft. Sehr stark.',
+    strongDay: 'Du bist heute gut im Flow.',
+    quietDay: 'Heute ist noch Luft nach oben.',
+    nextStep: 'Naechster sinnvoller Schritt: {habit}.',
+    empty: 'Lege eine Routine an, damit hier dein Fortschritt erscheint.',
+    fallbackCategory: 'Alltag',
+>>>>>>> e5c3053684b9aa4cea450f1fe37dc7d00f9e4859
   },
-  month: {
-    label: 'Monat',
-    average: 67,
-    steps: 124600,
-    improvement: 18,
-    progress: monthlyProgress,
+  english: {
+    today: 'Today',
+    areas: 'Areas',
+    completed: 'Done',
+    open: 'Open',
+    routines: 'routines',
+    averageText: 'Average of all routines',
+    chartToday: 'Progress per routine',
+    chartAreas: 'Progress by area',
+    details: 'Current routines',
+    summary: 'Today summary',
+    allDone: 'All routines are done. Strong work.',
+    strongDay: 'You are in a good flow today.',
+    quietDay: 'There is still room today.',
+    nextStep: 'Best next step: {habit}.',
+    empty: 'Add a routine so your progress can appear here.',
+    fallbackCategory: 'Daily life',
+  },
+  turkish: {
+    today: 'Bugun',
+    areas: 'Alanlar',
+    completed: 'Tamam',
+    open: 'Acik',
+    routines: 'rutin',
+    averageText: 'Tum rutinlerin ortalamasi',
+    chartToday: 'Rutin basina ilerleme',
+    chartAreas: 'Alanlara gore ilerleme',
+    details: 'Guncel rutinler',
+    summary: 'Bugun ozeti',
+    allDone: 'Tum rutinler tamamlandi. Cok iyi.',
+    strongDay: 'Bugun iyi bir akistasin.',
+    quietDay: 'Bugun hala alan var.',
+    nextStep: 'En uygun sonraki adim: {habit}.',
+    empty: 'Ilerlemeni gormek icin bir rutin ekle.',
+    fallbackCategory: 'Gunluk',
+  },
+  arabic: {
+    today: 'Today',
+    areas: 'Areas',
+    completed: 'Done',
+    open: 'Open',
+    routines: 'routines',
+    averageText: 'Average of all routines',
+    chartToday: 'Progress per routine',
+    chartAreas: 'Progress by area',
+    details: 'Current routines',
+    summary: 'Today summary',
+    allDone: 'All routines are done. Strong work.',
+    strongDay: 'You are in a good flow today.',
+    quietDay: 'There is still room today.',
+    nextStep: 'Best next step: {habit}.',
+    empty: 'Add a routine so your progress can appear here.',
+    fallbackCategory: 'Daily life',
   },
 }
 
-const todaySteps = 3200
-const stepGoal = 8000
-const stepProgress = Math.round((todaySteps / stepGoal) * 100)
+function clampProgress(value) {
+  return Math.min(Math.max(Math.round(Number(value) || 0), 0), 100)
+}
 
-function Statistik({ languageStyle, t }) {
-  const [period, setPeriod] = useState('week')
-  const activeStats = periodStats[period]
+function getHabitProgress(habit) {
+  if (habit.done) {
+    return 100
+  }
+
+  if (habit.progress !== undefined) {
+    return clampProgress(habit.progress)
+  }
+
+  return clampProgress((Number(habit.current ?? 0) / Number(habit.target ?? 1)) * 100)
+}
+
+function getAverageProgress(items) {
+  if (items.length === 0) {
+    return 0
+  }
+
+  return Math.round(items.reduce((sum, item) => sum + getHabitProgress(item), 0) / items.length)
+}
+
+function getHabitTitle(habit) {
+  return habit.displayTitle ?? habit.title
+}
+
+function getShortLabel(habit) {
+  const title = getHabitTitle(habit)
+  const words = title.split(' ').filter(Boolean)
+
+  return words.length > 1
+    ? words.map((word) => word[0]).join('').slice(0, 3)
+    : title.slice(0, 3)
+}
+
+function getHabitCategory(habit, copy) {
+  return habit.category ?? categoryByTitle[habit.title] ?? copy.fallbackCategory
+}
+
+function getCategoryData(habits, copy) {
+  const groups = habits.reduce((result, habit) => {
+    const category = getHabitCategory(habit, copy)
+
+    return {
+      ...result,
+      [category]: [...(result[category] ?? []), habit],
+    }
+  }, {})
+
+  return Object.entries(groups).map(([category, categoryHabits]) => ({
+    label: category,
+    value: getAverageProgress(categoryHabits),
+    title: category,
+  }))
+}
+
+function Statistik({ habits = [], languageStyle, t }) {
+  const [view, setView] = useState('today')
+  const copy = text[languageStyle] ?? text.german
+  const locale = languageStyle === 'german' ? 'de-DE' : 'en-US'
+  const averageProgress = getAverageProgress(habits)
+  const completedHabits = habits.filter((habit) => getHabitProgress(habit) >= 100).length
+  const openHabits = Math.max(habits.length - completedHabits, 0)
+  const chartData = view === 'today'
+    ? habits.map((habit) => ({
+        label: getShortLabel(habit),
+        value: getHabitProgress(habit),
+        title: getHabitTitle(habit),
+      }))
+    : getCategoryData(habits, copy)
+  const nextHabit = habits
+    .filter((habit) => getHabitProgress(habit) < 100)
+    .sort((firstHabit, secondHabit) => getHabitProgress(secondHabit) - getHabitProgress(firstHabit))[0]
+  const summaryTitle = habits.length === 0
+    ? copy.empty
+    : openHabits === 0
+      ? copy.allDone
+      : averageProgress >= 60
+        ? copy.strongDay
+        : copy.quietDay
+  const summaryText = nextHabit
+    ? copy.nextStep.replace('{habit}', getHabitTitle(nextHabit))
+    : `${averageProgress}% ${copy.averageText.toLowerCase()}`
 
   return (
     <section className="screen">
       <p className="eyebrow">{t.stats.eyebrow}</p>
       <h1>{t.stats.title}</h1>
+
       <div className="period-toggle" aria-label={t.stats.periodLabel}>
         <button
-          className={period === 'week' ? 'selected' : ''}
-          onClick={() => setPeriod('week')}
+          className={view === 'today' ? 'selected' : ''}
+          onClick={() => setView('today')}
           type="button"
         >
-          {t.stats.week}
+          {copy.today}
         </button>
         <button
-          className={period === 'month' ? 'selected' : ''}
-          onClick={() => setPeriod('month')}
+          className={view === 'areas' ? 'selected' : ''}
+          onClick={() => setView('areas')}
           type="button"
         >
-          {t.stats.month}
+          {copy.areas}
         </button>
       </div>
+
       <div className="stat-summary-grid">
         <article className="stat-card summary-card">
           <span>{t.stats.average}</span>
-          <strong>{activeStats.average}%</strong>
-          <p>{t.stats.inFlow.replace('{period}', period === 'week' ? t.stats.week : t.stats.month)}</p>
-        </article>
-        <article className="stat-card summary-card">
-          <span>{t.stats.steps}</span>
-          <strong>{activeStats.steps.toLocaleString(languageStyle === 'german' ? 'de-DE' : 'en-US')}</strong>
-          <p>{t.stats.total}</p>
+          <strong>{averageProgress}%</strong>
+          <p>{copy.averageText}</p>
         </article>
         <article className="stat-card summary-card improvement-card">
-          <span>{t.stats.improvement}</span>
-          <strong>+{activeStats.improvement}%</strong>
-          <p>{t.stats.compared}</p>
+          <span>{copy.completed}</span>
+          <strong>{completedHabits.toLocaleString(locale)}</strong>
+          <p>{copy.routines}</p>
+        </article>
+        <article className="stat-card summary-card">
+          <span>{copy.open}</span>
+          <strong>{openHabits.toLocaleString(locale)}</strong>
+          <p>{copy.routines}</p>
         </article>
       </div>
+<<<<<<< HEAD
       <WellbeingDashboard
         title={t.stats.wellbeingTitle}
         subtitle={t.stats.wellbeingSubtitle}
@@ -146,23 +311,47 @@ function Statistik({ languageStyle, t }) {
             <p>{index === 0 ? t.stats.cigarettesAvoided : t.stats.fewerCigarettes}</p>
           </article>
         ))}
+=======
+
+      <div
+        className="chart-card dynamic-chart-card"
+        aria-label={view === 'today' ? copy.chartToday : copy.chartAreas}
+      >
+        {chartData.map((entry) => (
+          <div className="bar-wrap" key={`${entry.label}-${entry.title}`} title={entry.title}>
+            <div className="bar" style={{ height: `${entry.value}%` }} />
+            <span>{entry.label}</span>
+          </div>
+        ))}
       </div>
+
+      <div className="routine-progress-list" aria-label={copy.details}>
+        {habits.map((habit) => {
+          const progress = getHabitProgress(habit)
+
+          return (
+            <article className="routine-progress-row" key={habit.id}>
+              <div>
+                <strong>{getHabitTitle(habit)}</strong>
+                <span>{habit.detail}</span>
+              </div>
+              <b>{progress}%</b>
+            </article>
+          )
+        })}
+>>>>>>> e5c3053684b9aa4cea450f1fe37dc7d00f9e4859
+      </div>
+
       <article className="motivation-card">
         <div className="motivation-bubble">
-          <span>{t.stats.thoughtBubble}</span>
-          <h2>{t.stats.quietDay}</h2>
-          <p>
-            {t.stats.stepText.replace('{steps}', todaySteps.toLocaleString(languageStyle === 'german' ? 'de-DE' : 'en-US'))}
-          </p>
+          <span>{copy.summary}</span>
+          <h2>{summaryTitle}</h2>
+          <p>{summaryText}</p>
         </div>
-        <div className="motivation-progress" aria-label={`${stepProgress}% vom Schrittziel erreicht`}>
-          <span style={{ width: `${stepProgress}%` }} />
+        <div className="motivation-progress" aria-label={`${averageProgress}% ${t.stats.average}`}>
+          <span style={{ width: `${averageProgress}%` }} />
         </div>
-        <small>
-          {t.stats.stepGoal
-            .replace('{progress}', stepProgress)
-            .replace('{goal}', stepGoal.toLocaleString(languageStyle === 'german' ? 'de-DE' : 'en-US'))}
-        </small>
+        <small>{averageProgress}% {copy.averageText.toLowerCase()}</small>
       </article>
     </section>
   )

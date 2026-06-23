@@ -49,6 +49,9 @@ function getLevel(score) {
 }
 
 function Freunde({ habits, t }) {
+  const firstRoutineTitle = habits[0]?.title ?? "Wasser trinken";
+  const routineLabels = new Map(habits.map((habit) => [habit.title, habit.displayTitle ?? habit.title]));
+  const getRoutineLabel = (routine) => routineLabels.get(routine) ?? routine;
   const inviteLink = "https://myflow.app/invite/nina-flow";
   const freunde = [
     {
@@ -56,42 +59,42 @@ function Freunde({ habits, t }) {
       score: 850,
       progress: 72,
       color: "#7c3aed",
-      details: ["Wasser: 2,0 L", "Laufen: 18 km", "Sport: 4/5"],
+      details: [`${t.profile.water}: 2,0 L`, "Laufen: 18 km", "Sport: 4/5"],
     },
     {
       name: "Du",
       score: 650,
       progress: 80,
       color: "#4f46e5",
-      details: ["Wasser: 2,5 L", "Laufen: 24 km", "Sport: 4/5"],
+      details: [`${t.profile.water}: 2,5 L`, "Laufen: 24 km", "Sport: 4/5"],
     },
     {
       name: "Max",
       score: 500,
       progress: 58,
       color: "#ec4899",
-      details: ["Wasser: 1,5 L", "Laufen: 12 km", "Sport: 2/5"],
+      details: [`${t.profile.water}: 1,5 L`, "Laufen: 12 km", "Sport: 2/5"],
     },
     {
       name: "Sarah",
       score: 300,
       progress: 45,
       color: "#22c55e",
-      details: ["Wasser: 1,2 L", "Laufen: 8 km", "Sport: 2/5"],
+      details: [`${t.profile.water}: 1,2 L`, "Laufen: 8 km", "Sport: 2/5"],
     },
     {
       name: "Tom",
       score: 150,
       progress: 32,
       color: "#f59e0b",
-      details: ["Wasser: 1,0 L", "Laufen: 5 km", "Sport: 1/5"],
+      details: [`${t.profile.water}: 1,0 L`, "Laufen: 5 km", "Sport: 1/5"],
     },
   ];
 
   const [selectedFriend, setSelectedFriend] = useState(freunde[1]);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteStatus, setInviteStatus] = useState("");
-  const [challengeRoutine, setChallengeRoutine] = useState(habits[0]?.displayTitle ?? habits[0]?.title ?? "Wasser trinken");
+  const [challengeRoutine, setChallengeRoutine] = useState(firstRoutineTitle);
   const [challengeDays, setChallengeDays] = useState("14");
   const [challengeFriend, setChallengeFriend] = useState("Lena");
   const [challenges, setChallenges] = useState([
@@ -219,9 +222,9 @@ function Freunde({ habits, t }) {
             <label>
               {t.friends.duration}
               <select value={challengeDays} onChange={(event) => setChallengeDays(event.target.value)}>
-                <option value="7">7 Tage</option>
-                <option value="14">14 Tage</option>
-                <option value="30">30 Tage</option>
+                <option value="7">{t.friends.days.replace('{days}', 7)}</option>
+                <option value="14">{t.friends.days.replace('{days}', 14)}</option>
+                <option value="30">{t.friends.days.replace('{days}', 30)}</option>
               </select>
             </label>
             <label>
@@ -245,7 +248,7 @@ function Freunde({ habits, t }) {
             <article className="challenge-card" key={challenge.id}>
               <div>
                 <span>{t.friends.days.replace('{days}', challenge.days)}</span>
-                <h3>{challenge.routine}</h3>
+                <h3>{getRoutineLabel(challenge.routine)}</h3>
                 <p>{t.friends.against.replace('{friend}', challenge.friend)}</p>
               </div>
               <strong>{challenge.progress}%</strong>

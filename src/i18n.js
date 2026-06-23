@@ -20,17 +20,17 @@ const habitTranslations = {
   Tagesplanung: { en: 'Daily planning', tr: 'Gun planlama' },
   Lernen: { en: 'Study', tr: 'Ders calisma' },
   Fokuszeit: { en: 'Focus time', tr: 'Odak zamani' },
-  Aufraeumen: { en: 'Tidying up', tr: 'Toparlama' },
+  Aufräumen: { en: 'Tidying up', tr: 'Toparlama' },
   'Freunde kontaktieren': { en: 'Contact friends', tr: 'Arkadaslara yaz' },
   'Familie kontaktieren': { en: 'Contact family', tr: 'Aileye yaz' },
-  'Soziale Aktivitaet': { en: 'Social activity', tr: 'Sosyal aktivite' },
+  'Soziale Aktivität': { en: 'Social activity', tr: 'Sosyal aktivite' },
   'Weniger Social Media': { en: 'Less social media', tr: 'Daha az sosyal medya' },
-  'Weniger Suessigkeiten': { en: 'Fewer sweets', tr: 'Daha az tatli' },
+  'Weniger Süßigkeiten': { en: 'Fewer sweets', tr: 'Daha az tatli' },
 }
 
 const unitTranslations = {
-  Glaeser: { en: 'glasses', tr: 'bardak' },
-  'Glaeser (500 ml)': { en: '500 ml glasses', tr: '500 ml bardak' },
+  Gläser: { en: 'glasses', tr: 'bardak' },
+  'Gläser (500 ml)': { en: '500 ml glasses', tr: '500 ml bardak' },
   Minuten: { en: 'minutes', tr: 'dakika' },
   Stunden: { en: 'hours', tr: 'saat' },
   Dinge: { en: 'things', tr: 'sey' },
@@ -40,7 +40,7 @@ const unitTranslations = {
   Portion: { en: 'portion', tr: 'porsiyon' },
   Plan: { en: 'plan', tr: 'plan' },
   Kontakt: { en: 'contact', tr: 'iletisim' },
-  Aktivitaet: { en: 'activity', tr: 'aktivite' },
+  Aktivität: { en: 'activity', tr: 'aktivite' },
   'Zigaretten vermieden': { en: 'cigarettes avoided', tr: 'sigara onlendi' },
   'Stunden vermieden': { en: 'hours avoided', tr: 'saat onlendi' },
   'Snacks vermieden': { en: 'snacks avoided', tr: 'atistirmalik onlendi' },
@@ -49,16 +49,75 @@ const unitTranslations = {
 
 const categoryTranslations = {
   'Mentale Gesundheit': { en: 'Mental health', tr: 'Ruh sagligi' },
-  'Koerperliche Gesundheit': { en: 'Physical health', tr: 'Fiziksel saglik' },
+  'Körperliche Gesundheit': { en: 'Physical health', tr: 'Fiziksel saglik' },
   'Medikamente & Vitamine': { en: 'Medication & vitamins', tr: 'Ilaclar ve vitaminler' },
-  Produktivitaet: { en: 'Productivity', tr: 'Verimlilik' },
+  Produktivität: { en: 'Productivity', tr: 'Verimlilik' },
   Soziales: { en: 'Social', tr: 'Sosyal' },
   'Gewohnheiten reduzieren': { en: 'Reduce habits', tr: 'Aliskanliklari azalt' },
+}
+
+const arabicHabitTranslations = {
+  'Wasser trinken': 'شرب الماء',
+  Bewegung: 'الحركة',
+  'Rauchen reduzieren': 'تقليل التدخين',
+  Schlaf: 'النوم',
+  Entspannung: 'الاسترخاء',
+  Meditation: 'التأمل',
+  Dankbarkeit: 'الامتنان',
+  Tagebuch: 'اليوميات',
+  'Stimmung tracken': 'تتبع المزاج',
+  Lesen: 'القراءة',
+  'Digitale Pause': 'استراحة رقمية',
+  Sport: 'الرياضة',
+  'Gesund essen': 'الأكل الصحي',
+  Periode: 'الدورة الشهرية',
+  'Medikament eingenommen': 'تناول الدواء',
+  'Vitamine eingenommen': 'تناول الفيتامينات',
+  'Supplement eingenommen': 'تناول المكمل',
+  'Magnesium/Zink eingenommen': 'تناول المغنيسيوم/الزنك',
+  Tagesplanung: 'تخطيط اليوم',
+  Lernen: 'الدراسة',
+  Fokuszeit: 'وقت التركيز',
+  Aufräumen: 'الترتيب',
+  'Freunde kontaktieren': 'التواصل مع الأصدقاء',
+  'Familie kontaktieren': 'التواصل مع العائلة',
+  'Soziale Aktivität': 'نشاط اجتماعي',
+  'Weniger Social Media': 'تقليل وسائل التواصل',
+  'Weniger Süßigkeiten': 'تقليل الحلويات',
+}
+
+const arabicUnitTranslations = {
+  Gläser: 'أكواب',
+  'Gläser (500 ml)': 'أكواب 500 مل',
+  Minuten: 'دقائق',
+  Stunden: 'ساعات',
+  Dinge: 'أشياء',
+  Eintrag: 'إدخال',
+  Mahlzeiten: 'وجبات',
+  Dosis: 'جرعة',
+  Portion: 'حصة',
+  Plan: 'خطة',
+  Kontakt: 'تواصل',
+  Aktivität: 'نشاط',
+  'Zigaretten vermieden': 'سجائر تم تجنبها',
+  'Stunden vermieden': 'ساعات تم تجنبها',
+  'Snacks vermieden': 'وجبات خفيفة تم تجنبها',
+  Mal: 'مرة',
+}
+
+const arabicCategoryTranslations = {
+  'Mentale Gesundheit': 'الصحة النفسية',
+  'Körperliche Gesundheit': 'الصحة الجسدية',
+  'Medikamente & Vitamine': 'الأدوية والفيتامينات',
+  Produktivität: 'الإنتاجية',
+  Soziales: 'العلاقات الاجتماعية',
+  'Gewohnheiten reduzieren': 'تقليل العادات',
 }
 
 function languageKey(languageStyle) {
   if (languageStyle === 'english') return 'en'
   if (languageStyle === 'turkish') return 'tr'
+  if (languageStyle === 'arabic') return 'ar'
   return 'de'
 }
 
@@ -68,15 +127,51 @@ function translateMap(map, value, languageStyle) {
 }
 
 export function translateHabitTitle(title, languageStyle) {
+  if (languageStyle === 'arabic') return arabicHabitTranslations[title] ?? title
   return translateMap(habitTranslations, title, languageStyle)
 }
 
 export function translateUnit(unit, languageStyle) {
+  if (languageStyle === 'arabic') return arabicUnitTranslations[unit] ?? unit
   return translateMap(unitTranslations, unit, languageStyle)
 }
 
 export function translateCategory(category, languageStyle) {
+  if (languageStyle === 'arabic') return arabicCategoryTranslations[category] ?? category
   return translateMap(categoryTranslations, category, languageStyle)
+}
+
+function formatPeriodDetail(habit, languageStyle) {
+  const period = habit.period ?? {}
+
+  if (languageStyle === 'arabic') {
+    return [
+      period.cycleLength ? `${period.cycleLength} أيام` : '',
+      period.flowStrength ? `الشدة: ${period.flowStrength}/5` : '',
+      period.painLevel ? `الألم: ${period.painLevel}/5` : '',
+      period.phaseWellbeing ? `الراحة: ${period.phaseWellbeing}` : '',
+    ].filter(Boolean).join(' · ') || 'إدخال بيانات الدورة'
+  }
+
+  if (languageStyle === 'english') {
+    return [
+      period.cycleLength ? `${period.cycleLength} days` : '',
+      period.flowStrength ? `Strength: ${period.flowStrength}/5` : '',
+      period.painLevel ? `Pain: ${period.painLevel}/5` : '',
+      period.phaseWellbeing ? `Wellbeing: ${period.phaseWellbeing}` : '',
+    ].filter(Boolean).join(' · ') || 'Enter cycle data'
+  }
+
+  if (languageStyle === 'turkish') {
+    return [
+      period.cycleLength ? `${period.cycleLength} gun` : '',
+      period.flowStrength ? `Yogunluk: ${period.flowStrength}/5` : '',
+      period.painLevel ? `Agri: ${period.painLevel}/5` : '',
+      period.phaseWellbeing ? `Iyi olma: ${period.phaseWellbeing}` : '',
+    ].filter(Boolean).join(' · ') || 'Dongu verisi gir'
+  }
+
+  return habit.detail
 }
 
 export function translateHabit(habit, languageStyle) {
@@ -87,9 +182,11 @@ export function translateHabit(habit, languageStyle) {
       ? `Today: ${habit.mood}`
       : languageStyle === 'turkish'
         ? `Bugun: ${habit.mood}`
-        : `Heute: ${habit.mood}`
+        : languageStyle === 'arabic'
+          ? `اليوم: ${habit.mood}`
+          : `Heute: ${habit.mood}`
     : habit.type === 'period'
-      ? habit.detail
+      ? formatPeriodDetail(habit, languageStyle)
       : `${habit.current} / ${habit.target} ${unit}`
 
   return {
@@ -103,7 +200,7 @@ export function translateHabit(habit, languageStyle) {
 export const translations = {
   german: {
     nav: { dashboard: 'Home', habits: 'Routinen', progress: 'Statistik', freunde: 'Freunde', profile: 'Profil' },
-    common: { back: 'Zurueck', close: 'Schliessen', change: 'Aendern', ok: 'OK', active: 'Aktiv', off: 'Aus', save: 'Speichern' },
+    common: { back: 'Zurück', close: 'Schließen', change: 'Ändern', ok: 'OK', active: 'Aktiv', off: 'Aus', save: 'Speichern' },
     start: {
       badge: 'Dein Wohlbefinden. Dein Flow.',
       category: 'Gesundheit, Routinen und Motivation',
@@ -117,57 +214,64 @@ export const translations = {
         { icon: '^', title: 'Bleib dran', text: 'Erhalte Erinnerungen.', tone: 'blue' },
       ],
     },
+    welcomeCharacter: {
+      eyebrow: 'MyFlow begleitet dich',
+      title: 'Willkommen, {name}!',
+      text: 'Ich bin dein kleiner Flow-Begleiter. Lass uns deinen Tag ruhig und motiviert starten.',
+      button: 'Weiter',
+    },
     auth: {
-      loginTitle: 'Willkommen zurueck!',
-      loginText: 'Schoen, dass du wieder da bist.',
+      loginTitle: 'Willkommen zurück!',
+      loginText: 'Schön, dass du wieder da bist.',
       email: 'E-Mail',
       password: 'Passwort',
       forgot: 'Passwort vergessen?',
       noAccount: 'Noch kein Konto?',
       registerTitle: 'Konto erstellen',
-      registerText: 'Erstelle dein Konto, um MyFlow vollstaendig zu nutzen.',
+      registerText: 'Erstelle dein Konto, um MyFlow vollständig zu nutzen.',
       username: 'Benutzername',
       usernamePlaceholder: 'Dein Benutzername',
       ownPassword: 'Eigenes Passwort',
       repeatPassword: 'Passwort wiederholen',
       hasAccount: 'Bereits ein Konto?',
-      resetTitle: 'Passwort zuruecksetzen',
-      resetText: 'Lege ein neues Passwort fuer dein Konto fest.',
+      resetTitle: 'Passwort zurücksetzen',
+      resetText: 'Lege ein neues Passwort für dein Konto fest.',
       newPassword: 'Neues Passwort',
-      confirmPassword: 'Passwort bestaetigen',
+      confirmPassword: 'Passwort bestätigen',
       savePassword: 'Passwort speichern',
-      backToLogin: 'Zurueck zum',
+      backToLogin: 'Zurück zum',
     },
     language: {
       eyebrow: 'Personalisierung',
-      title: 'Welche Sprache moechtest du nutzen?',
-      intro: 'Du kannst spaeter in deinem Profil jederzeit zwischen Sprache und Ton wechseln.',
+      title: 'Welche Sprache möchtest du nutzen?',
+      intro: 'Du kannst später in deinem Profil jederzeit zwischen Sprache und Ton wechseln.',
       toneTitle: 'Wie soll MyFlow mit dir sprechen?',
-      toneIntro: 'Waehle, ob die App sachlich-standardmaessig oder locker und naeher bei dir klingt.',
+      toneIntro: 'Wähle, ob die App sachlich-standardmäßig oder locker und näher bei dir klingt.',
       continue: 'Mit {language} und {tone} fortfahren',
       options: {
-        german: { title: 'Deutsch', example: 'Hey, schoen dass du da bist!', description: 'Deutsche Texte und Hinweise in der App' },
+        german: { title: 'Deutsch', example: 'Hey, schön dass du da bist!', description: 'Deutsche Texte und Hinweise in der App' },
         english: { title: 'English', example: 'Hey, good to see you!', description: 'App texts and messages in English' },
         turkish: { title: 'Turkce', example: 'Merhaba, seni gormek guzel!', description: 'Uygulama metinleri ve bildirimleri Turkce' },
+        arabic: { title: 'العربية', example: 'أهلا، سعيد بوجودك!', description: 'Arabische Texte und Hinweise in der App' },
       },
       toneOptions: {
         casual: {
           title: 'Locker',
-          example: 'Hey, schoen dass du da bist!',
-          description: 'Persoenlich, motivierend und etwas naeher am Alltag.',
+          example: 'Hey, schön dass du da bist!',
+          description: 'Persönlich, motivierend und etwas näher am Alltag.',
         },
         formal: {
-          title: 'Foermlich',
-          example: 'Guten Tag, willkommen zurueck.',
+          title: 'Förmlich',
+          example: 'Guten Tag, willkommen zurück.',
           description: 'Ruhig, sachlich und in Standardform formuliert.',
         },
       },
     },
     dashboard: {
-      hello: 'Hey {name}, schoen dass du da bist!',
-      title: 'Wie laeuft dein Tag?',
+      hello: 'Hey {name}, schön dass du da bist!',
+      title: 'Wie läuft dein Tag?',
       message: 'Du hast {count} von {total} Routinen fast geschafft. Weiter so!',
-      dayFeeling: 'Tagesgefuehl',
+      dayFeeling: 'Tagesgefühl',
       goodFlow: 'Du bist gut im Flow.',
       moreRoom: 'Heute ist noch Luft nach oben.',
       progressMessage: 'Stark! Du bist heute richtig gut dabei.',
@@ -187,46 +291,46 @@ export const translations = {
       recommendation: 'Empfehlung',
       focus: 'Heute wichtig',
       topFocus: 'Top Fokus',
-      allDone: 'Alles erledigt. Heute darf sich leicht anfuehlen.',
+      allDone: 'Alles erledigt. Heute darf sich leicht anfühlen.',
       dayPlan: 'Tagesplan',
       morning: 'Morgen',
       noon: 'Mittag',
       evening: 'Abend',
       morningText: 'kurz starten und Wasser nicht vergessen',
       noonText: 'eine kleine Bewegungspause einbauen',
-      eveningText: 'den Tag ruhig abschliessen und Fortschritt ansehen',
-      thought: 'Gedanke fuer heute',
-      thoughtText: 'Du musst heute nicht perfekt sein. Ein kleiner Schritt zaehlt schon als Richtung.',
+      eveningText: 'den Tag ruhig abschließen und Fortschritt ansehen',
+      thought: 'Gedanke für heute',
+      thoughtText: 'Du musst heute nicht perfekt sein. Ein kleiner Schritt zählt schon als Richtung.',
     },
     routines: {
       eyebrow: 'Routinen',
       title: 'Meine Routinen',
-      add: '+ Routine hinzufuegen',
-      closeAdd: 'Hinzufuegen schliessen',
+      add: '+ Routine hinzufügen',
+      closeAdd: 'Hinzufügen schließen',
       custom: 'Eigene Routine',
       routine: 'Routine',
       target: 'Ziel',
       unit: 'Einheit',
-      added: 'Hinzugefuegt',
-      addRoutine: 'Routine hinzufuegen',
+      added: 'Hinzugefügt',
+      addRoutine: 'Routine hinzufügen',
       placeholder: 'z. B. Wasser trinken',
     },
     habitCard: {
-      closeDetails: 'Details schliessen',
+      closeDetails: 'Details schließen',
       mood: 'Stimmung eintragen',
       period: 'Zyklusdaten bearbeiten',
-      moodQuestion: 'Wie fuehlst du dich heute?',
-      cycleLength: 'Zykluslaenge',
-      flowStrength: 'Staerke',
+      moodQuestion: 'Wie fühlst du dich heute?',
+      cycleLength: 'Zykluslänge',
+      flowStrength: 'Stärke',
       pain: 'Schmerzen',
-      wellbeing: 'Wohlbefinden waehrend der Phase',
+      wellbeing: 'Wohlbefinden während der Phase',
       moods: ['Schlecht', 'Eher schlecht', 'Okay', 'Gut', 'Sehr gut'],
       scale: ['sehr leicht', 'leicht', 'mittel', 'stark', 'sehr stark'],
     },
     stats: {
       eyebrow: 'Statistik',
       title: 'Dein Fortschritt',
-      periodLabel: 'Statistik Zeitraum auswaehlen',
+      periodLabel: 'Statistik Zeitraum auswählen',
       week: 'Woche',
       month: 'Monat',
       average: 'Durchschnitt',
@@ -234,13 +338,13 @@ export const translations = {
       steps: 'Schritte',
       total: 'gesamt',
       improvement: 'Verbesserung',
-      compared: 'gegenueber vorher',
+      compared: 'gegenüber vorher',
       today: 'Heute',
       cigarettesAvoided: 'Zigaretten vermieden',
       fewerCigarettes: 'Zigaretten weniger',
       thoughtBubble: 'Gedankenblase',
       quietDay: 'Heute war es etwas ruhiger.',
-      stepText: 'Du bist heute {steps} Schritte gelaufen. Ein kurzer Spaziergang bringt dich deinem Ziel schon naeher.',
+      stepText: 'Du bist heute {steps} Schritte gelaufen. Ein kurzer Spaziergang bringt dich deinem Ziel schon näher.',
       stepGoal: '{progress}% von {goal} Schritten',
       wellbeingTitle: 'Wohlbefinden',
       wellbeingSubtitle: 'Dein Zustand im Überblick',
@@ -258,32 +362,32 @@ export const translations = {
       title: 'Profil',
       picture: 'Profilbild',
       settings: 'Profil-Einstellungen',
-      settingsText: 'Persoenliche Daten und App-Verhalten',
+      settingsText: 'Persönliche Daten und App-Verhalten',
       pictureText: 'Dein Profilbild nutzt aktuell automatisch den ersten Buchstaben deines Namens.',
       name: 'Name',
       newName: 'Neuer Name',
       gender: 'Geschlecht',
       weight: 'Gewicht',
-      height: 'Groesse',
+      height: 'Größe',
       reminders: 'Erinnerungen',
       language: 'Sprache',
       communicationStyle: 'Kommunikationsstil',
       design: 'Design',
       subscription: 'Abo',
       payment: 'Bezahlung',
-      paidText: 'Plus und Pro schalten die Abo-Tools frei. Bezahlt wird mit der ausgewaehlten Zahlungsart.',
+      paidText: 'Plus und Pro schalten die Abo-Tools frei. Bezahlt wird mit der ausgewählten Zahlungsart.',
       logout: 'Abmelden',
       water: 'Wasser',
       perDay: 'pro Tag',
       challengeLevel: 'Challenge-Level',
       points: '{points} Punkte gesammelt',
-      nextLevel: 'Naechstes Level: {level} ab {points} Punkten',
+      nextLevel: 'Nächstes Level: {level} ab {points} Punkten',
     },
     friends: {
       subtitle: 'Gemeinsam motiviert bleiben',
       title: 'Freunde und Rangliste',
       weekly: '{progress}% Wochenfortschritt',
-      nextLevel: 'naechstes Level: {level}',
+      nextLevel: 'nächstes Level: {level}',
       invite: 'Freunde einladen',
       inviteFriend: 'Freund einladen',
       inviteText: 'Teile deinen Link per WhatsApp, E-Mail oder kopiere ihn direkt.',
@@ -308,40 +412,40 @@ const communicationStyleOverrides = {
         start: 'Starten',
       },
       auth: {
-        loginTitle: 'Willkommen zurueck',
-        loginText: 'Schoen, dass Sie wieder da sind.',
+        loginTitle: 'Willkommen zurück',
+        loginText: 'Schön, dass Sie wieder da sind.',
         usernamePlaceholder: 'Ihr Benutzername',
-        registerText: 'Erstellen Sie Ihr Konto, um MyFlow vollstaendig zu nutzen.',
+        registerText: 'Erstellen Sie Ihr Konto, um MyFlow vollständig zu nutzen.',
         ownPassword: 'Ihr Passwort',
       },
       language: {
         toneOptions: {
           casual: {
             title: 'Locker',
-            example: 'Hey, schoen dass du da bist!',
-            description: 'Persoenlich, motivierend und etwas naeher am Alltag.',
+            example: 'Hey, schön dass du da bist!',
+            description: 'Persönlich, motivierend und etwas näher am Alltag.',
           },
           formal: {
-            title: 'Foermlich',
-            example: 'Guten Tag, willkommen zurueck.',
+            title: 'Förmlich',
+            example: 'Guten Tag, willkommen zurück.',
             description: 'Ruhig, sachlich und in Standardform formuliert.',
           },
         },
       },
       dashboard: {
-        hello: 'Guten Tag {name}, schoen dass Sie da sind.',
-        title: 'Wie verlaeuft Ihr Tag?',
+        hello: 'Guten Tag {name}, schön dass Sie da sind.',
+        title: 'Wie verläuft Ihr Tag?',
         message: 'Sie haben {count} von {total} Routinen abgeschlossen. Machen Sie weiter so.',
         progressMessage: 'Sehr gut. Sie machen heute stabile Fortschritte.',
         goodFlow: 'Sie sind gut im Flow.',
-        moreRoom: 'Heute gibt es noch Potenzial fuer weitere Schritte.',
+        moreRoom: 'Heute gibt es noch Potenzial für weitere Schritte.',
         doneText: 'Routinen abgeschlossen',
         openText: 'heute noch offen',
         allDone: 'Alles erledigt. Der heutige Tag darf ruhig ausklingen.',
         morningText: 'ruhig starten und Wasser nicht vergessen',
         noonText: 'eine kurze Bewegungspause einplanen',
-        eveningText: 'den Tag ruhig abschliessen und den Fortschritt ansehen',
-        thoughtText: 'Sie muessen heute nicht perfekt sein. Ein kleiner Schritt ist bereits ein Fortschritt.',
+        eveningText: 'den Tag ruhig abschließen und den Fortschritt ansehen',
+        thoughtText: 'Sie müssen heute nicht perfekt sein. Ein kleiner Schritt ist bereits ein Fortschritt.',
       },
       routines: {
         title: 'Ihre Routinen',
@@ -349,11 +453,11 @@ const communicationStyleOverrides = {
       },
       stats: {
         title: 'Ihr Fortschritt',
-        stepText: 'Sie sind heute {steps} Schritte gelaufen. Ein kurzer Spaziergang bringt Sie Ihrem Ziel bereits naeher.',
+        stepText: 'Sie sind heute {steps} Schritte gelaufen. Ein kurzer Spaziergang bringt Sie Ihrem Ziel bereits näher.',
       },
       profile: {
         pictureText: 'Ihr Profilbild nutzt aktuell automatisch den ersten Buchstaben Ihres Namens.',
-        paidText: 'Plus und Pro schalten die Abo-Tools frei. Die Zahlung erfolgt mit der ausgewaehlten Zahlungsart.',
+        paidText: 'Plus und Pro schalten die Abo-Tools frei. Die Zahlung erfolgt mit der ausgewählten Zahlungsart.',
       },
       friends: {
         subtitle: 'Gemeinsam motiviert bleiben',
@@ -493,6 +597,12 @@ translations.english = {
       { icon: '^', title: 'Keep going', text: 'Get reminders.', tone: 'blue' },
     ],
   },
+  welcomeCharacter: {
+    eyebrow: 'MyFlow is with you',
+    title: 'Welcome, {name}!',
+    text: 'I am your little Flow guide. Let us start your day calmly and with motivation.',
+    button: 'Continue',
+  },
   auth: {
     loginTitle: 'Welcome back!',
     loginText: 'Good to see you again.',
@@ -522,9 +632,10 @@ translations.english = {
     toneIntro: 'Choose whether the app should sound more standard and calm, or more relaxed and personal.',
     continue: 'Continue with {language} and {tone}',
     options: {
-      german: { title: 'Deutsch', example: 'Hey, schoen dass du da bist!', description: 'German texts and hints in the app' },
+      german: { title: 'Deutsch', example: 'Hey, schön dass du da bist!', description: 'German texts and hints in the app' },
       english: { title: 'English', example: 'Hey, good to see you!', description: 'App texts and messages in English' },
       turkish: { title: 'Turkce', example: 'Merhaba, seni gormek guzel!', description: 'App texts and messages in Turkish' },
+      arabic: { title: 'العربية', example: 'أهلا، سعيد بوجودك!', description: 'App texts and messages in Arabic' },
     },
     toneOptions: {
       casual: {
@@ -681,6 +792,12 @@ translations.turkish = {
       { icon: '^', title: 'Devam et', text: 'Hatirlaticilar al.', tone: 'blue' },
     ],
   },
+  welcomeCharacter: {
+    eyebrow: 'MyFlow seninle',
+    title: 'Hos geldin, {name}!',
+    text: 'Ben senin kucuk Flow rehberinim. Gunune sakin ve motive baslayalim.',
+    button: 'Devam et',
+  },
   auth: {
     loginTitle: 'Tekrar hos geldin!',
     loginText: 'Seni yeniden gormek guzel.',
@@ -745,9 +862,10 @@ translations.turkish = {
     toneIntro: 'Uygulamanin daha standart ve sakin mi, yoksa daha samimi mi konusacagini sec.',
     continue: '{language} ve {tone} ile devam et',
     options: {
-      german: { title: 'Deutsch', example: 'Hey, schoen dass du da bist!', description: 'Uygulamada Almanca metinler' },
+      german: { title: 'Deutsch', example: 'Hey, schön dass du da bist!', description: 'Uygulamada Almanca metinler' },
       english: { title: 'English', example: 'Hey, good to see you!', description: 'Uygulamada Ingilizce metinler' },
       turkish: { title: 'Turkce', example: 'Merhaba, seni gormek guzel!', description: 'Uygulamada Turkce metinler' },
+      arabic: { title: 'العربية', example: 'أهلا، سعيد بوجودك!', description: 'Uygulamada Arapca metinler' },
     },
     toneOptions: {
       casual: {
@@ -846,5 +964,200 @@ translations.turkish = {
     start: 'Challenge baslat',
     against: '{friend} ile karsi karsiya',
     days: '{days} gun',
+  },
+}
+
+translations.arabic = {
+  ...translations.english,
+  nav: { dashboard: 'الرئيسية', habits: 'الروتينات', progress: 'الإحصائيات', freunde: 'الأصدقاء', profile: 'الملف الشخصي' },
+  common: { back: 'رجوع', close: 'إغلاق', change: 'تغيير', ok: 'حسنا', active: 'نشط', off: 'إيقاف', save: 'حفظ' },
+  start: {
+    badge: 'رفاهيتك. تدفقك.',
+    category: 'الصحة والروتين والتحفيز',
+    lead: 'ابن عادات صحية، نظم يومك الدراسي، وحافظ على حماسك على المدى الطويل.',
+    start: 'ابدأ',
+    login: 'تسجيل الدخول',
+    register: 'إنشاء حساب',
+    features: [
+      { icon: '*', title: 'حدد أهدافك', text: 'خطط لروتيناتك.', tone: 'purple' },
+      { icon: '+', title: 'التقدم', text: 'شاهد تطورك.', tone: 'pink' },
+      { icon: '^', title: 'استمر', text: 'احصل على تذكيرات.', tone: 'blue' },
+    ],
+  },
+  welcomeCharacter: {
+    eyebrow: 'MyFlow معك',
+    title: 'أهلا بك، {name}!',
+    text: 'أنا مرافقك الصغير في MyFlow. لنبدأ يومك بهدوء وتحفيز.',
+    button: 'متابعة',
+  },
+  auth: {
+    loginTitle: 'أهلا بعودتك!',
+    loginText: 'سعيد برؤيتك من جديد.',
+    email: 'البريد الإلكتروني',
+    password: 'كلمة المرور',
+    forgot: 'نسيت كلمة المرور؟',
+    noAccount: 'ليس لديك حساب؟',
+    registerTitle: 'إنشاء حساب',
+    registerText: 'أنشئ حسابك لاستخدام MyFlow بالكامل.',
+    username: 'اسم المستخدم',
+    usernamePlaceholder: 'اسم المستخدم الخاص بك',
+    ownPassword: 'كلمة المرور الخاصة بك',
+    repeatPassword: 'كرر كلمة المرور',
+    hasAccount: 'لديك حساب بالفعل؟',
+    resetTitle: 'إعادة تعيين كلمة المرور',
+    resetText: 'اختر كلمة مرور جديدة لحسابك.',
+    newPassword: 'كلمة مرور جديدة',
+    confirmPassword: 'تأكيد كلمة المرور',
+    savePassword: 'حفظ كلمة المرور',
+    backToLogin: 'العودة إلى تسجيل الدخول',
+  },
+  language: {
+    eyebrow: 'التخصيص',
+    title: 'أي لغة تريد استخدامها؟',
+    intro: 'يمكنك تغيير اللغة والنبرة لاحقا من ملفك الشخصي.',
+    toneTitle: 'كيف تريد أن يتحدث MyFlow معك؟',
+    toneIntro: 'اختر بين أسلوب هادئ ورسمي أو أسلوب قريب ومحفز.',
+    continue: 'المتابعة باستخدام {language} و{tone}',
+    options: {
+      german: { title: 'Deutsch', example: 'Hey, schön dass du da bist!', description: 'نصوص التطبيق بالألمانية' },
+      english: { title: 'English', example: 'Hey, good to see you!', description: 'نصوص التطبيق بالإنجليزية' },
+      turkish: { title: 'Türkçe', example: 'Merhaba, seni görmek güzel!', description: 'نصوص التطبيق بالتركية' },
+      arabic: { title: 'العربية', example: 'أهلا، سعيد بوجودك!', description: 'نصوص التطبيق بالعربية' },
+    },
+    toneOptions: {
+      casual: {
+        title: 'قريب',
+        example: 'أهلا، سعيد بوجودك!',
+        description: 'أسلوب شخصي ومحفز وقريب من الحياة اليومية.',
+      },
+      formal: {
+        title: 'رسمي',
+        example: 'مرحبا، أهلا بعودتك.',
+        description: 'أسلوب هادئ وواضح ورسمي.',
+      },
+    },
+  },
+  dashboard: {
+    hello: 'أهلا {name}، سعيد بوجودك!',
+    title: 'كيف يسير يومك؟',
+    message: 'أكملت {count} من {total} روتينات. استمر!',
+    dayFeeling: 'شعور اليوم',
+    goodFlow: 'أنت في تدفق جيد.',
+    moreRoom: 'ما زال هناك مجال لخطوة أخرى اليوم.',
+    progressMessage: 'رائع! أنت تتقدم بشكل جيد اليوم.',
+    done: 'تم',
+    doneText: 'روتينات منجزة',
+    open: 'مفتوح',
+    openText: 'متبقي اليوم',
+    coach: 'مدرب MyFlow الذكي',
+    energy: 'الطاقة',
+    stress: 'التوتر',
+    time: 'الوقت',
+    checkIn: {
+      energy: ['منخفضة', 'متوسطة', 'عالية'],
+      stress: ['هادئ', 'متوتر', 'مجهد'],
+      time: ['دقيقتان', '5 دقائق', '10 دقائق'],
+    },
+    recommendation: 'توصية',
+    focus: 'المهم اليوم',
+    topFocus: 'التركيز الأساسي',
+    allDone: 'تم كل شيء. يمكن أن يكون اليوم خفيفا.',
+    dayPlan: 'خطة اليوم',
+    morning: 'الصباح',
+    noon: 'الظهر',
+    evening: 'المساء',
+    morningText: 'ابدأ بهدوء ولا تنس الماء',
+    noonText: 'أضف استراحة حركة قصيرة',
+    eveningText: 'اختم اليوم بهدوء وراجع تقدمك',
+    thought: 'فكرة اليوم',
+    thoughtText: 'لا تحتاج أن تكون مثاليا اليوم. خطوة صغيرة تكفي لتحديد الاتجاه.',
+  },
+  routines: {
+    eyebrow: 'الروتينات',
+    title: 'روتيناتي',
+    add: '+ إضافة روتين',
+    closeAdd: 'إغلاق الإضافة',
+    custom: 'روتين خاص',
+    routine: 'روتين',
+    target: 'الهدف',
+    unit: 'الوحدة',
+    added: 'تمت الإضافة',
+    addRoutine: 'إضافة روتين',
+    placeholder: 'مثلا: شرب الماء',
+  },
+  habitCard: {
+    closeDetails: 'إغلاق التفاصيل',
+    mood: 'تسجيل المزاج',
+    period: 'تعديل بيانات الدورة',
+    moodQuestion: 'كيف تشعر اليوم؟',
+    cycleLength: 'طول الدورة',
+    flowStrength: 'الشدة',
+    pain: 'الألم',
+    wellbeing: 'الراحة أثناء المرحلة',
+    moods: ['سيئ', 'ليس جيدا', 'حسنا', 'جيد', 'جيد جدا'],
+    scale: ['خفيف جدا', 'خفيف', 'متوسط', 'قوي', 'قوي جدا'],
+  },
+  stats: {
+    eyebrow: 'الإحصائيات',
+    title: 'تقدمك',
+    periodLabel: 'اختيار فترة الإحصائيات',
+    week: 'أسبوع',
+    month: 'شهر',
+    average: 'المتوسط',
+    inFlow: '{period} في التدفق',
+    steps: 'خطوات',
+    total: 'الإجمالي',
+    improvement: 'تحسن',
+    compared: 'مقارنة بالسابق',
+    today: 'اليوم',
+    cigarettesAvoided: 'سجائر تم تجنبها',
+    fewerCigarettes: 'سجائر أقل',
+    thoughtBubble: 'فقاعة أفكار',
+    quietDay: 'كان اليوم أهدأ قليلا.',
+    stepText: 'مشيت اليوم {steps} خطوة. مشي قصير يقربك من هدفك.',
+    stepGoal: '{progress}% من {goal} خطوة',
+  },
+  profile: {
+    ...translations.english.profile,
+    title: 'الملف الشخصي',
+    picture: 'الصورة الشخصية',
+    settings: 'إعدادات الملف',
+    settingsText: 'البيانات الشخصية وسلوك التطبيق',
+    pictureText: 'صورتك الشخصية تستخدم حاليا أول حرف من اسمك تلقائيا.',
+    name: 'الاسم',
+    newName: 'اسم جديد',
+    gender: 'الجنس',
+    weight: 'الوزن',
+    height: 'الطول',
+    reminders: 'التذكيرات',
+    language: 'اللغة',
+    communicationStyle: 'أسلوب التواصل',
+    design: 'التصميم',
+    subscription: 'الاشتراك',
+    payment: 'الدفع',
+    paidText: 'Plus و Pro يفتحان أدوات الاشتراك. يتم الدفع بالطريقة المحددة.',
+    logout: 'تسجيل الخروج',
+    water: 'الماء',
+    perDay: 'في اليوم',
+    challengeLevel: 'مستوى التحدي',
+    points: 'تم جمع {points} نقطة',
+    nextLevel: 'المستوى التالي: {level} من {points} نقطة',
+  },
+  friends: {
+    subtitle: 'ابق متحمسا مع الآخرين',
+    title: 'الأصدقاء ولوحة الترتيب',
+    weekly: '{progress}% تقدم أسبوعي',
+    nextLevel: 'المستوى التالي: {level}',
+    invite: 'دعوة أصدقاء',
+    inviteFriend: 'دعوة صديق',
+    inviteText: 'شارك رابطك عبر واتساب أو البريد الإلكتروني أو انسخه مباشرة.',
+    copied: 'تم نسخ رابط الدعوة',
+    goals: 'أهداف مشتركة',
+    challenges: 'التحديات',
+    duration: 'المدة',
+    with: 'مع',
+    start: 'بدء التحدي',
+    against: 'أنت ضد {friend}',
+    days: '{days} أيام',
   },
 }

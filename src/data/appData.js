@@ -1,5 +1,5 @@
 export const habits = [
-  { title: 'Wasser trinken', detail: '3 / 4 Glaeser (500 ml)', progress: 75, status: 'Offen' },
+  { title: 'Wasser trinken', detail: '3 / 4 Gläser (500 ml)', progress: 75, status: 'Offen' },
   { title: 'Bewegung', detail: '30 / 60 Minuten', progress: 50, status: 'Aktiv' },
   { title: 'Rauchen reduzieren', detail: '2 / 5 Zigaretten vermieden', progress: 40, status: 'Aktiv' },
   { title: 'Schlaf', detail: '7 h 30 min', progress: 90, status: 'Gut' },
@@ -56,5 +56,12 @@ export const languageStyles = {
     dashboardTitle: 'Bugünkü Akış',
     dashboardMessage: '{total} rutinden {count} tanesini neredeyse tamamladın. Devam et!',
     progressMessage: 'Harika! Bugün iyi ilerliyorsun.',
+  },
+  arabic: {
+    label: 'العربية',
+    greeting: 'أهلا، سعيد بوجودك!',
+    dashboardTitle: 'تدفق اليوم',
+    dashboardMessage: 'أكملت تقريبا {count} من {total} روتينات. استمر!',
+    progressMessage: 'رائع! أنت تتقدم بشكل جيد اليوم.',
   },
 }
