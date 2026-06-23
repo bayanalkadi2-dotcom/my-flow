@@ -1928,53 +1928,564 @@ input {
 }
 
 .chart-card {
-  height: 260px;
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
+  min-height: 360px;
+  padding: 18px;
+  display: block;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(80, 60, 160, 0.14);
+  border: 1px solid rgba(123, 97, 255, 0.08);
 }
 
 .success-chart-card {
+  position: relative;
   display: grid;
-  height: auto;
-  padding: 16px;
-  overflow: hidden;
+  min-height: 260px;
+  padding: 0;
+  overflow: visible;
 }
 
-.chart-header {
+.chart-card.smart-chart-card {
+  display: block;
+  height: auto;
+  min-height: auto;
+  padding: 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.12);
+  border: 1px solid rgba(118, 92, 255, 0.12);
+}
+
+.wellbeing-dashboard {
+  margin-top: 18px;
+  display: grid;
+  gap: 18px;
+}
+
+.wellbeing-dashboard-header,
+.wellbeing-dashboard-body {
+  display: grid;
+  gap: 18px;
+}
+
+.wellbeing-dashboard-heading {
   display: flex;
-  align-items: start;
+  gap: 14px;
+  align-items: center;
+}
+
+.wellbeing-dashboard-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: rgba(123, 97, 255, 0.12);
+}
+
+.wellbeing-dashboard-heading h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.wellbeing-dashboard-actions {
+  display: grid;
+  gap: 14px;
+  align-items: center;
+  justify-content: end;
+  grid-template-columns: auto max-content;
+}
+
+.wellbeing-info-button {
+  min-width: 140px;
+}
+
+.wellbeing-period-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 5px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.wellbeing-period-toggle button {
+  min-height: 40px;
+  padding: 10px;
+  border-radius: 14px;
+  background: transparent;
+  color: #655d7f;
+}
+
+.wellbeing-period-toggle button.selected {
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff);
+  color: white;
+}
+
+.wellbeing-dashboard-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.wellbeing-metric-card {
+  padding: 16px;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(112, 88, 194, 0.08);
+  border: 1px solid rgba(118, 92, 255, 0.12);
+}
+
+.wellbeing-metric-card span {
+  display: block;
+  color: #8275a9;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wellbeing-metric-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 24px;
+  color: #2a2051;
+}
+
+.wellbeing-dashboard-body {
+  grid-template-columns: 1fr;
+}
+
+.wellbeing-chart-card {
+  min-height: 350px;
+  padding: 18px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(80, 60, 160, 0.14);
+  border: 1px solid rgba(123, 97, 255, 0.08);
+}
+
+.wellbeing-chart-card .chart-header,
+.wellbeing-section-header {
+  display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 6px;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
-.chart-header span {
-  color: #765cff;
+.wellbeing-chart-card .chart-header span,
+.wellbeing-section-header span {
+  font-weight: 700;
+  color: #2a2051;
+}
+
+.wellbeing-chart-card .chart-header small {
+  color: #8d85a3;
+}
+
+.wellbeing-dashboard-side {
+  display: grid;
+  gap: 14px;
+}
+
+.wellbeing-habits,
+.wellbeing-insights {
+  display: grid;
+  gap: 12px;
+}
+
+.wellbeing-habit-card,
+.wellbeing-insight-card {
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: #f8f6ff;
+  border: 1px solid rgba(123, 97, 255, 0.12);
+}
+
+.wellbeing-habit-card {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.wellbeing-habit-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: rgba(123, 97, 255, 0.12);
+}
+
+.wellbeing-habit-card strong,
+.wellbeing-insight-card strong {
+  display: block;
+  font-size: 15px;
+  color: #2a2051;
+}
+
+.wellbeing-habit-card p,
+.wellbeing-insight-card p {
+  margin: 0;
+  color: #6f648a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.wellbeing-empty-state {
+  min-height: 140px;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: #7b6b9c;
+  background: rgba(123, 97, 255, 0.06);
+  border-radius: 22px;
+}
+
+.smart-chart-overview {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.smart-chart-overview-left {
+  display: grid;
+  gap: 10px;
+}
+
+.smart-chart-title {
+  color: #7a7396;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.smart-chart-current-value {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.smart-chart-current-value strong {
+  font-size: 42px;
+  line-height: 1;
+  color: #17133f;
+}
+
+.smart-chart-current-value span {
+  color: #7a7396;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.smart-chart-trend-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7a7396;
+  font-size: 13px;
+  margin: 0;
+}
+
+.smart-chart-trend-arrow {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.smart-chart-trend-arrow.up {
+  background: rgba(34, 168, 111, 0.12);
+  color: #147d4a;
+}
+
+.smart-chart-trend-arrow.down {
+  background: rgba(255, 87, 87, 0.12);
+  color: #c14b4b;
+}
+
+.smart-chart-trend-arrow.stable {
+  background: rgba(118, 92, 255, 0.12);
+  color: #7b61ff;
+}
+
+.smart-chart-overview-right {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+  text-align: right;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
 }
 
-.chart-header h2 {
-  margin: 3px 0 0;
+.status-normal {
+  color: #3d4a68;
+  background: rgba(118, 92, 255, 0.08);
+}
+
+.status-low,
+.status-high {
+  color: #7b61ff;
+  background: rgba(123, 97, 255, 0.12);
+}
+
+.status-critical-low,
+.status-critical-high {
+  color: #c14b4b;
+  background: rgba(255, 87, 87, 0.12);
+}
+
+.smart-chart-normal-range,
+.smart-chart-update-time {
+  color: #7a7396;
+  font-size: 12px;
+  margin: 0;
+}
+
+.smart-chart-plot {
+  position: relative;
+}
+
+.smart-chart-svg {
+  width: 100%;
+  height: auto;
+  min-height: 320px;
+}
+
+.smart-chart-grid-line {
+  stroke: rgba(70, 78, 105, 0.08);
+  stroke-width: 1.5;
+}
+
+.smart-chart-normal-band {
+  fill: rgba(123, 97, 255, 0.08);
+  stroke: rgba(123, 97, 255, 0.22);
+  stroke-width: 1;
+}
+
+.smart-chart-area {
+  fill: url(#smart-chart-area-gradient);
+}
+
+.smart-chart-line {
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 12px 20px rgba(123, 97, 255, 0.16));
+}
+
+.smart-chart-point {
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.point-normal {
+  fill: #7b61ff;
+}
+
+.point-abnormal {
+  fill: #ffb31f;
+}
+
+.point-critical {
+  fill: #ff4e5a;
+}
+
+.smart-chart-spot-ring {
+  fill: rgba(255, 180, 36, 0.18);
+}
+
+.spot-high {
+  fill: rgba(255, 143, 74, 0.16);
+}
+
+.spot-low {
+  fill: rgba(255, 180, 36, 0.18);
+}
+
+.smart-chart-current-line {
+  stroke: rgba(123, 97, 255, 0.24);
+  stroke-dasharray: 3 6;
+  stroke-width: 1.5;
+}
+
+.smart-chart-current-tag {
+  fill: #4a5269;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.smart-chart-hit-area {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.smart-chart-hit-area:focus-visible {
+  outline: none;
+}
+
+.smart-chart-tooltip {
+  position: absolute;
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  width: min(220px, 45vw);
+  border-radius: 18px;
+  background: #ffffff;
   color: #17133f;
-  font-size: 34px;
-  line-height: 1;
+  box-shadow: 0 24px 38px rgba(80, 60, 160, 0.16);
+  transform: translate(-50%, -120%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.app.theme-dark .smart-chart-tooltip {
+  background: rgba(31, 25, 52, 0.95);
+  color: #f8f6ff;
+}
+
+.smart-chart-tooltip strong {
+  font-size: 13px;
+}
+
+.smart-chart-tooltip span {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.smart-chart-tooltip small {
+  display: block;
+  color: #7a7396;
+  font-size: 11px;
+}
+
+.smart-chart-axis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(34px, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.smart-chart-axis span {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 34px;
+  border-radius: 999px;
+  background: rgba(118, 92, 255, 0.08);
+  color: #7b61ff;
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smart-chart-point,
+  .chart-point-target,
+  .smart-chart-tooltip {
+    transition: none !important;
+  }
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(118, 92, 255, 0.14);
+}
+
+.chart-header span {
+  color: #7b61ff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.chart-header h2 {
+  margin: 0;
+  color: #17133f;
+  font-size: 26px;
+  line-height: 1.1;
 }
 
 .chart-header small {
-  max-width: 96px;
   color: #7a7396;
   font-size: 12px;
-  font-weight: 800;
-  line-height: 1.25;
-  text-align: right;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .success-chart {
   position: relative;
   width: 100%;
+  min-height: 300px;
+}
+
+.chart-tooltip {
+  position: absolute;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  min-width: 160px;
+  max-width: 230px;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #17133f;
+  box-shadow: 0 24px 40px rgba(75, 53, 141, 0.16);
+  transform: translate(-50%, -115%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.app.theme-dark .chart-tooltip {
+  background: rgba(31, 25, 52, 0.95);
+  color: #f8f6ff;
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.35);
+}
+
+.chart-tooltip strong {
+  font-size: 13px;
+}
+
+.chart-tooltip span {
+  color: #302c5a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.chart-tooltip small {
+  color: #7a7396;
+  font-size: 11px;
+}
+
+.chart-point-target {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.chart-point-target:focus-visible {
+  outline: none;
+  stroke: #7b61ff;
+  stroke-width: 2;
+  opacity: 0.8;
 }
 
 .success-chart svg {
@@ -1984,7 +2495,11 @@ input {
 }
 
 .chart-band {
-  fill: rgba(77, 86, 113, 0.08);
+  fill: url(#band-gradient);
+}
+
+.chart-area {
+  fill: url(#area-gradient);
 }
 
 .chart-grid-line {
@@ -1994,53 +2509,58 @@ input {
 
 .chart-line {
   fill: none;
-  stroke: #c4c9d3;
-  stroke-width: 9;
+  stroke: url(#line-gradient);
+  stroke-width: 10;
   stroke-linecap: round;
-  filter: drop-shadow(0 8px 8px rgba(72, 80, 104, 0.12));
+  stroke-linejoin: round;
+  filter: drop-shadow(0 12px 18px rgba(123, 97, 255, 0.22));
 }
 
 .chart-pulse {
-  fill: rgba(255, 180, 36, 0.22);
+  fill: rgba(255, 180, 36, 0.18);
 }
 
 .chart-dot-ring {
-  fill: #ffffff;
-  filter: drop-shadow(0 5px 8px rgba(54, 62, 90, 0.16));
+  fill: #fff;
+  stroke: rgba(123, 97, 255, 0.15);
+  stroke-width: 1;
+  filter: drop-shadow(0 10px 18px rgba(76, 59, 145, 0.14));
 }
 
 .chart-dot {
-  fill: #3d4a68;
+  fill: #7b61ff;
 }
 
-.chart-dot.best,
 .chart-dot.low {
   fill: #ffb31f;
 }
 
 .chart-label {
-  fill: #4a5269;
-  font-size: 14px;
+  fill: #302c5a;
+  font-size: 12px;
   font-weight: 900;
-  letter-spacing: 0;
+  letter-spacing: 0.04em;
 }
 
 .chart-axis {
   display: flex;
   justify-content: space-between;
-  padding: 0 20px;
-  margin-top: -5px;
+  gap: 2px;
+  margin-top: 14px;
 }
 
 .chart-axis span {
-  display: grid;
-  place-items: center;
-  min-width: 34px;
-  height: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 32px;
+  height: 32px;
   border-radius: 999px;
-  background: #e9e9ec;
-  color: transparent;
-  font-size: 0;
+  background: rgba(118, 92, 255, 0.08);
+  color: #7b61ff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 8px;
 }
 
 .bar-wrap {

@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import SmartRangeTrendChart from '../commponents/SmartRangeTrendChart'
+import WellbeingDashboard from '../commponents/WellbeingDashboard'
 
 const weeklyProgress = [
   { day: 'Mo', value: 55 },
@@ -21,6 +23,30 @@ const smokingProgress = [
   { label: 'Heute', value: '2', detail: 'Zigaretten vermieden' },
   { label: 'Woche', value: '11', detail: 'Zigaretten weniger' },
 ]
+
+const chartSeries = {
+  week: {
+    normalRange: { min: 50, max: 72 },
+    data: [
+      { label: 'Mo', value: 55 },
+      { label: 'Di', value: 80 },
+      { label: 'Mi', value: 45 },
+      { label: 'Do', value: 90 },
+      { label: 'Fr', value: 65 },
+      { label: 'Sa', value: 75 },
+      { label: 'So', value: 60 },
+    ],
+  },
+  month: {
+    normalRange: { min: 62, max: 76 },
+    data: [
+      { label: 'W1', value: 58 },
+      { label: 'W2', value: 64 },
+      { label: 'W3', value: 71 },
+      { label: 'W4', value: 82 },
+    ],
+  },
+}
 
 const periodStats = {
   week: {
@@ -84,14 +110,34 @@ function Statistik({ languageStyle, t }) {
           <p>{t.stats.compared}</p>
         </article>
       </div>
-      <div className="chart-card">
-        {activeStats.progress.map((entry) => (
-          <div className="bar-wrap" key={entry.day}>
-            <div className="bar" style={{ height: `${entry.value}%` }} />
-            <span>{entry.day}</span>
-          </div>
-        ))}
-      </div>
+      <WellbeingDashboard
+        title={t.stats.wellbeingTitle}
+        subtitle={t.stats.wellbeingSubtitle}
+        infoLabel={t.stats.wellbeingInfo}
+        period={period}
+        periodOptions={[
+          { value: 'week', label: t.stats.week },
+          { value: 'month', label: t.stats.month },
+        ]}
+        onPeriodChange={setPeriod}
+        metrics={[
+          { label: t.stats.wellbeingMood, value: activeStats.average, unit: '%' },
+          { label: t.stats.wellbeingStrength, value: activeStats.improvement, unit: '%' },
+          { label: t.stats.wellbeingHabits, value: smokingProgress.length },
+        ]}
+        chartData={chartSeries[period].data}
+        chartTitle={t.stats.wellbeingChart}
+        habits={smokingProgress.map((entry) => ({
+          title: entry.label,
+          detail: entry.detail,
+        }))}
+        habitsTitle={t.stats.wellbeingHabits}
+        insights={[]}
+        insightsTitle={t.stats.wellbeingInsights}
+        lastUpdated={t.stats.wellbeingLastUpdated}
+        noDataText={t.stats.wellbeingNoData}
+        noInsightsText={t.stats.wellbeingNoInsights}
+      />
       <div className="smoking-stats">
         {smokingProgress.map((entry, index) => (
           <article className="stat-card smoking-card" key={entry.label}>
