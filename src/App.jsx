@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAuth } from './context/AuthContext'
+import { useAuth } from './context/authContextValue'
 import { getRoutines, bulkCreateRoutines } from './services/routineService'
 import { getProfile, getUserSettings } from './services/authService'
 import Navbar from './commponents/Navbar'
 import { habits, languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import DashboardHome from './pages/DashboardHome'
+import DailyCheckIn from './commponents/checkin/DailyCheckIn'
 import Einloggen from './pages/Einloggen'
 import PasswortÄndern from './pages/Passwortändern'
 import Profil from './pages/Profil'
@@ -16,6 +17,7 @@ import Startseite from './pages/Startseite'
 import Statistik from './pages/Statistik'
 import Freunde from './pages/Freunde'
 import Willkommen from './pages/Willkommen'
+import flowCharacter from './assets/flow-character-wall-final.jpg'
 import './App.css'
 
 const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter']
@@ -71,13 +73,15 @@ function App() {
   // Load user settings and routines from Supabase
   useEffect(() => {
     if (!isAuthenticated || !user) {
-      setLanguageStyle('german')
-      setCommunicationStyle('casual')
-      setProfileName('Gast')
-      setAppTheme('Hell')
-      setRoutineItems([])
-      setScreen('start')
-      setRoutinesLoaded(true)
+      queueMicrotask(() => {
+        setLanguageStyle('german')
+        setCommunicationStyle('casual')
+        setProfileName('Gast')
+        setAppTheme('Hell')
+        setRoutineItems([])
+        setScreen('start')
+        setRoutinesLoaded(true)
+      })
       return
     }
 
@@ -446,6 +450,8 @@ function App() {
             onToggleDone={toggleHabitDone}
           />
         )
+      case 'checkin':
+        return <DailyCheckIn onNavigate={setScreen} user={user} />
       case 'progress':
         return <Statistik habits={preparedHabits} languageStyle={languageStyle} t={t} />
       case 'freunde':
@@ -508,6 +514,17 @@ function App() {
   return (
     <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
       {renderScreen()}
+      {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'checkin' && (
+        <button
+          className="floating-checkin-button"
+          onClick={() => setScreen('checkin')}
+          type="button"
+          aria-label="Tages-Check-in oeffnen"
+        >
+          <img src={flowCharacter} alt="" />
+          <span>Check-in</span>
+        </button>
+      )}
       {!authScreens.includes(screen) && screen !== 'profileSettings' && (
         <Navbar activeScreen={screen} items={Object.entries(t.nav).map(([id, label]) => ({ id, label }))} onNavigate={setScreen} />
       )}

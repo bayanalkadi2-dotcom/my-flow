@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/authContextValue'
 import logo from '../assets/Icon Gruppe H.png'
 import iconCommunication from '../assets/settings-icons/communication.png'
 import iconDesign from '../assets/settings-icons/design.png'

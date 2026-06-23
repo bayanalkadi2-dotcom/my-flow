@@ -199,3 +199,108 @@ DROP TRIGGER IF EXISTS update_user_settings_updated_at ON public.user_settings;
 CREATE TRIGGER update_user_settings_updated_at
   BEFORE UPDATE ON public.user_settings
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- ============================================
+-- Tabelle: daily_checkins
+-- Speichert den intelligenten Tages-Check-in und empfohlene Aufgaben
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.daily_checkins (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  general_mood TEXT NOT NULL,
+  stress_level TEXT NOT NULL,
+  tiredness_level TEXT NOT NULL,
+  physical_energy TEXT NOT NULL,
+  mental_energy TEXT NOT NULL,
+  concentration_level TEXT NOT NULL,
+  mood TEXT NOT NULL,
+  available_time_minutes INTEGER NOT NULL,
+  support_goal TEXT NOT NULL,
+  recommended_task_ids TEXT[] NOT NULL DEFAULT '{}',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+ALTER TABLE public.daily_checkins
+  ADD COLUMN IF NOT EXISTS mood TEXT;
+
+ALTER TABLE public.daily_checkins
+  ADD COLUMN IF NOT EXISTS available_time_minutes INTEGER;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'daily_checkins'
+      AND column_name = 'mood_tags'
+  ) THEN
+    UPDATE public.daily_checkins
+    SET mood = COALESCE(mood, NULLIF(mood_tags[1], ''), 'balanced')
+    WHERE mood IS NULL;
+  ELSE
+    UPDATE public.daily_checkins
+    SET mood = COALESCE(mood, 'balanced')
+    WHERE mood IS NULL;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'daily_checkins'
+      AND column_name = 'available_time'
+  ) THEN
+    UPDATE public.daily_checkins
+    SET available_time_minutes = COALESCE(available_time_minutes, available_time, 5)
+    WHERE available_time_minutes IS NULL;
+  ELSE
+    UPDATE public.daily_checkins
+    SET available_time_minutes = COALESCE(available_time_minutes, 5)
+    WHERE available_time_minutes IS NULL;
+  END IF;
+END $$;
+
+ALTER TABLE public.daily_checkins
+  ALTER COLUMN mood SET NOT NULL,
+  ALTER COLUMN available_time_minutes SET NOT NULL,
+  ALTER COLUMN recommended_task_ids SET DEFAULT '{}';
+
+CREATE INDEX IF NOT EXISTS idx_daily_checkins_user_id ON public.daily_checkins(user_id);
+CREATE INDEX IF NOT EXISTS idx_daily_checkins_created_at ON public.daily_checkins(created_at);
+
+ALTER TABLE public.daily_checkins ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can read own daily checkins" ON public.daily_checkins;
+CREATE POLICY "Users can read own daily checkins"
+ON public.daily_checkins
+FOR SELECT
+USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can create own daily checkins" ON public.daily_checkins;
+CREATE POLICY "Users can create own daily checkins"
+ON public.daily_checkins
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own daily checkins" ON public.daily_checkins;
+CREATE POLICY "Users can update own daily checkins"
+ON public.daily_checkins
+FOR UPDATE
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete own daily checkins" ON public.daily_checkins;
+CREATE POLICY "Users can delete own daily checkins"
+ON public.daily_checkins
+FOR DELETE
+USING (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS update_daily_checkins_updated_at ON public.daily_checkins;
+CREATE TRIGGER update_daily_checkins_updated_at
+  BEFORE UPDATE ON public.daily_checkins
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

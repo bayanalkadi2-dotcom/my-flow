@@ -1,7 +1,6 @@
-import { createContext, useState, useEffect, useContext } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-
-export const AuthContext = createContext()
+import { AuthContext } from './authContextValue'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -55,7 +54,7 @@ export function AuthProvider({ children }) {
     } catch (err) {
       const message = err.message || 'Registrierung fehlgeschlagen'
       setError(message)
-      throw new Error(message)
+      throw new Error(message, { cause: err })
     }
   }
 
@@ -73,7 +72,7 @@ export function AuthProvider({ children }) {
     } catch (err) {
       const message = err.message || 'Anmeldung fehlgeschlagen'
       setError(message)
-      throw new Error(message)
+      throw new Error(message, { cause: err })
     }
   }
 
@@ -85,7 +84,7 @@ export function AuthProvider({ children }) {
     } catch (err) {
       const message = err.message || 'Abmeldung fehlgeschlagen'
       setError(message)
-      throw new Error(message)
+      throw new Error(message, { cause: err })
     }
   }
 
@@ -105,12 +104,4 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth muss innerhalb eines AuthProvider verwendet werden')
-  }
-  return context
 }
