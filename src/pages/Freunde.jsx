@@ -9,6 +9,10 @@ const levelSteps = [
 ]
 
 function getFlowTree(score) {
+  if (score <= 0) {
+    return { label: "Start", symbols: "" }
+  }
+
   if (score < 100) {
     return { label: "Blatt", symbols: "🍃" }
   }
@@ -49,68 +53,47 @@ function getLevel(score) {
 }
 
 function Freunde({ habits, t }) {
-  const firstRoutineTitle = habits[0]?.title ?? "Wasser trinken";
+  const firstRoutineTitle = habits[0]?.title ?? "";
   const routineLabels = new Map(habits.map((habit) => [habit.title, habit.displayTitle ?? habit.title]));
   const getRoutineLabel = (routine) => routineLabels.get(routine) ?? routine;
-  const inviteLink = "https://myflow.app/invite/nina-flow";
-  const freunde = [
-    {
-      name: "Lena",
-      score: 850,
-      progress: 72,
-      color: "#7c3aed",
-      details: [`${t.profile.water}: 2,0 L`, "Laufen: 18 km", "Sport: 4/5"],
-    },
-    {
-      name: "Du",
-      score: 650,
-      progress: 80,
-      color: "#4f46e5",
-      details: [`${t.profile.water}: 2,5 L`, "Laufen: 24 km", "Sport: 4/5"],
-    },
-    {
-      name: "Max",
-      score: 500,
-      progress: 58,
-      color: "#ec4899",
-      details: [`${t.profile.water}: 1,5 L`, "Laufen: 12 km", "Sport: 2/5"],
-    },
-    {
-      name: "Sarah",
-      score: 300,
-      progress: 45,
-      color: "#22c55e",
-      details: [`${t.profile.water}: 1,2 L`, "Laufen: 8 km", "Sport: 2/5"],
-    },
-    {
-      name: "Tom",
-      score: 150,
-      progress: 32,
-      color: "#f59e0b",
-      details: [`${t.profile.water}: 1,0 L`, "Laufen: 5 km", "Sport: 1/5"],
-    },
-  ];
-
-  const [selectedFriend, setSelectedFriend] = useState(freunde[1]);
+  const inviteLink = "https://myflow.app/invite/my-flow";
+  const [freunde, setFreunde] = useState([]);
+  const [selectedFriend, setSelectedFriend] = useState(null);
+  const [friendName, setFriendName] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteStatus, setInviteStatus] = useState("");
   const [challengeRoutine, setChallengeRoutine] = useState(firstRoutineTitle);
   const [challengeDays, setChallengeDays] = useState("14");
-  const [challengeFriend, setChallengeFriend] = useState("Lena");
-  const [challenges, setChallenges] = useState([
-    {
-      id: 1,
-      routine: "Wasser trinken",
-      days: 14,
-      friend: "Lena",
-      progress: 36,
-    },
-  ]);
+  const [challengeFriend, setChallengeFriend] = useState("");
+  const [challenges, setChallenges] = useState([]);
+
+  function addFriend(event) {
+    event.preventDefault();
+
+    const name = friendName.trim();
+
+    if (!name || freunde.some((freund) => freund.name.toLowerCase() === name.toLowerCase())) {
+      return;
+    }
+
+    const nextFriend = {
+      name,
+      score: 0,
+      progress: 0,
+      color: "#7b61ff",
+      details: ["Noch keine gemeinsamen Daten"],
+    };
+
+    setFreunde((currentFriends) => [...currentFriends, nextFriend]);
+    setSelectedFriend(nextFriend);
+    setChallengeFriend(name);
+    setFriendName("");
+  }
 
   function addChallenge(event) {
     event.preventDefault();
 
-    if (!challengeRoutine) {
+    if (!challengeRoutine || !challengeFriend) {
       return;
     }
 
@@ -134,8 +117,8 @@ function Freunde({ habits, t }) {
     setInviteStatus(t.friends.copied);
   }
 
-  const selectedLevel = getLevel(selectedFriend.score);
-  const selectedTree = getFlowTree(selectedFriend.score);
+  const selectedLevel = selectedFriend ? getLevel(selectedFriend.score) : null;
+  const selectedTree = selectedFriend ? getFlowTree(selectedFriend.score) : null;
   const inviteText = encodeURIComponent(`MyFlow: ${inviteLink}`);
   const mailSubject = encodeURIComponent("Einladung zu MyFlow");
 
@@ -148,34 +131,59 @@ function Freunde({ habits, t }) {
         </div>
       </div>
 
-      <div className="friend-detail-card">
-        <div className="friend-detail-top">
-          <div className="avatar detail-avatar">{selectedFriend.name.charAt(0)}</div>
-          <div>
-            <h2>{selectedFriend.name}</h2>
-            <p>{t.friends.weekly.replace('{progress}', selectedFriend.progress)}</p>
+      {selectedFriend ? (
+        <div className="friend-detail-card">
+          <div className="friend-detail-top">
+            <div className="avatar detail-avatar">{selectedFriend.name.charAt(0)}</div>
+            <div>
+              <h2>{selectedFriend.name}</h2>
+              <p>{t.friends.weekly.replace('{progress}', selectedFriend.progress)}</p>
+            </div>
+            <strong>{selectedFriend.score}</strong>
           </div>
-          <strong>{selectedFriend.score}</strong>
-        </div>
 
-        <div className="friend-level-row">
-          <span>Level {selectedLevel.current}</span>
-          <small>{t.friends.nextLevel.replace('{level}', selectedLevel.next)}</small>
-        </div>
-        <div className="friend-tree-status">
-          <span>{selectedTree.symbols}</span>
-          <p>FlowTree: {selectedTree.label}</p>
-        </div>
-        <div className="friend-level-progress">
-          <span style={{ width: `${selectedLevel.progress}%` }} />
-        </div>
+          <div className="friend-level-row">
+            <span>Level {selectedLevel.current}</span>
+            <small>{t.friends.nextLevel.replace('{level}', selectedLevel.next)}</small>
+          </div>
+          <div className="friend-tree-status">
+            <span>{selectedTree.symbols}</span>
+            <p>FlowTree: {selectedTree.label}</p>
+          </div>
+          <div className="friend-level-progress">
+            <span style={{ width: `${selectedLevel.progress}%` }} />
+          </div>
 
-        <div className="detail-list">
-          {selectedFriend.details.map((detail) => (
-            <span key={detail}>{detail}</span>
-          ))}
+          <div className="detail-list">
+            {selectedFriend.details.map((detail) => (
+              <span key={detail}>{detail}</span>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="friend-detail-card">
+          <div className="friend-detail-top">
+            <div className="avatar detail-avatar">+</div>
+            <div>
+              <h2>Noch keine Freunde</h2>
+              <p>Fuege spaeter Freunde hinzu, um Fortschritte zu vergleichen.</p>
+            </div>
+            <strong>0</strong>
+          </div>
+        </div>
+      )}
+
+      <form className="challenge-form add-friend-form" onSubmit={addFriend}>
+        <label>
+          Freund hinzufuegen
+          <input
+            value={friendName}
+            onChange={(event) => setFriendName(event.target.value)}
+            placeholder="Name"
+          />
+        </label>
+        <button type="submit">Hinzufuegen</button>
+      </form>
 
       <button className="add-friend-button invite-bottom-button" onClick={() => setInviteOpen((open) => !open)} type="button">
         {t.friends.invite}
@@ -210,12 +218,16 @@ function Freunde({ habits, t }) {
         <form className="challenge-form" onSubmit={addChallenge}>
           <label>
             {t.routines.routine}
-            <select value={challengeRoutine} onChange={(event) => setChallengeRoutine(event.target.value)}>
-              {habits.map((habit) => (
-                <option value={habit.title} key={habit.id}>
-                  {habit.displayTitle ?? habit.title}
-                </option>
-              ))}
+            <select disabled={habits.length === 0} value={challengeRoutine} onChange={(event) => setChallengeRoutine(event.target.value)}>
+              {habits.length === 0 ? (
+                <option>Erst Routine hinzufuegen</option>
+              ) : (
+                habits.map((habit) => (
+                  <option value={habit.title} key={habit.id}>
+                    {habit.displayTitle ?? habit.title}
+                  </option>
+                ))
+              )}
             </select>
           </label>
           <div className="challenge-form-row">
@@ -229,73 +241,99 @@ function Freunde({ habits, t }) {
             </label>
             <label>
               {t.friends.with}
-              <select value={challengeFriend} onChange={(event) => setChallengeFriend(event.target.value)}>
-                {freunde
-                  .filter((freund) => freund.name !== "Du")
-                  .map((freund) => (
+              <select disabled={freunde.length === 0} value={challengeFriend} onChange={(event) => setChallengeFriend(event.target.value)}>
+                {freunde.length === 0 ? (
+                  <option>Erst Freund hinzufuegen</option>
+                ) : (
+                  freunde.map((freund) => (
                     <option value={freund.name} key={freund.name}>
                       {freund.name}
                     </option>
-                  ))}
+                  ))
+                )}
               </select>
             </label>
           </div>
-          <button type="submit">{t.friends.start}</button>
+          <button disabled={freunde.length === 0 || habits.length === 0} type="submit">{t.friends.start}</button>
         </form>
 
         <div className="challenge-list">
-          {challenges.map((challenge) => (
-            <article className="challenge-card" key={challenge.id}>
+          {challenges.length === 0 ? (
+            <article className="challenge-card">
               <div>
-                <span>{t.friends.days.replace('{days}', challenge.days)}</span>
-                <h3>{getRoutineLabel(challenge.routine)}</h3>
-                <p>{t.friends.against.replace('{friend}', challenge.friend)}</p>
+                <span>{t.friends.challenges}</span>
+                <h3>Keine Challenge aktiv</h3>
+                <p>Starte spaeter eine Challenge mit einem Freund.</p>
               </div>
-              <strong>{challenge.progress}%</strong>
+              <strong>0%</strong>
               <div className="challenge-progress">
-                <span style={{ width: `${challenge.progress}%` }} />
+                <span style={{ width: "0%" }} />
               </div>
             </article>
-          ))}
+          ) : (
+            challenges.map((challenge) => (
+              <article className="challenge-card" key={challenge.id}>
+                <div>
+                  <span>{t.friends.days.replace('{days}', challenge.days)}</span>
+                  <h3>{getRoutineLabel(challenge.routine)}</h3>
+                  <p>{t.friends.against.replace('{friend}', challenge.friend)}</p>
+                </div>
+                <strong>{challenge.progress}%</strong>
+                <div className="challenge-progress">
+                  <span style={{ width: `${challenge.progress}%` }} />
+                </div>
+              </article>
+            ))
+          )}
         </div>
       </section>
 
       <div className="leaderboard">
-        {freunde.map((freund, index) => (
-          <button
-            className={`friend-card ${
-              selectedFriend.name === freund.name ? "active" : ""
-            }`}
-            key={freund.name}
-            onClick={() => setSelectedFriend(freund)}
-          >
-            <div className="rank">{index + 1}</div>
-            <div className="avatar">{freund.name.charAt(0)}</div>
-            <div className="friend-tree-badge" aria-label={`FlowTree ${getFlowTree(freund.score).label}`}>
-              {getFlowTree(freund.score).symbols}
-            </div>
-
+        {freunde.length === 0 ? (
+          <div className="friend-card">
+            <div className="rank">0</div>
             <div className="friend-info">
-              <h2>{freund.name}</h2>
-              <p>{t.friends.weekly.replace('{progress}', freund.progress)}</p>
-
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{
-                    width: `${freund.progress}%`,
-                    backgroundColor: freund.color,
-                  }}
-                />
+              <h2>Keine Freunde</h2>
+              <p>Die Rangliste fuellt sich, sobald du Freunde hinzufuegst.</p>
+            </div>
+          </div>
+        ) : (
+          freunde.map((freund, index) => (
+            <button
+              className={`friend-card ${
+                selectedFriend?.name === freund.name ? "active" : ""
+              }`}
+              key={freund.name}
+              onClick={() => setSelectedFriend(freund)}
+            >
+              <div className="rank">{index + 1}</div>
+              <div className="avatar">{freund.name.charAt(0)}</div>
+              <div className="friend-tree-badge" aria-label={`FlowTree ${getFlowTree(freund.score).label}`}>
+                {getFlowTree(freund.score).symbols}
               </div>
-            </div>
 
-            <div className="score">
-              <span>{freund.score}</span>
-              <small>{getLevel(freund.score).current}</small>
-            </div>
-          </button>
-        ))}
+              <div className="friend-info">
+                <h2>{freund.name}</h2>
+                <p>{t.friends.weekly.replace('{progress}', freund.progress)}</p>
+
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${freund.progress}%`,
+                      backgroundColor: freund.color,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="score">
+                <span>{freund.score}</span>
+                <small>{getLevel(freund.score).current}</small>
+              </div>
+            </button>
+          ))
+        )}
       </div>
     </div>
   );

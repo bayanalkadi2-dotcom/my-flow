@@ -1,10 +1,4 @@
-export const habits = [
-  { title: 'Wasser trinken', detail: '3 / 4 Gläser (500 ml)', progress: 75, status: 'Offen' },
-  { title: 'Bewegung', detail: '30 / 60 Minuten', progress: 50, status: 'Aktiv' },
-  { title: 'Rauchen reduzieren', detail: '2 / 5 Zigaretten vermieden', progress: 40, status: 'Aktiv' },
-  { title: 'Schlaf', detail: '7 h 30 min', progress: 90, status: 'Gut' },
-  { title: 'Entspannung', detail: '10 / 15 Minuten', progress: 70, status: 'Offen' },
-]
+export const habits = []
 
 export const navItems = [
   { id: 'dashboard', label: 'Home' },

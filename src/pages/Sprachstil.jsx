@@ -11,6 +11,7 @@ function Sprachstil({
   onSelectCommunicationStyle,
   onSelectStyle,
   onNavigate,
+  nextScreen = 'dashboard',
   t,
 }) {
   return (
@@ -60,7 +61,7 @@ function Sprachstil({
           )
         })}
       </div>
-      <button className="style-continue" onClick={() => onNavigate('dashboard')}>
+      <button className="style-continue" onClick={() => onNavigate(nextScreen)}>
         {t.language.continue
           .replace('{language}', tone.label)
           .replace('{tone}', t.language.toneOptions[communicationStyle].title)}
