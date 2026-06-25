@@ -63,8 +63,8 @@ const routineCategories = [
 
 function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
   const [title, setTitle] = useState('')
-  const [target, setTarget] = useState('1')
-  const [unit, setUnit] = useState('Mal')
+  const [target, setTarget] = useState('4')
+  const [unit, setUnit] = useState('Gläser (500 ml)')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
   const [openCategory, setOpenCategory] = useState('')
   const existingTitles = new Set(habits.map((habit) => habit.title.toLowerCase()))
@@ -83,8 +83,8 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
     })
 
     setTitle('')
-    setTarget('1')
-    setUnit('Mal')
+    setTarget('4')
+    setUnit('Gläser (500 ml)')
     setAddPanelOpen(false)
   }
 

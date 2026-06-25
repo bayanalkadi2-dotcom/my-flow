@@ -661,8 +661,7 @@ input {
   font-weight: 750;
 }
 
-.login-field input,
-.login-field select {
+.login-field input {
   min-height: auto;
   width: 100%;
   padding: 0;
@@ -674,18 +673,9 @@ input {
   font-weight: 600;
 }
 
-.login-field select {
-  appearance: none;
-}
-
 .login-field input::placeholder {
   color: #777298;
   opacity: 1;
-}
-
-.profile-onboarding-fields {
-  display: grid;
-  margin-top: 4px;
 }
 
 .field-icon {
@@ -720,36 +710,6 @@ input {
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
-}
-
-.remember-login-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  width: 100%;
-  min-height: 48px;
-  margin: -3px 0 14px;
-  padding: 12px 14px;
-  border: 1px solid rgba(132, 105, 196, 0.13);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.76);
-  color: #3d3952;
-  font-size: 14px;
-  font-weight: 800;
-  box-shadow: 0 10px 21px rgba(75, 53, 141, 0.08);
-}
-
-.remember-login-row input {
-  flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  accent-color: #7b61ff;
-}
-
-.remember-login-row span {
-  color: #2b2742;
 }
 
 .forgot-password {
