@@ -235,10 +235,11 @@ function App() {
 
   function toggleHabitDone(selectedHabit) {
     const nextDone = !selectedHabit.done
+    const nextCurrent = nextDone ? selectedHabit.target : selectedHabit.current
     setRoutineItems((current) =>
       current.map((habit) =>
         habit.id === selectedHabit.id
-          ? { ...habit, done: nextDone, current: nextDone ? selectedHabit.target : selectedHabit.current }
+          ? { ...habit, done: nextDone, current: nextCurrent }
           : habit,
       ),
     )
@@ -247,7 +248,7 @@ function App() {
     if (isAuthenticated && user) {
       (async () => {
         const { updateRoutine } = await import('./services/routineService')
-        updateRoutine(selectedHabit.id, user.id, { done: nextDone }).catch((err) => {
+        updateRoutine(selectedHabit.id, user.id, { current: nextCurrent, done: nextDone }).catch((err) => {
           console.error('Fehler beim Aktualisieren der Routine:', err)
         })
       })()
@@ -255,6 +256,9 @@ function App() {
   }
 
   function setHabitMood(id, mood) {
+    const currentHabit = routineItems.find((habit) => habit.id === id)
+    const nextCurrent = Number(currentHabit?.target ?? 1)
+
     setRoutineItems((current) =>
       current.map((habit) =>
         habit.id === id
@@ -272,7 +276,7 @@ function App() {
     if (isAuthenticated && user) {
       (async () => {
         const { updateRoutine } = await import('./services/routineService')
-        updateRoutine(id, user.id, { mood, done: true }).catch((err) => {
+        updateRoutine(id, user.id, { current: nextCurrent, mood, done: true }).catch((err) => {
           console.error('Fehler beim Aktualisieren der Routine:', err)
         })
       })()

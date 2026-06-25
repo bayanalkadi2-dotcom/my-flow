@@ -103,9 +103,22 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
   }
 
   return (
-    <section className="screen">
-      <p className="eyebrow">{t.routines.eyebrow}</p>
-      <h1>{t.routines.title}</h1>
+    <section className="screen routines-screen">
+      <header className="routines-page-header">
+        <div>
+          <p className="eyebrow">ROUTINEN</p>
+          <h1>Meine Routinen</h1>
+          <p>Behalte deine täglichen Gewohnheiten im Blick.</p>
+        </div>
+        <button
+          className="routine-add-circle"
+          onClick={() => setAddPanelOpen((open) => !open)}
+          type="button"
+          aria-label={addPanelOpen ? t.routines.closeAdd : t.routines.add}
+        >
+          {addPanelOpen ? '×' : '+'}
+        </button>
+      </header>
 
       <div className="habit-list">
         {habits.map((habit) => (
@@ -122,14 +135,6 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
           />
         ))}
       </div>
-
-      <button
-        className="add-routine-toggle"
-        onClick={() => setAddPanelOpen((open) => !open)}
-        type="button"
-      >
-        {addPanelOpen ? t.routines.closeAdd : t.routines.add}
-      </button>
 
       {addPanelOpen && (
         <div className="routine-add-panel">
