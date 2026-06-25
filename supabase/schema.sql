@@ -1,5 +1,5 @@
 -- Enable RLS for all tables
-ALTER DATABASE postgres SET "app.settings".'statement_timeout' = '30s';
+ALTER DATABASE postgres SET statement_timeout TO '30s';
 
 -- ============================================
 -- Tabelle: profiles

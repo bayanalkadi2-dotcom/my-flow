@@ -99,3 +99,37 @@ export async function getDailyCheckIns(userId) {
     return { success: false, error: err.message, checkIns: [] }
   }
 }
+
+export async function getUserCheckIns() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError) {
+    console.error('Fehler beim Laden des Benutzers:', userError)
+    throw new Error(userError.message)
+  }
+
+  if (!user) {
+    throw new Error('Du bist nicht angemeldet.')
+  }
+
+  const { data, error } = await supabase
+    .from('daily_checkins')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Fehler beim Laden der Tages-Check-ins:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    })
+    throw new Error(error.message)
+  }
+
+  return data ?? []
+}

@@ -457,7 +457,7 @@ function App() {
       case 'checkin':
         return <DailyCheckIn onNavigate={setScreen} user={user} />
       case 'progress':
-        return <Statistik habits={preparedHabits} languageStyle={languageStyle} t={t} />
+        return <Statistik habits={preparedHabits} languageStyle={languageStyle} onNavigate={setScreen} t={t} />
       case 'freunde':
         return <Freunde habits={preparedHabits} t={t} />
       case 'welcomeCharacter':
