@@ -1,0 +1,303 @@
+import { useState } from 'react'
+import WellbeingDashboard from '../commponents/WellbeingDashboard'
+
+const categoryByTitle = {
+  'Wasser trinken': 'Koerper',
+  Bewegung: 'Koerper',
+  Sport: 'Koerper',
+  Schlaf: 'Koerper',
+  'Gesund essen': 'Koerper',
+  Periode: 'Koerper',
+  Entspannung: 'Mental',
+  Meditation: 'Mental',
+  Dankbarkeit: 'Mental',
+  Tagebuch: 'Mental',
+  'Stimmung tracken': 'Mental',
+  Lesen: 'Mental',
+  'Digitale Pause': 'Mental',
+  Lernen: 'Produktiv',
+  Tagesplanung: 'Produktiv',
+  Fokuszeit: 'Produktiv',
+  Aufraeumen: 'Produktiv',
+  'Freunde kontaktieren': 'Sozial',
+  'Familie kontaktieren': 'Sozial',
+  'Soziale Aktivitaet': 'Sozial',
+  'Rauchen reduzieren': 'Reduktion',
+  'Weniger Social Media': 'Reduktion',
+  'Weniger Suessigkeiten': 'Reduktion',
+}
+
+const text = {
+  german: {
+    today: 'Heute',
+    areas: 'Bereiche',
+    completed: 'Erledigt',
+    open: 'Offen',
+    routines: 'Routinen',
+    averageText: 'Durchschnitt aller Routinen',
+    chartToday: 'Fortschritt pro Routine',
+    chartAreas: 'Fortschritt nach Bereichen',
+    details: 'Aktuelle Routinen',
+    summary: 'Heute-Zusammenfassung',
+    allDone: 'Alle Routinen sind geschafft. Sehr stark.',
+    strongDay: 'Du bist heute gut im Flow.',
+    quietDay: 'Heute ist noch Luft nach oben.',
+    nextStep: 'Naechster sinnvoller Schritt: {habit}.',
+    empty: 'Lege eine Routine an, damit hier dein Fortschritt erscheint.',
+    fallbackCategory: 'Alltag',
+  },
+  english: {
+    today: 'Today',
+    areas: 'Areas',
+    completed: 'Done',
+    open: 'Open',
+    routines: 'routines',
+    averageText: 'Average of all routines',
+    chartToday: 'Progress per routine',
+    chartAreas: 'Progress by area',
+    details: 'Current routines',
+    summary: 'Today summary',
+    allDone: 'All routines are done. Strong work.',
+    strongDay: 'You are in a good flow today.',
+    quietDay: 'There is still room today.',
+    nextStep: 'Best next step: {habit}.',
+    empty: 'Add a routine so your progress can appear here.',
+    fallbackCategory: 'Daily life',
+  },
+  turkish: {
+    today: 'Bugun',
+    areas: 'Alanlar',
+    completed: 'Tamam',
+    open: 'Acik',
+    routines: 'rutin',
+    averageText: 'Tum rutinlerin ortalamasi',
+    chartToday: 'Rutin basina ilerleme',
+    chartAreas: 'Alanlara gore ilerleme',
+    details: 'Guncel rutinler',
+    summary: 'Bugun ozeti',
+    allDone: 'Tum rutinler tamamlandi. Cok iyi.',
+    strongDay: 'Bugun iyi bir akistasin.',
+    quietDay: 'Bugun hala alan var.',
+    nextStep: 'En uygun sonraki adim: {habit}.',
+    empty: 'Ilerlemeni gormek icin bir rutin ekle.',
+    fallbackCategory: 'Gunluk',
+  },
+  arabic: {
+    today: 'Today',
+    areas: 'Areas',
+    completed: 'Done',
+    open: 'Open',
+    routines: 'routines',
+    averageText: 'Average of all routines',
+    chartToday: 'Progress per routine',
+    chartAreas: 'Progress by area',
+    details: 'Current routines',
+    summary: 'Today summary',
+    allDone: 'All routines are done. Strong work.',
+    strongDay: 'You are in a good flow today.',
+    quietDay: 'There is still room today.',
+    nextStep: 'Best next step: {habit}.',
+    empty: 'Add a routine so your progress can appear here.',
+    fallbackCategory: 'Daily life',
+  },
+}
+
+function clampProgress(value) {
+  return Math.min(Math.max(Math.round(Number(value) || 0), 0), 100)
+}
+
+function getHabitProgress(habit) {
+  if (habit.done) {
+    return 100
+  }
+
+  if (habit.progress !== undefined) {
+    return clampProgress(habit.progress)
+  }
+
+  return clampProgress((Number(habit.current ?? 0) / Number(habit.target ?? 1)) * 100)
+}
+
+function getAverageProgress(items) {
+  if (items.length === 0) {
+    return 0
+  }
+
+  return Math.round(items.reduce((sum, item) => sum + getHabitProgress(item), 0) / items.length)
+}
+
+function getHabitTitle(habit) {
+  return habit.displayTitle ?? habit.title
+}
+
+function getShortLabel(habit) {
+  const title = getHabitTitle(habit)
+  const words = title.split(' ').filter(Boolean)
+
+  return words.length > 1
+    ? words.map((word) => word[0]).join('').slice(0, 3)
+    : title.slice(0, 3)
+}
+
+function getHabitCategory(habit, copy) {
+  return habit.category ?? categoryByTitle[habit.title] ?? copy.fallbackCategory
+}
+
+function getCategoryData(habits, copy) {
+  const groups = habits.reduce((result, habit) => {
+    const category = getHabitCategory(habit, copy)
+
+    return {
+      ...result,
+      [category]: [...(result[category] ?? []), habit],
+    }
+  }, {})
+
+  return Object.entries(groups).map(([category, categoryHabits]) => ({
+    label: category,
+    value: getAverageProgress(categoryHabits),
+    title: category,
+  }))
+}
+
+function Statistik({ habits = [], languageStyle, t }) {
+  const [view, setView] = useState('today')
+  const copy = text[languageStyle] ?? text.german
+  const locale = languageStyle === 'german' ? 'de-DE' : 'en-US'
+  const averageProgress = getAverageProgress(habits)
+  const completedHabits = habits.filter((habit) => getHabitProgress(habit) >= 100).length
+  const openHabits = Math.max(habits.length - completedHabits, 0)
+  const chartData = view === 'today'
+    ? habits.map((habit) => ({
+        label: getShortLabel(habit),
+        value: getHabitProgress(habit),
+        title: getHabitTitle(habit),
+      }))
+    : getCategoryData(habits, copy)
+  const nextHabit = habits
+    .filter((habit) => getHabitProgress(habit) < 100)
+    .sort((firstHabit, secondHabit) => getHabitProgress(secondHabit) - getHabitProgress(firstHabit))[0]
+  const summaryTitle = habits.length === 0
+    ? copy.empty
+    : openHabits === 0
+      ? copy.allDone
+      : averageProgress >= 60
+        ? copy.strongDay
+        : copy.quietDay
+  const summaryText = nextHabit
+    ? copy.nextStep.replace('{habit}', getHabitTitle(nextHabit))
+    : `${averageProgress}% ${copy.averageText.toLowerCase()}`
+
+  return (
+    <section className="screen">
+      <p className="eyebrow">{t.stats.eyebrow}</p>
+      <h1>{t.stats.title}</h1>
+
+      <div className="period-toggle" aria-label={t.stats.periodLabel}>
+        <button
+          className={view === 'today' ? 'selected' : ''}
+          onClick={() => setView('today')}
+          type="button"
+        >
+          {copy.today}
+        </button>
+        <button
+          className={view === 'areas' ? 'selected' : ''}
+          onClick={() => setView('areas')}
+          type="button"
+        >
+          {copy.areas}
+        </button>
+      </div>
+
+      <div className="stat-summary-grid">
+        <article className="stat-card summary-card">
+          <span>{t.stats.average}</span>
+          <strong>{averageProgress}%</strong>
+          <p>{copy.averageText}</p>
+        </article>
+        <article className="stat-card summary-card improvement-card">
+          <span>{copy.completed}</span>
+          <strong>{completedHabits.toLocaleString(locale)}</strong>
+          <p>{copy.routines}</p>
+        </article>
+        <article className="stat-card summary-card">
+          <span>{copy.open}</span>
+          <strong>{openHabits.toLocaleString(locale)}</strong>
+          <p>{copy.routines}</p>
+        </article>
+      </div>
+
+      <div
+        className="chart-card dynamic-chart-card"
+        aria-label={view === 'today' ? copy.chartToday : copy.chartAreas}
+      >
+        {chartData.map((entry) => (
+          <div className="bar-wrap" key={`${entry.label}-${entry.title}`} title={entry.title}>
+            <div className="bar" style={{ height: `${entry.value}%` }} />
+            <span>{entry.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="routine-progress-list" aria-label={copy.details}>
+        {habits.map((habit) => {
+          const progress = getHabitProgress(habit)
+
+          return (
+            <article className="routine-progress-row" key={habit.id}>
+              <div>
+                <strong>{getHabitTitle(habit)}</strong>
+                <span>{habit.detail}</span>
+              </div>
+              <b>{progress}%</b>
+            </article>
+          )
+        })}
+      </div>
+
+      <article className="motivation-card">
+        <div className="motivation-bubble">
+          <span>{copy.summary}</span>
+          <h2>{summaryTitle}</h2>
+          <p>{summaryText}</p>
+        </div>
+        <div className="motivation-progress" aria-label={`${averageProgress}% ${t.stats.average}`}>
+          <span style={{ width: `${averageProgress}%` }} />
+        </div>
+        <small>{averageProgress}% {copy.averageText.toLowerCase()}</small>
+      </article>
+
+      <WellbeingDashboard
+        title={t.stats.wellbeingTitle}
+        subtitle={t.stats.wellbeingSubtitle}
+        infoLabel={t.stats.wellbeingInfo}
+        period={view}
+        periodOptions={[
+          { value: 'today', label: copy.today },
+          { value: 'areas', label: copy.areas },
+        ]}
+        onPeriodChange={setView}
+        metrics={[
+          { label: t.stats.wellbeingMood, value: averageProgress, unit: '%' },
+          { label: t.stats.wellbeingStrength, value: completedHabits, unit: `/${habits.length}` },
+          { label: t.stats.wellbeingHabits, value: habits.length },
+        ]}
+        chartData={chartData}
+        chartTitle={t.stats.wellbeingChart}
+        habits={habits.map((habit) => ({
+          title: getHabitTitle(habit),
+          detail: habit.detail || '—',
+        }))}
+        habitsTitle={t.stats.wellbeingHabits}
+        insights={[]}
+        insightsTitle={t.stats.wellbeingInsights}
+        lastUpdated={t.stats.wellbeingLastUpdated}
+        noDataText={t.stats.wellbeingNoData}
+        noInsightsText={t.stats.wellbeingNoInsights}
+      />
+    </section>
+  )
+}
+
+export default Statistik
