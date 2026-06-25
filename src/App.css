@@ -4087,8 +4087,11 @@ input {
 }
 
 .friends-header h1 {
-  font-size: 34px;
+  max-width: 100%;
+  font-size: clamp(24px, 7.2vw, 34px);
+  line-height: 1.12;
   margin: 6px 0 0;
+  text-wrap: balance;
 }
 
 .add-friend-button {
