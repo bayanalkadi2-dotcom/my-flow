@@ -81,18 +81,21 @@ drop policy if exists "Users can read own daily checkins" on public.daily_checki
 create policy "Users can read own daily checkins"
 on public.daily_checkins
 for select
+to authenticated
 using (auth.uid() = user_id);
 
 drop policy if exists "Users can create own daily checkins" on public.daily_checkins;
 create policy "Users can create own daily checkins"
 on public.daily_checkins
 for insert
+to authenticated
 with check (auth.uid() = user_id);
 
 drop policy if exists "Users can update own daily checkins" on public.daily_checkins;
 create policy "Users can update own daily checkins"
 on public.daily_checkins
 for update
+to authenticated
 using (auth.uid() = user_id)
 with check (auth.uid() = user_id);
 
@@ -100,6 +103,7 @@ drop policy if exists "Users can delete own daily checkins" on public.daily_chec
 create policy "Users can delete own daily checkins"
 on public.daily_checkins
 for delete
+to authenticated
 using (auth.uid() = user_id);
 
 drop trigger if exists update_daily_checkins_updated_at on public.daily_checkins;

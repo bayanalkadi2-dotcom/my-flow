@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { checkInQuestions } from '../../data/checkInQuestions'
-import { createDailyCheckIn } from '../../services/checkInService'
+import { saveDailyCheckIn } from '../../services/checkInService'
 import { buildCheckInSummary, recommendTasks } from '../../services/recommendationService'
 import CheckInProgress from './CheckInProgress'
 import CheckInQuestion from './CheckInQuestion'
@@ -13,6 +13,7 @@ function DailyCheckIn({ onNavigate, user }) {
   const [isComplete, setIsComplete] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
+  const [savedCheckIn, setSavedCheckIn] = useState(null)
   const currentQuestion = checkInQuestions[currentStep]
   const recommendations = useMemo(
     () => (isComplete ? recommendTasks(answers) : []),
@@ -42,13 +43,20 @@ function DailyCheckIn({ onNavigate, user }) {
     setIsComplete(true)
     setIsSaving(true)
     setSaveError('')
+    setSavedCheckIn(null)
 
-    const result = await createDailyCheckIn(user?.id, nextAnswers, recommendTasks(nextAnswers))
-    if (!result.success) {
-      setSaveError(result.error || 'Der Check-in konnte nicht gespeichert werden.')
+    try {
+      const nextRecommendations = recommendTasks(nextAnswers)
+      const savedDailyCheckIn = await saveDailyCheckIn(nextAnswers, nextRecommendations)
+      console.log('Check-in gespeichert:', savedDailyCheckIn)
+      setSaveError('')
+      setSavedCheckIn(savedDailyCheckIn)
+    } catch (error) {
+      console.error('Check-in-Speicherfehler:', error)
+      setSaveError(error.message)
+    } finally {
+      setIsSaving(false)
     }
-
-    setIsSaving(false)
   }
 
   function continueCheckIn() {
@@ -108,6 +116,7 @@ function DailyCheckIn({ onNavigate, user }) {
           answers={buildCheckInSummary(answers)}
           isSaving={isSaving}
           recommendations={recommendations}
+          savedCheckIn={savedCheckIn}
           saveError={saveError}
           onBackToDashboard={() => onNavigate?.('dashboard')}
           onRestart={cancelCheckIn}

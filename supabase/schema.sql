@@ -279,18 +279,21 @@ DROP POLICY IF EXISTS "Users can read own daily checkins" ON public.daily_checki
 CREATE POLICY "Users can read own daily checkins"
 ON public.daily_checkins
 FOR SELECT
+TO authenticated
 USING (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users can create own daily checkins" ON public.daily_checkins;
 CREATE POLICY "Users can create own daily checkins"
 ON public.daily_checkins
 FOR INSERT
+TO authenticated
 WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS "Users can update own daily checkins" ON public.daily_checkins;
 CREATE POLICY "Users can update own daily checkins"
 ON public.daily_checkins
 FOR UPDATE
+TO authenticated
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
@@ -298,6 +301,7 @@ DROP POLICY IF EXISTS "Users can delete own daily checkins" ON public.daily_chec
 CREATE POLICY "Users can delete own daily checkins"
 ON public.daily_checkins
 FOR DELETE
+TO authenticated
 USING (auth.uid() = user_id);
 
 DROP TRIGGER IF EXISTS update_daily_checkins_updated_at ON public.daily_checkins;

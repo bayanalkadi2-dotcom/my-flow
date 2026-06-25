@@ -160,7 +160,7 @@ test('user without login is rejected before saving', () => {
   const result = buildDailyCheckInPayload('', baseAnswers, recommendTasks(baseAnswers))
 
   assert.equal(result.success, false)
-  assert.equal(result.error, 'Nutzer ist nicht angemeldet.')
+  assert.equal(result.error, 'Du bist nicht angemeldet. Bitte melde dich erneut an.')
 })
 
 test('check-in payload uses the Supabase column names from the schema', () => {
