@@ -17,6 +17,7 @@ import Startseite from './pages/Startseite'
 import Statistik from './pages/Statistik'
 import Freunde from './pages/Freunde'
 import Willkommen from './pages/Willkommen'
+import Onboarding from './pages/Onboarding'
 import flowCharacter from './assets/flow-character-wall-final.jpg'
 import './App.css'
 
@@ -80,6 +81,7 @@ function LoadingScreen() {
 function App() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth()
   const [screen, setScreen] = useState('dashboard')
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
   const [languageStyle, setLanguageStyle] = useState('german')
   const [communicationStyle, setCommunicationStyle] = useState('casual')
   const [profileName, setProfileName] = useState('Gast')
@@ -394,6 +396,19 @@ function App() {
   // Show loading screen while checking auth
   if (authLoading) {
     return <LoadingScreen />
+  }
+
+  function handleOnboardingFinish() {
+    setHasSeenOnboarding(true)
+    setScreen(isAuthenticated ? 'dashboard' : 'start')
+  }
+
+  if (!hasSeenOnboarding) {
+    return (
+      <main className={`app onboarding-app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
+        <Onboarding onFinish={handleOnboardingFinish} />
+      </main>
+    )
   }
 
   // Show login if not authenticated
