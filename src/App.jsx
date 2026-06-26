@@ -21,6 +21,24 @@ import flowCharacter from './assets/flow-character-wall-final.jpg'
 import './App.css'
 
 const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter']
+const removedRoutineTitles = new Set([
+  'tagebuch',
+  'lesen',
+  'sport',
+  'gesund essen',
+  'supplement eingenommen',
+  'magnesium/zink eingenommen',
+  'tagesplanung',
+  'fokuszeit',
+  'freunde kontaktieren',
+  'familie kontaktieren',
+  'soziale aktivität',
+])
+
+function isRemovedRoutine(routine) {
+  const title = String(routine?.title ?? '').trim().toLowerCase()
+  return removedRoutineTitles.has(title) || removedRoutineTitles.has(title.replaceAll('ä', 'Ã¤'))
+}
 
 function prepareRoutineData(routine) {
   const detail = routine.detail || `${routine.current ?? 0} / ${routine.target ?? 1} ${routine.unit || 'Mal'}`
@@ -107,24 +125,26 @@ function App() {
         if (routinesRes.success) {
           if (routinesRes.routines.length === 0) {
             // If no routines exist, create default ones
-            const defaultRoutines = habits.map((habit) => ({
-              title: habit.title,
-              detail: habit.detail,
-              progress: habit.progress || 0,
-              category: habit.category,
-              current: 0,
-              target: 1,
-              unit: habit.unit || 'Mal',
-              done: false,
-              type: habit.type,
-            }))
+            const defaultRoutines = habits
+              .filter((habit) => !isRemovedRoutine(habit))
+              .map((habit) => ({
+                title: habit.title,
+                detail: habit.detail,
+                progress: habit.progress || 0,
+                category: habit.category,
+                current: 0,
+                target: 1,
+                unit: habit.unit || 'Mal',
+                done: false,
+                type: habit.type,
+              }))
 
             const createRes = await bulkCreateRoutines(user.id, defaultRoutines)
             if (createRes.success) {
-              setRoutineItems(createRes.routines.map(prepareRoutineData))
+              setRoutineItems(createRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
             }
           } else {
-            setRoutineItems(routinesRes.routines.map(prepareRoutineData))
+            setRoutineItems(routinesRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
           }
         }
         setScreen('dashboard')
@@ -148,6 +168,10 @@ function App() {
   )
 
   function addHabit(newHabit) {
+    if (isRemovedRoutine(newHabit)) {
+      return
+    }
+
     const habitData = {
       title: newHabit.title,
       category: newHabit.category,

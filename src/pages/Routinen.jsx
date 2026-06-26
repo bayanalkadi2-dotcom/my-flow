@@ -8,9 +8,7 @@ const routineCategories = [
     routines: [
       { title: 'Meditation', target: 10, unit: 'Minuten', incrementLabel: '1 Minute meditiert' },
       { title: 'Dankbarkeit', target: 3, unit: 'Dinge', incrementLabel: '1 Sache notiert' },
-      { title: 'Tagebuch', target: 1, unit: 'Eintrag', incrementLabel: 'Eintrag geschrieben' },
       { title: 'Stimmung tracken', target: 1, unit: 'Check-in', incrementLabel: 'Stimmung eingetragen', type: 'mood' },
-      { title: 'Lesen', target: 20, unit: 'Minuten', incrementLabel: '1 Minute gelesen' },
       { title: 'Digitale Pause', target: 30, unit: 'Minuten', incrementLabel: '1 Minute Pause' },
     ],
   },
@@ -19,9 +17,7 @@ const routineCategories = [
     routines: [
       { title: 'Wasser trinken', target: 4, unit: 'Gläser (500 ml)', incrementLabel: '500 ml Wasser getrunken' },
       { title: 'Bewegung', target: 30, unit: 'Minuten', incrementLabel: '1 Minute Bewegung' },
-      { title: 'Sport', target: 30, unit: 'Minuten', incrementLabel: '1 Minute Sport' },
       { title: 'Schlaf', target: 8, unit: 'Stunden', incrementLabel: '1 Stunde geschlafen' },
-      { title: 'Gesund essen', target: 3, unit: 'Mahlzeiten', incrementLabel: '1 gesunde Mahlzeit' },
       { title: 'Periode', target: 1, unit: 'Eintrag', incrementLabel: 'Periode eingetragen', type: 'period' },
     ],
   },
@@ -30,25 +26,13 @@ const routineCategories = [
     routines: [
       { title: 'Medikament eingenommen', target: 1, unit: 'Dosis', incrementLabel: 'Dosis eingenommen' },
       { title: 'Vitamine eingenommen', target: 1, unit: 'Portion', incrementLabel: 'Vitamine eingenommen' },
-      { title: 'Supplement eingenommen', target: 1, unit: 'Portion', incrementLabel: 'Supplement eingenommen' },
-      { title: 'Magnesium/Zink eingenommen', target: 1, unit: 'Portion', incrementLabel: 'Portion eingenommen' },
     ],
   },
   {
     title: 'Produktivität',
     routines: [
-      { title: 'Tagesplanung', target: 1, unit: 'Plan', incrementLabel: 'Plan erstellt' },
       { title: 'Lernen', target: 60, unit: 'Minuten', incrementLabel: '1 Minute gelernt' },
-      { title: 'Fokuszeit', target: 45, unit: 'Minuten', incrementLabel: '1 Minute fokussiert' },
       { title: 'Aufräumen', target: 15, unit: 'Minuten', incrementLabel: '1 Minute aufgeräumt' },
-    ],
-  },
-  {
-    title: 'Soziales',
-    routines: [
-      { title: 'Freunde kontaktieren', target: 1, unit: 'Kontakt', incrementLabel: 'Kontakt erledigt' },
-      { title: 'Familie kontaktieren', target: 1, unit: 'Kontakt', incrementLabel: 'Kontakt erledigt' },
-      { title: 'Soziale Aktivität', target: 1, unit: 'Aktivität', incrementLabel: 'Aktivität gemacht' },
     ],
   },
   {
