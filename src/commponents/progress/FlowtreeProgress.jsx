@@ -1,4 +1,4 @@
-import mascotImage from '../../assets/flow-character-robot-boyish-card.png'
+import mascotImage from '../../assets/flow-character-robot-crossed-card.png'
 import { flowtreeLevels } from '../../data/flowtreeLevels'
 
 function FlowtreeProgress({ stats }) {
