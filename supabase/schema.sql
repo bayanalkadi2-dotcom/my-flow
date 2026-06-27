@@ -13,6 +13,15 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS student_status TEXT,
+  ADD COLUMN IF NOT EXISTS age_group TEXT,
+  ADD COLUMN IF NOT EXISTS education_level TEXT,
+  ADD COLUMN IF NOT EXISTS daily_context TEXT,
+  ADD COLUMN IF NOT EXISTS main_challenges TEXT[] DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS support_goals TEXT[] DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false;
+
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- Profil: Benutzer können nur ihr eigenes Profil lesen
@@ -26,6 +35,13 @@ CREATE POLICY "Users can update own profile"
 ON public.profiles
 FOR UPDATE
 USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can create own profile" ON public.profiles;
+CREATE POLICY "Users can create own profile"
+ON public.profiles
+FOR INSERT
+TO authenticated
 WITH CHECK (auth.uid() = id);
 
 -- Profil: Ein Admin-Trigger erzeugt automatisch ein Profil nach der Registrierung

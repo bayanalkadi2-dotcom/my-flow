@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useAuth } from '../context/authContextValue'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
+import StudentOnboarding from './StudentOnboarding'
 
 function Registrieren({ onNavigate, t }) {
   const { signup, error: authError } = useAuth()
+  const [onboardingData, setOnboardingData] = useState(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -35,7 +37,7 @@ function Registrieren({ onNavigate, t }) {
 
     setIsLoading(true)
     try {
-      await signup(email, password, displayName || 'Gast')
+      await signup(email, password, displayName || 'Gast', onboardingData)
       setSuccess('Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mail.')
       setEmail('')
       setPassword('')
@@ -46,6 +48,16 @@ function Registrieren({ onNavigate, t }) {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (!onboardingData) {
+    return (
+      <StudentOnboarding
+        mode="register"
+        onBack={() => onNavigate('start')}
+        onComplete={setOnboardingData}
+      />
+    )
   }
 
   return (

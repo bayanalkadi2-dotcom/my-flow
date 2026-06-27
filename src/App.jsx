@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from './context/authContextValue'
 import { getRoutines, bulkCreateRoutines } from './services/routineService'
-import { getProfile, getUserSettings } from './services/authService'
+import { getProfile, getUserSettings, saveOnboardingProfile } from './services/authService'
 import Navbar from './commponents/Navbar'
 import { habits, languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
@@ -18,6 +18,7 @@ import Statistik from './pages/Statistik'
 import Freunde from './pages/Freunde'
 import Willkommen from './pages/Willkommen'
 import Onboarding from './pages/Onboarding'
+import StudentOnboarding from './pages/StudentOnboarding'
 import flowCharacter from './assets/flow-character-wall-final.jpg'
 import './App.css'
 
@@ -89,6 +90,9 @@ function App() {
   const [routineItems, setRoutineItems] = useState([])
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [routinesLoaded, setRoutinesLoaded] = useState(false)
+  const [profile, setProfile] = useState(null)
+  const [needsStudentOnboarding, setNeedsStudentOnboarding] = useState(false)
+  const [isSavingOnboarding, setIsSavingOnboarding] = useState(false)
 
   // Load user settings and routines from Supabase
   useEffect(() => {
@@ -99,6 +103,8 @@ function App() {
         setProfileName('Gast')
         setAppTheme('Hell')
         setRoutineItems([])
+        setProfile(null)
+        setNeedsStudentOnboarding(false)
         setScreen('start')
         setRoutinesLoaded(true)
       })
@@ -120,6 +126,11 @@ function App() {
         const profileRes = await getProfile(user.id)
         if (profileRes.success && profileRes.profile) {
           setProfileName(profileRes.profile.display_name || 'Gast')
+          setProfile(profileRes.profile)
+          setNeedsStudentOnboarding(profileRes.profile.onboarding_completed !== true)
+        } else if (user) {
+          setProfile(null)
+          setNeedsStudentOnboarding(true)
         }
 
         // Load routines
@@ -393,9 +404,30 @@ function App() {
     }
   }
 
-  // Show loading screen while checking auth
-  if (authLoading) {
-    return <LoadingScreen />
+  async function handleStudentOnboardingComplete(answers) {
+    setIsSavingOnboarding(true)
+    try {
+      const result = await saveOnboardingProfile(answers, profileName || 'Gast')
+
+      if (!result.success) {
+        const isSignedOut = result.error?.message === 'Du bist nicht angemeldet.'
+        throw new Error(
+          isSignedOut
+            ? 'Du bist nicht angemeldet.'
+            : 'Deine Angaben konnten nicht gespeichert werden. Bitte versuche es erneut.',
+          { cause: result.error },
+        )
+      }
+
+      setProfile(result.profile)
+      setNeedsStudentOnboarding(false)
+      setScreen('dashboard')
+    } catch (err) {
+      console.error('Onboarding konnte nicht gespeichert werden:', err.cause ?? err)
+      throw err
+    } finally {
+      setIsSavingOnboarding(false)
+    }
   }
 
   function handleOnboardingFinish() {
@@ -409,6 +441,11 @@ function App() {
         <Onboarding onFinish={handleOnboardingFinish} />
       </main>
     )
+  }
+
+  // Show loading screen while checking auth, after the introductory pages.
+  if (authLoading) {
+    return <LoadingScreen />
   }
 
   // Show login if not authenticated
@@ -456,6 +493,20 @@ function App() {
   // Wait for routines to load
   if (!routinesLoaded || isLoadingData) {
     return <LoadingScreen />
+  }
+
+  if (needsStudentOnboarding || screen === 'profileOnboarding') {
+    return (
+      <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
+        <StudentOnboarding
+          initialAnswers={profile ?? {}}
+          mode="profile"
+          onBack={() => needsStudentOnboarding ? setScreen('dashboard') : setScreen('profileSettings')}
+          onComplete={handleStudentOnboardingComplete}
+          saving={isSavingOnboarding}
+        />
+      </main>
+    )
   }
 
   function renderScreen() {
@@ -534,6 +585,16 @@ function App() {
             onProfileNameChange={handleProfileNameChange}
             onCommunicationStyleChange={handleCommunicationStyleChange}
             onSelectStyle={selectLanguage}
+          />
+        )
+      case 'profileOnboarding':
+        return (
+          <StudentOnboarding
+            initialAnswers={profile ?? {}}
+            mode="profile"
+            onBack={() => setScreen('profileSettings')}
+            onComplete={handleStudentOnboardingComplete}
+            saving={isSavingOnboarding}
           />
         )
       default:

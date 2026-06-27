@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { AuthContext } from './authContextValue'
+import { upsertProfile } from '../services/authService'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -34,7 +35,7 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  const signup = async (email, password, displayName) => {
+  const signup = async (email, password, displayName, onboardingData = null) => {
     setError(null)
     try {
       const { data, error: signupError } = await supabase.auth.signUp({
@@ -44,11 +45,19 @@ export function AuthProvider({ children }) {
           emailRedirectTo: window.location.origin,
           data: {
             display_name: displayName,
+            onboarding: onboardingData,
           },
         },
       })
 
       if (signupError) throw signupError
+
+      if (data.user && data.session) {
+        const profileResult = await upsertProfile(data.user.id, email, displayName, onboardingData ?? {})
+        if (!profileResult.success) {
+          console.error('Profil konnte nach Registrierung nicht gespeichert werden:', profileResult.error)
+        }
+      }
 
       return { user: data.user, session: data.session }
     } catch (err) {

@@ -164,7 +164,7 @@ function SettingIcon({ type }) {
 
   return (
     <span className="setting-row-icon" aria-hidden="true">
-      <img src={icons[type]} alt="" />
+      <img src={icons[type] ?? iconName} alt="" />
     </span>
   )
 }
@@ -484,6 +484,13 @@ function Profil({
             <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
+
+        <div className="profile-setting-row">
+          <SettingIcon type="onboarding" />
+          <span>Schule & Studium</span>
+          <strong>Angaben</strong>
+          <button type="button" onClick={() => onNavigate('profileOnboarding')}>{t.common.change}</button>
+        </div>
 
         <span className="settings-section-label">Einstellungen</span>
         <div className="profile-setting-row">
