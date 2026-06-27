@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Blühender Flowtree">
+  <rect width="240" height="240" rx="48" fill="#fff2fb"/>
+  <ellipse cx="121" cy="190" rx="86" ry="18" fill="#ead8ff"/>
+  <path d="M108 190c12-45 11-78 5-119h20c-5 43-3 77 8 119Z" fill="#9b6a43"/>
+  <circle cx="86" cy="83" r="39" fill="#67ce83"/>
+  <circle cx="127" cy="59" r="44" fill="#79d978"/>
+  <circle cx="160" cy="91" r="40" fill="#56bd72"/>
+  <circle cx="121" cy="111" r="46" fill="#8be28a"/>
+  <g fill="#ff9fd2">
+    <circle cx="85" cy="76" r="8"/>
+    <circle cx="126" cy="49" r="9"/>
+    <circle cx="159" cy="84" r="8"/>
+    <circle cx="116" cy="116" r="9"/>
+    <circle cx="147" cy="124" r="7"/>
+  </g>
+  <g fill="#fff7a8">
+    <circle cx="85" cy="76" r="3"/>
+    <circle cx="126" cy="49" r="3"/>
+    <circle cx="159" cy="84" r="3"/>
+    <circle cx="116" cy="116" r="3"/>
+    <circle cx="147" cy="124" r="2.5"/>
+  </g>
+</svg>

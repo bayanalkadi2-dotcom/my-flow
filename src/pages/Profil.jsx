@@ -10,6 +10,7 @@ import iconName from '../assets/settings-icons/name.png'
 import iconReminders from '../assets/settings-icons/reminders.png'
 import iconSubscription from '../assets/settings-icons/subscription.png'
 import iconWeight from '../assets/settings-icons/weight.png'
+import { calculateChallengePoints } from '../utils/progressLevels'
 
 const languageOptions = [
   { id: 'german', label: 'Deutsch' },
@@ -173,6 +174,7 @@ function Profil({
   communicationStyle,
   languageStyle,
   profileName,
+  habits = [],
   settingsPage = false,
   tone,
   t,
@@ -217,7 +219,7 @@ function Profil({
   const bmiLabel = bmi.toFixed(1)
   const bmiCategory = getBmiCategory(bmi)
   const recommendation = getHealthRecommendation(bmi, weight)
-  const challengePoints = 650
+  const challengePoints = calculateChallengePoints(habits)
   const level = getLevel(challengePoints)
   const flowTree = getFlowTree(challengePoints, treeType)
   const treeChoiceUnlocked = challengePoints >= 800

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const onboardingSlides = [
   {
@@ -112,14 +112,10 @@ function OnboardingIllustration({ type }) {
 
 function Onboarding({ onFinish }) {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [animationKey, setAnimationKey] = useState(0)
   const slide = onboardingSlides[currentSlide]
+  const animationKey = slide.id
   const isFirstSlide = currentSlide === 0
   const isLastSlide = currentSlide === onboardingSlides.length - 1
-
-  useEffect(() => {
-    setAnimationKey((current) => current + 1)
-  }, [currentSlide])
 
   function finishOnboarding() {
     localStorage.setItem('hasSeenOnboarding', 'true')

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Samen">
+  <rect width="240" height="240" rx="48" fill="#f7f0ff"/>
+  <ellipse cx="120" cy="157" rx="72" ry="18" fill="#d7c7ff"/>
+  <path d="M118 145c-25-18-19-58 13-75 26 23 24 61-13 75Z" fill="#8c5a3c"/>
+  <path d="M128 82c-16 12-22 32-14 49" fill="none" stroke="#cfa26f" stroke-width="7" stroke-linecap="round"/>
+</svg>

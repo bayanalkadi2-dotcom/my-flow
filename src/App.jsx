@@ -505,6 +505,7 @@ function App() {
         return (
           <Profil
             appTheme={appTheme}
+            habits={preparedHabits}
             languageStyle={languageStyle}
             communicationStyle={communicationStyle}
             profileName={profileName}
@@ -521,6 +522,7 @@ function App() {
         return (
           <Profil
             appTheme={appTheme}
+            habits={preparedHabits}
             languageStyle={languageStyle}
             communicationStyle={communicationStyle}
             profileName={profileName}

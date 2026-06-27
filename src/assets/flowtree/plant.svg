@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Pflanze">
+  <rect width="240" height="240" rx="48" fill="#f2fbf5"/>
+  <ellipse cx="120" cy="184" rx="82" ry="18" fill="#c9e9d1"/>
+  <path d="M119 183V72" fill="none" stroke="#2f965f" stroke-width="13" stroke-linecap="round"/>
+  <path d="M114 103c-42 1-66-22-66-55 42-2 70 18 66 55Z" fill="#47bd70"/>
+  <path d="M126 94c36-25 74-17 90 15-35 26-72 24-90-15Z" fill="#82d96f"/>
+  <path d="M118 147c-34 9-62-4-73-31 34-11 62 1 73 31Z" fill="#62cd83"/>
+  <path d="M128 150c31-14 61-7 78 18-30 18-61 13-78-18Z" fill="#a1e785"/>
+</svg>

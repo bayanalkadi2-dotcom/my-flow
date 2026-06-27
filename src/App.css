@@ -3174,6 +3174,358 @@ input {
   white-space: nowrap;
 }
 
+.progress-mascot {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  width: min(100%, 245px);
+  padding: 12px;
+  border: 1px solid rgba(123, 97, 255, 0.14);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255, 255, 255, 0.62), transparent 38%),
+    linear-gradient(135deg, rgba(255, 245, 252, 0.95), rgba(235, 248, 255, 0.94));
+  box-shadow: 0 16px 34px rgba(110, 90, 170, 0.12);
+}
+
+.progress-mascot-image-wrap {
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(255, 159, 210, 0.28), rgba(123, 97, 255, 0.18), rgba(115, 207, 255, 0.22));
+}
+
+.progress-mascot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.progress-mascot-copy {
+  min-width: 0;
+}
+
+.progress-mascot-copy span {
+  display: block;
+  color: #765cff;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.progress-mascot-copy strong {
+  display: block;
+  margin-top: 3px;
+  color: #17133f;
+  font-size: 16px;
+  line-height: 1.15;
+}
+
+.progress-mascot-copy p {
+  margin: 4px 0 8px;
+  color: #5f5b7c;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.progress-mascot-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.14);
+}
+
+.progress-mascot-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff, #73cfff);
+}
+
+.progress-mascot-copy small {
+  display: block;
+  margin-top: 6px;
+  color: #65607f;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.progress-mascot-bronze .progress-mascot-image-wrap {
+  background: linear-gradient(145deg, rgba(255, 190, 122, 0.34), rgba(123, 97, 255, 0.18));
+}
+
+.progress-mascot-silver .progress-mascot-image-wrap {
+  background: linear-gradient(145deg, rgba(220, 226, 255, 0.8), rgba(115, 207, 255, 0.28));
+}
+
+.progress-mascot-gold .progress-mascot-image-wrap,
+.progress-mascot-complete .progress-mascot-image-wrap {
+  background: linear-gradient(145deg, rgba(255, 218, 114, 0.46), rgba(255, 159, 210, 0.28), rgba(123, 97, 255, 0.2));
+}
+
+.flowtree-stats-page {
+  gap: 16px;
+  padding-bottom: 118px;
+}
+
+.flowtree-hero {
+  align-items: center;
+}
+
+.flowtree-dashboard {
+  display: grid;
+  gap: 14px;
+}
+
+.flowtree-card,
+.flowtree-week-card,
+.flowtree-explain-card,
+.flowtree-loading-card {
+  border: 1px solid rgba(118, 92, 255, 0.12);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 18px 44px rgba(110, 90, 170, 0.12);
+}
+
+.flowtree-card {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 82% 16%, rgba(115, 207, 255, 0.2), transparent 30%),
+    radial-gradient(circle at 12% 0%, rgba(255, 159, 210, 0.22), transparent 34%),
+    rgba(255, 255, 255, 0.88);
+}
+
+.flowtree-card-copy span,
+.flowtree-points-row span,
+.flowtree-explain-card span {
+  display: block;
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.flowtree-card-copy h2 {
+  margin: 6px 0 4px;
+  color: #17133f;
+  font-size: clamp(28px, 8vw, 42px);
+  line-height: 1;
+}
+
+.flowtree-card-copy p,
+.flowtree-status-message,
+.flowtree-explain-card p {
+  margin: 0;
+  color: #5f5b7c;
+  line-height: 1.45;
+}
+
+.flowtree-visual-panel {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 230px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(255, 255, 255, 0.9), transparent 38%),
+    linear-gradient(145deg, rgba(244, 238, 255, 0.78), rgba(231, 248, 255, 0.72));
+}
+
+.flowtree-stage-image {
+  width: min(72%, 235px);
+  max-height: 235px;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 28px rgba(90, 72, 150, 0.16));
+}
+
+.flowtree-mascot-image {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  width: 72px;
+  height: 72px;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  object-fit: cover;
+  box-shadow: 0 14px 28px rgba(90, 72, 150, 0.16);
+}
+
+.flowtree-points-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.flowtree-points-row div {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(123, 97, 255, 0.07);
+}
+
+.flowtree-points-row strong {
+  display: block;
+  margin-top: 5px;
+  color: #17133f;
+  font-size: 20px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.flowtree-progress-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.14);
+}
+
+.flowtree-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #ff9fd2, #7b61ff, #73cfff);
+}
+
+.flowtree-level-rail {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.flowtree-level-step {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 4px;
+  border: 1px solid rgba(118, 92, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #65607f;
+  text-align: center;
+}
+
+.flowtree-level-step span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.1);
+  color: #765cff;
+  font-weight: 900;
+}
+
+.flowtree-level-step small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.flowtree-level-step.reached {
+  border-color: rgba(34, 168, 111, 0.28);
+  background: rgba(222, 247, 231, 0.7);
+}
+
+.flowtree-level-step.current {
+  border-color: rgba(123, 97, 255, 0.42);
+  background: linear-gradient(135deg, rgba(255, 230, 245, 0.92), rgba(235, 248, 255, 0.94));
+  color: #17133f;
+}
+
+.flowtree-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.flowtree-stat-grid article {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(118, 92, 255, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 14px 34px rgba(110, 90, 170, 0.1);
+}
+
+.flowtree-stat-grid span {
+  color: #765cff;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.flowtree-stat-grid strong {
+  display: block;
+  margin-top: 8px;
+  color: #17133f;
+  font-size: 30px;
+}
+
+.flowtree-week-card,
+.flowtree-explain-card {
+  padding: 18px;
+}
+
+.flowtree-week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.flowtree-week-days div {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  border: 1px solid rgba(118, 92, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(123, 97, 255, 0.06);
+  color: #65607f;
+  font-weight: 900;
+}
+
+.flowtree-week-days div.active {
+  border-color: rgba(34, 168, 111, 0.4);
+  background: rgba(222, 247, 231, 0.9);
+  color: #1f8c5d;
+}
+
+.flowtree-explain-card {
+  display: grid;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(255, 245, 252, 0.9), rgba(235, 248, 255, 0.9));
+}
+
+.flowtree-loading-card {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+
+.flowtree-loading-card span {
+  min-height: 86px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, rgba(123, 97, 255, 0.08), rgba(115, 207, 255, 0.14), rgba(123, 97, 255, 0.08));
+  background-size: 220% 100%;
+  animation: checkinSkeleton 1.4s ease infinite;
+}
+
+.flowtree-error-state {
+  min-height: auto;
+}
+
 .stats-view-toggle {
   margin-top: 0;
 }
@@ -6009,6 +6361,381 @@ h3,
   width: 100%;
 }
 
+.bottom-nav {
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: min(398px, calc(100vw - 24px));
+  border: 1px solid rgba(255, 255, 255, 0.78);
+}
+
+.floating-checkin-button {
+  right: max(14px, calc((100vw - 430px) / 2 + 14px));
+  bottom: calc(104px + env(safe-area-inset-bottom));
+  z-index: 35;
+  width: 68px;
+  padding: 7px 7px 8px;
+  border-radius: 20px;
+}
+
+.floating-checkin-button img {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+}
+
+.flowtree-stats-page {
+  gap: 12px;
+  padding: 24px 14px calc(132px + env(safe-area-inset-bottom));
+}
+
+.flowtree-hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 24px;
+}
+
+.flowtree-hero h1 {
+  font-size: clamp(31px, 8vw, 42px);
+}
+
+.flowtree-hero p:last-child {
+  max-width: 360px;
+  font-size: 14px;
+}
+
+.flowtree-dashboard {
+  gap: 12px;
+}
+
+.flowtree-card,
+.flowtree-week-card,
+.flowtree-explain-card {
+  border-radius: 24px;
+  box-shadow: 0 18px 45px rgba(82, 65, 148, 0.08);
+}
+
+.flowtree-card {
+  gap: 13px;
+  padding: 16px;
+}
+
+.flowtree-hero-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(132px, 44%);
+  gap: 12px;
+  align-items: center;
+}
+
+.flowtree-card-copy h2 {
+  margin: 5px 0 3px;
+  font-size: clamp(28px, 7vw, 38px);
+}
+
+.flowtree-card-copy small {
+  display: block;
+  margin-top: 8px;
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.flowtree-visual-panel {
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  padding: 8px;
+  border-radius: 22px;
+}
+
+.flowtree-stage-image {
+  width: 100%;
+  max-width: 210px;
+  max-height: 210px;
+}
+
+.flowtree-mascot-image {
+  right: 8px;
+  bottom: 8px;
+  width: clamp(42px, 12vw, 62px);
+  height: clamp(42px, 12vw, 62px);
+  border-width: 3px;
+  border-radius: 18px;
+}
+
+.flowtree-points-panel {
+  display: grid;
+  gap: 8px;
+  padding: 13px;
+  border-radius: 18px;
+  background: rgba(123, 97, 255, 0.07);
+}
+
+.flowtree-points-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: end;
+}
+
+.flowtree-points-head span {
+  color: #765cff;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.flowtree-points-head strong {
+  display: block;
+  margin-top: 2px;
+  color: #17133f;
+  font-size: clamp(24px, 7vw, 34px);
+  line-height: 1;
+}
+
+.flowtree-points-head small {
+  max-width: 145px;
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.flowtree-status-message {
+  font-size: 12px;
+}
+
+.flowtree-level-rail {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(66px, 1fr));
+  gap: 0;
+  overflow-x: auto;
+  padding: 10px;
+  border: 1px solid rgba(118, 92, 255, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+  scrollbar-width: none;
+}
+
+.flowtree-level-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.flowtree-level-step {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 66px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.flowtree-step-node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 2px solid rgba(123, 97, 255, 0.14);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.flowtree-step-node img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.flowtree-level-step i {
+  position: absolute;
+  top: 21px;
+  left: calc(50% + 21px);
+  width: calc(100% - 42px);
+  height: 2px;
+  background: rgba(123, 97, 255, 0.16);
+}
+
+.flowtree-level-step small {
+  color: #65607f;
+  font-size: 10px;
+  line-height: 1.15;
+}
+
+.flowtree-level-step.reached .flowtree-step-node {
+  border-color: rgba(34, 168, 111, 0.36);
+  background: rgba(222, 247, 231, 0.92);
+}
+
+.flowtree-level-step.current .flowtree-step-node {
+  border-color: rgba(123, 97, 255, 0.7);
+  box-shadow: 0 0 0 5px rgba(123, 97, 255, 0.1);
+}
+
+.flowtree-level-step.current small {
+  color: #17133f;
+  font-weight: 900;
+}
+
+.flowtree-stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.flowtree-stat-grid article {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 82px;
+  padding: 12px 10px;
+  border-radius: 20px;
+}
+
+.flowtree-stat-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(123, 97, 255, 0.1);
+  color: #765cff;
+  font-weight: 900;
+}
+
+.flowtree-stat-grid article > div {
+  min-width: 0;
+}
+
+.flowtree-stat-grid article > div > span {
+  display: block;
+  color: #5f5b7c;
+  font-size: 10px;
+  line-height: 1.15;
+  text-transform: none;
+}
+
+.flowtree-stat-grid strong {
+  margin-top: 3px;
+  font-size: clamp(23px, 6vw, 32px);
+  line-height: 1;
+}
+
+.flowtree-stat-grid small {
+  display: block;
+  margin-top: 2px;
+  color: #80799a;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.flowtree-week-card {
+  padding: 16px;
+}
+
+.flowtree-week-header {
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.flowtree-week-header h2 {
+  font-size: clamp(20px, 5vw, 27px);
+}
+
+.flowtree-week-header button {
+  min-height: 34px;
+  padding: 8px 12px;
+  background: rgba(123, 97, 255, 0.1);
+  color: #765cff;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.flowtree-week-days {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.flowtree-week-days div {
+  display: grid;
+  gap: 5px;
+  place-items: center;
+  min-height: 58px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.07);
+}
+
+.flowtree-week-days div span {
+  color: #5f5b7c;
+  font-size: 11px;
+}
+
+.flowtree-week-days b {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(123, 97, 255, 0.14);
+  border-radius: 50%;
+  color: #22a86f;
+  font-size: 12px;
+}
+
+.flowtree-week-days div.active b {
+  border-color: rgba(34, 168, 111, 0.38);
+  background: rgba(222, 247, 231, 0.95);
+}
+
+.flowtree-week-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0 8px;
+  color: #65607f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.flowtree-explain-card {
+  padding: 15px 16px;
+  border-radius: 22px;
+}
+
+@media (max-width: 380px) {
+  .flowtree-stats-page {
+    padding-inline: 10px;
+  }
+
+  .flowtree-hero-row {
+    grid-template-columns: 1fr;
+  }
+
+  .flowtree-visual-panel {
+    max-width: 210px;
+    justify-self: center;
+    width: 100%;
+  }
+
+  .flowtree-stat-grid {
+    overflow-x: auto;
+    grid-auto-flow: column;
+    grid-auto-columns: 132px;
+    grid-template-columns: none;
+    scrollbar-width: none;
+  }
+
+  .flowtree-stat-grid::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @media (max-width: 520px) {
   .routines-page-header {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -6085,6 +6812,79 @@ h3,
   .stats-hero {
     grid-template-columns: 1fr;
     padding: 18px;
+  }
+
+  .progress-mascot {
+    grid-template-columns: 66px minmax(0, 1fr);
+    width: 100%;
+    padding: 10px;
+  }
+
+  .progress-mascot-image-wrap {
+    width: 66px;
+    height: 66px;
+    border-radius: 20px;
+  }
+
+  .progress-mascot-copy strong {
+    font-size: 15px;
+  }
+
+  .progress-mascot-copy p {
+    font-size: 11px;
+  }
+
+  .flowtree-card,
+  .flowtree-week-card,
+  .flowtree-explain-card {
+    border-radius: 22px;
+    padding: 14px;
+  }
+
+  .flowtree-visual-panel {
+    min-height: 190px;
+    border-radius: 20px;
+  }
+
+  .flowtree-stage-image {
+    width: min(76%, 190px);
+    max-height: 190px;
+  }
+
+  .flowtree-mascot-image {
+    width: 58px;
+    height: 58px;
+    border-radius: 19px;
+  }
+
+  .flowtree-points-row,
+  .flowtree-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flowtree-level-rail,
+  .flowtree-week-days {
+    gap: 5px;
+  }
+
+  .flowtree-level-step {
+    padding: 8px 2px;
+  }
+
+  .flowtree-level-step span {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  .flowtree-level-step small {
+    font-size: 9px;
+  }
+
+  .flowtree-week-days div {
+    min-height: 36px;
+    border-radius: 12px;
+    font-size: 12px;
   }
 
   .stats-date-chip {
@@ -6552,5 +7352,82 @@ h3,
     min-height: 52px;
     padding: 0 12px;
     font-size: 15px;
+  }
+}
+
+/* Flowtree statistics final layout overrides */
+.bottom-nav {
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 40;
+  width: min(398px, calc(100vw - 24px));
+}
+
+.floating-checkin-button {
+  bottom: calc(104px + env(safe-area-inset-bottom));
+  right: max(14px, calc((100vw - 430px) / 2 + 14px));
+  z-index: 35;
+}
+
+.flowtree-stats-page {
+  padding-bottom: calc(132px + env(safe-area-inset-bottom));
+}
+
+.flowtree-card {
+  gap: 13px;
+  padding: 16px;
+}
+
+.flowtree-hero-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(132px, 44%);
+  gap: 12px;
+  align-items: center;
+}
+
+.flowtree-visual-panel {
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.flowtree-stage-image {
+  width: 100%;
+  max-width: 210px;
+  height: auto;
+  object-fit: contain;
+}
+
+.flowtree-level-rail {
+  grid-template-columns: repeat(5, minmax(66px, 1fr));
+  overflow-x: auto;
+}
+
+.flowtree-stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.flowtree-week-days {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+@media (max-width: 380px) {
+  .flowtree-hero-row {
+    grid-template-columns: 1fr;
+  }
+
+  .flowtree-visual-panel {
+    width: min(100%, 210px);
+    justify-self: center;
+  }
+
+  .flowtree-stat-grid {
+    grid-auto-flow: column;
+    grid-auto-columns: 132px;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .flowtree-stat-grid::-webkit-scrollbar {
+    display: none;
   }
 }

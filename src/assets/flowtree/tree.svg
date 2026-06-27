@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Baum">
+  <rect width="240" height="240" rx="48" fill="#f3f8ff"/>
+  <ellipse cx="121" cy="190" rx="86" ry="18" fill="#d5e5c9"/>
+  <path d="M108 190c12-45 11-78 5-119h20c-5 43-3 77 8 119Z" fill="#9b6a43"/>
+  <circle cx="87" cy="82" r="39" fill="#5fcf7a"/>
+  <circle cx="127" cy="60" r="44" fill="#75d878"/>
+  <circle cx="158" cy="91" r="40" fill="#4fbd6f"/>
+  <circle cx="121" cy="111" r="46" fill="#86df86"/>
+</svg>

@@ -7,9 +7,6 @@ function DashboardHome({ habits, profileName, t }) {
     .filter((habit) => !habit.done && habit.progress < 100)
     .sort((firstHabit, secondHabit) => secondHabit.progress - firstHabit.progress)
     .slice(0, 3)
-  const dashboardMessage = t.dashboard.message
-    .replace('{count}', completedHabits)
-    .replace('{total}', habits.length)
   const firstName = profileName.trim() || 'Gast'
 
   return (
@@ -18,7 +15,6 @@ function DashboardHome({ habits, profileName, t }) {
         <div>
           <p className="eyebrow">{t.dashboard.hello.replace('{name}', firstName)}</p>
           <h1>{t.dashboard.title}</h1>
-          <p className="lead">{dashboardMessage}</p>
         </div>
       </div>
 
