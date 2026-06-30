@@ -1,9 +1,9 @@
 import { useProfile } from '../context/profileContextValue'
 
-function formatGoals(goals) {
-  return String(goals || '')
+function formatProfileList(value) {
+  return String(value || '')
     .split(/[\n,;]/)
-    .map((goal) => goal.trim())
+    .map((item) => item.trim())
     .filter(Boolean)
     .slice(0, 4)
 }
@@ -19,7 +19,8 @@ function DashboardHome({ accountProfile = {}, habits, profileName, t, onNavigate
     .sort((firstHabit, secondHabit) => secondHabit.progress - firstHabit.progress)
     .slice(0, 3)
   const firstName = profileName.trim() || 'Gast'
-  const visibleGoals = formatGoals(accountProfile.goals)
+  const visibleGoals = formatProfileList(accountProfile.goals)
+  const visibleDailyRoutine = formatProfileList(accountProfile.dailyRoutine)
 
   return (
     <section className="screen home-screen">
@@ -47,21 +48,42 @@ function DashboardHome({ accountProfile = {}, habits, profileName, t, onNavigate
       <section className="home-goals-card">
         <div className="home-goals-header">
           <div>
-            <span>Meine Ziele</span>
-            <h2>{visibleGoals.length > 0 ? 'Das steht heute im Fokus' : 'Noch kein Ziel eingetragen'}</h2>
+            <span>Mein Alltag</span>
+            <h2>{visibleGoals.length > 0 || visibleDailyRoutine.length > 0 ? 'Ziele und Tagesablauf' : 'Noch nichts eingetragen'}</h2>
           </div>
           <button type="button" onClick={() => onNavigate?.('profileSettings')}>
             Bearbeiten
           </button>
         </div>
-        {visibleGoals.length > 0 ? (
-          <div className="home-goals-list">
-            {visibleGoals.map((goal) => (
-              <strong key={goal}>{goal}</strong>
-            ))}
+        {visibleGoals.length > 0 || visibleDailyRoutine.length > 0 ? (
+          <div className="home-profile-summary">
+            <div>
+              <small>Meine Ziele</small>
+              {visibleGoals.length > 0 ? (
+                <div className="home-goals-list">
+                  {visibleGoals.map((goal) => (
+                    <strong key={goal}>{goal}</strong>
+                  ))}
+                </div>
+              ) : (
+                <p>Noch kein Ziel eingetragen.</p>
+              )}
+            </div>
+            <div>
+              <small>Mein Tagesablauf</small>
+              {visibleDailyRoutine.length > 0 ? (
+                <div className="home-goals-list">
+                  {visibleDailyRoutine.map((routineItem) => (
+                    <strong key={routineItem}>{routineItem}</strong>
+                  ))}
+                </div>
+              ) : (
+                <p>Noch kein Tagesablauf eingetragen.</p>
+              )}
+            </div>
           </div>
         ) : (
-          <p>Trage deine Ziele ein, damit MyFlow passende Routinen und Erinnerungen anzeigen kann.</p>
+          <p>Trage Ziele und Tagesablauf ein, damit MyFlow passende Routinen und Erinnerungen anzeigen kann.</p>
         )}
       </section>
 

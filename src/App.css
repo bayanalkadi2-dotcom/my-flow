@@ -1219,6 +1219,22 @@ input {
   gap: 9px;
 }
 
+.home-profile-summary {
+  display: grid;
+  gap: 14px;
+}
+
+.home-profile-summary > div {
+  display: grid;
+  gap: 9px;
+}
+
+.home-profile-summary small {
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .home-goals-list strong {
   display: block;
   padding: 12px 14px;
