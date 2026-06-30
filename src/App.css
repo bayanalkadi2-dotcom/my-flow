@@ -108,6 +108,7 @@ body {
 .app.theme-dark .challenge-card p,
 .app.theme-dark .profile-edit-panel p,
 .app.theme-dark .home-status-grid p,
+.app.theme-dark .home-goals-card p,
 .app.theme-dark .daily-focus-card p,
 .app.theme-dark .day-plan-card p,
 .app.theme-dark .home-motivation-card p,
@@ -125,6 +126,7 @@ body {
 .app.theme-dark .profile-level-card,
 .app.theme-dark .flow-tree-card,
 .app.theme-dark .day-overview-card,
+.app.theme-dark .home-goals-card,
 .app.theme-dark .daily-focus-card,
 .app.theme-dark .day-plan-card,
 .app.theme-dark .home-motivation-card,
@@ -144,6 +146,7 @@ body {
 .app.theme-dark select,
 .app.theme-dark .profile-edit-panel,
 .app.theme-dark .daily-focus-list div,
+.app.theme-dark .home-goals-list strong,
 .app.theme-dark .flow-segment div,
 .app.theme-dark .flow-recommendation,
 .app.theme-dark .invite-link-box,
@@ -1055,6 +1058,7 @@ input {
 }
 
 .day-overview-card,
+.home-goals-card,
 .daily-focus-card,
 .day-plan-card,
 .home-motivation-card {
@@ -1080,6 +1084,7 @@ input {
 }
 
 .day-overview-card span,
+.home-goals-header span,
 .daily-focus-header span,
 .day-plan-card > span,
 .home-motivation-card span {
@@ -1174,9 +1179,54 @@ input {
 }
 
 .home-status-grid span,
+.home-goals-header span,
 .daily-focus-header small,
 .home-motivation-card span {
   color: #765cff;
+}
+
+.home-goals-card {
+  display: grid;
+  gap: 14px;
+}
+
+.home-goals-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.home-goals-header h2 {
+  margin: 5px 0 0;
+  color: #18143f;
+  font-size: 23px;
+  line-height: 1.15;
+}
+
+.home-goals-header button {
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: white;
+  color: #765cff;
+  border: 1px solid rgba(118, 92, 255, 0.18);
+  box-shadow: none;
+}
+
+.home-goals-list {
+  display: grid;
+  gap: 9px;
+}
+
+.home-goals-list strong {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(123, 97, 255, 0.08);
+  color: #302c5a;
+  font-size: 14px;
+  line-height: 1.3;
 }
 
 .home-status-grid strong {
@@ -4652,6 +4702,23 @@ input {
   width: 100%;
 }
 
+.profile-edit-panel textarea {
+  width: 100%;
+  min-height: 82px;
+  resize: vertical;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(130, 100, 255, 0.2);
+  outline: none;
+  background: white;
+  color: #17133f;
+  font: inherit;
+}
+
+.account-profile-editor {
+  gap: 12px;
+}
+
 .option-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -6039,6 +6106,7 @@ h3,
 .app.theme-dark .profile-level-card,
 .app.theme-dark .flow-tree-card,
 .app.theme-dark .day-overview-card,
+.app.theme-dark .home-goals-card,
 .app.theme-dark .daily-focus-card,
 .app.theme-dark .day-plan-card,
 .app.theme-dark .home-motivation-card,
@@ -6060,6 +6128,7 @@ h3,
 .app.theme-dark select,
 .app.theme-dark .profile-edit-panel,
 .app.theme-dark .daily-focus-list div,
+.app.theme-dark .home-goals-list strong,
 .app.theme-dark .flow-segment div,
 .app.theme-dark .flow-recommendation,
 .app.theme-dark .invite-link-box,
@@ -6094,6 +6163,7 @@ h3,
 .app.theme-dark .challenge-card p,
 .app.theme-dark .profile-edit-panel p,
 .app.theme-dark .home-status-grid p,
+.app.theme-dark .home-goals-card p,
 .app.theme-dark .daily-focus-card p,
 .app.theme-dark .day-plan-card p,
 .app.theme-dark .home-motivation-card p,

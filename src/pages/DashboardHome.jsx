@@ -1,6 +1,14 @@
 import { useProfile } from '../context/profileContextValue'
 
-function DashboardHome({ habits, profileName, t }) {
+function formatGoals(goals) {
+  return String(goals || '')
+    .split(/[\n,;]/)
+    .map((goal) => goal.trim())
+    .filter(Boolean)
+    .slice(0, 4)
+}
+
+function DashboardHome({ accountProfile = {}, habits, profileName, t, onNavigate }) {
   const { personalizedTexts } = useProfile()
   const completedHabits = habits.filter((habit) => habit.done || habit.progress >= 100).length
   const totalProgress = habits.reduce((sum, habit) => sum + habit.progress, 0)
@@ -11,6 +19,7 @@ function DashboardHome({ habits, profileName, t }) {
     .sort((firstHabit, secondHabit) => secondHabit.progress - firstHabit.progress)
     .slice(0, 3)
   const firstName = profileName.trim() || 'Gast'
+  const visibleGoals = formatGoals(accountProfile.goals)
 
   return (
     <section className="screen home-screen">
@@ -34,6 +43,27 @@ function DashboardHome({ habits, profileName, t }) {
           <span>{dayProgress}%</span>
         </strong>
       </article>
+
+      <section className="home-goals-card">
+        <div className="home-goals-header">
+          <div>
+            <span>Meine Ziele</span>
+            <h2>{visibleGoals.length > 0 ? 'Das steht heute im Fokus' : 'Noch kein Ziel eingetragen'}</h2>
+          </div>
+          <button type="button" onClick={() => onNavigate?.('profileSettings')}>
+            Bearbeiten
+          </button>
+        </div>
+        {visibleGoals.length > 0 ? (
+          <div className="home-goals-list">
+            {visibleGoals.map((goal) => (
+              <strong key={goal}>{goal}</strong>
+            ))}
+          </div>
+        ) : (
+          <p>Trage deine Ziele ein, damit MyFlow passende Routinen und Erinnerungen anzeigen kann.</p>
+        )}
+      </section>
 
       <div className="home-status-grid">
         <article className="status-card-done">

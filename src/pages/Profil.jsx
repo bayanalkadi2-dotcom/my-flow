@@ -40,6 +40,13 @@ const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 
 
 const paidTools = ['KI-Coach', 'Erweiterte Statistik', 'Premium-Routinen']
 
+const defaultAccountProfile = {
+  age: '',
+  goals: '',
+  dailyRoutine: '',
+  interests: '',
+}
+
 const levelSteps = [
   { name: 'Starter', min: 0 },
   { name: 'Bronze', min: 250 },
@@ -150,6 +157,22 @@ function getHealthRecommendation(bmi, weight) {
   return { water: waterLiters, steps: '7.500', note: 'sanft anfangen' }
 }
 
+function loadAccountProfile() {
+  try {
+    return { ...defaultAccountProfile, ...JSON.parse(localStorage.getItem('myflow-account-profile') || '{}') }
+  } catch {
+    return defaultAccountProfile
+  }
+}
+
+function getAccountSummary(accountProfile) {
+  const filledFields = [accountProfile.age, accountProfile.goals, accountProfile.dailyRoutine, accountProfile.interests]
+    .filter((value) => String(value).trim())
+    .length
+
+  return filledFields > 0 ? `${filledFields}/4 ausgefuellt` : 'Einrichten'
+}
+
 function SettingIcon({ type }) {
   const icons = {
     name: iconName,
@@ -171,6 +194,7 @@ function SettingIcon({ type }) {
 }
 
 function Profil({
+  accountProfile,
   appTheme,
   communicationStyle,
   languageStyle,
@@ -179,6 +203,7 @@ function Profil({
   settingsPage = false,
   tone,
   t,
+  onAccountProfileChange,
   onAppThemeChange,
   onCommunicationStyleChange,
   onNavigate,
@@ -202,6 +227,7 @@ function Profil({
   const [paymentEmail, setPaymentEmail] = useState('')
   const [treeType, setTreeType] = useState('oak')
   const [profileImage, setProfileImage] = useState(() => localStorage.getItem('myflow-profile-image') || '')
+  const visibleAccountProfile = accountProfile ?? loadAccountProfile()
   const [draftSettings, setDraftSettings] = useState({
     name: profileName || 'Gast',
     gender,
@@ -211,6 +237,7 @@ function Profil({
     communicationStyle,
     languageStyle,
     design: appTheme,
+    accountProfile: visibleAccountProfile,
   })
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
@@ -242,6 +269,7 @@ function Profil({
       communicationStyle,
       languageStyle,
       design: appTheme,
+      accountProfile: visibleAccountProfile,
     })
     setActiveEditor(editor)
   }
@@ -275,6 +303,9 @@ function Profil({
         break
       case 'reminders':
         setReminders(draftSettings.reminders)
+        break
+      case 'accountProfile':
+        onAccountProfileChange?.(draftSettings.accountProfile)
         break
       case 'language':
         onSelectStyle(draftSettings.languageStyle)
@@ -513,6 +544,53 @@ function Profil({
               </button>
             </div>
             <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
+          </div>
+        )}
+
+        <div className="profile-setting-row">
+          <SettingIcon type="name" />
+          <span>Profil / Konto</span>
+          <strong>{getAccountSummary(visibleAccountProfile)}</strong>
+          <button type="button" onClick={() => openEditor('accountProfile')}>{t.common.change}</button>
+        </div>
+        {activeEditor === 'accountProfile' && (
+          <div className="profile-edit-panel account-profile-editor">
+            <label>
+              Alter
+              <input
+                min="10"
+                max="99"
+                type="number"
+                value={draftSettings.accountProfile.age}
+                onChange={(event) => updateDraft('accountProfile', { ...draftSettings.accountProfile, age: event.target.value })}
+                placeholder="z. B. 17"
+              />
+            </label>
+            <label>
+              Ziele
+              <textarea
+                value={draftSettings.accountProfile.goals}
+                onChange={(event) => updateDraft('accountProfile', { ...draftSettings.accountProfile, goals: event.target.value })}
+                placeholder="z. B. mehr Sport, besser schlafen, weniger Stress"
+              />
+            </label>
+            <label>
+              Tagesablauf
+              <textarea
+                value={draftSettings.accountProfile.dailyRoutine}
+                onChange={(event) => updateDraft('accountProfile', { ...draftSettings.accountProfile, dailyRoutine: event.target.value })}
+                placeholder="z. B. Schule, Lernen, Training, Freizeit"
+              />
+            </label>
+            <label>
+              Interessen
+              <textarea
+                value={draftSettings.accountProfile.interests}
+                onChange={(event) => updateDraft('accountProfile', { ...draftSettings.accountProfile, interests: event.target.value })}
+                placeholder="z. B. Fitness, Musik, Gaming, Freunde"
+              />
+            </label>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>Speichern</button>
           </div>
         )}
 

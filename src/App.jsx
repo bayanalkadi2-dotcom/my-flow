@@ -38,6 +38,21 @@ const removedRoutineTitles = new Set([
   'soziale aktivität',
 ])
 
+const defaultAccountProfile = {
+  age: '',
+  goals: '',
+  dailyRoutine: '',
+  interests: '',
+}
+
+function loadAccountProfile() {
+  try {
+    return { ...defaultAccountProfile, ...JSON.parse(localStorage.getItem('myflow-account-profile') || '{}') }
+  } catch {
+    return defaultAccountProfile
+  }
+}
+
 function isRemovedRoutine(routine) {
   const title = String(routine?.title ?? '').trim().toLowerCase()
   return removedRoutineTitles.has(title) || removedRoutineTitles.has(title.replaceAll('ä', 'Ã¤'))
@@ -92,6 +107,7 @@ function App() {
   const [routineItems, setRoutineItems] = useState([])
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [routinesLoaded, setRoutinesLoaded] = useState(false)
+  const [accountProfile, setAccountProfile] = useState(loadAccountProfile)
   const [isSavingOnboarding, setIsSavingOnboarding] = useState(false)
   const needsStudentOnboarding = isAuthenticated
     && !profileLoading
@@ -107,6 +123,8 @@ function App() {
         setProfileName('Gast')
         setAppTheme('Hell')
         setRoutineItems([])
+        setProfile(null)
+        setAccountProfile(loadAccountProfile())
         setScreen('start')
         setRoutinesLoaded(true)
       })
@@ -396,6 +414,11 @@ function App() {
     }
   }
 
+  function handleAccountProfileChange(nextAccountProfile) {
+    setAccountProfile(nextAccountProfile)
+    localStorage.setItem('myflow-account-profile', JSON.stringify(nextAccountProfile))
+  }
+
   async function handleStudentOnboardingComplete(answers) {
     const returnToProfile = screen === 'profileOnboarding'
     setIsSavingOnboarding(true)
@@ -507,12 +530,14 @@ function App() {
       case 'dashboard':
         return (
           <DashboardHome
+            accountProfile={accountProfile}
             habits={preparedHabits}
             communicationStyle={communicationStyle}
             languageStyle={languageStyle}
             profileName={resolvedProfileName}
             tone={tone}
             t={t}
+            onNavigate={setScreen}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
             onSetMood={setHabitMood}
@@ -548,6 +573,7 @@ function App() {
       case 'profile':
         return (
           <Profil
+            accountProfile={accountProfile}
             appTheme={appTheme}
             habits={preparedHabits}
             languageStyle={languageStyle}
@@ -555,6 +581,7 @@ function App() {
             profileName={resolvedProfileName}
             tone={tone}
             t={t}
+            onAccountProfileChange={handleAccountProfileChange}
             onAppThemeChange={handleAppThemeChange}
             onNavigate={setScreen}
             onProfileNameChange={handleProfileNameChange}
@@ -565,6 +592,7 @@ function App() {
       case 'profileSettings':
         return (
           <Profil
+            accountProfile={accountProfile}
             appTheme={appTheme}
             habits={preparedHabits}
             languageStyle={languageStyle}
@@ -573,6 +601,7 @@ function App() {
             settingsPage
             tone={tone}
             t={t}
+            onAccountProfileChange={handleAccountProfileChange}
             onAppThemeChange={handleAppThemeChange}
             onNavigate={setScreen}
             onProfileNameChange={handleProfileNameChange}
@@ -594,12 +623,14 @@ function App() {
       default:
         return (
           <DashboardHome
+            accountProfile={accountProfile}
             habits={preparedHabits}
             communicationStyle={communicationStyle}
             languageStyle={languageStyle}
             profileName={resolvedProfileName}
             tone={tone}
             t={t}
+            onNavigate={setScreen}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
             onSetMood={setHabitMood}
