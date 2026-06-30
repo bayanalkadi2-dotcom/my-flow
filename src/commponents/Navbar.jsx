@@ -14,6 +14,17 @@ const icons = {
       <path d="m3.5 17 1.2 1.2L7 15.8" />
     </svg>
   ),
+  calendar: (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 3v3" />
+      <path d="M17 3v3" />
+      <path d="M4 9h16" />
+      <path d="M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
+      <path d="M8 13h2" />
+      <path d="M14 13h2" />
+      <path d="M8 17h2" />
+    </svg>
+  ),
   progress: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M5 19V9" />

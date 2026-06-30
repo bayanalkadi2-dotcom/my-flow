@@ -10,6 +10,7 @@ import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
 import Einloggen from './pages/Einloggen'
 import PasswortÄndern from './pages/Passwortändern'
+import Kalender from './pages/Kalender'
 import Profil from './pages/Profil'
 import Registrieren from './pages/Registrieren'
 import Routinen from './pages/Routinen'
@@ -564,6 +565,8 @@ function App() {
         )
       case 'checkin':
         return <DailyCheckIn onNavigate={setScreen} user={user} />
+      case 'calendar':
+        return <Kalender />
       case 'progress':
         return <Statistik habits={preparedHabits} languageStyle={languageStyle} onNavigate={setScreen} t={t} />
       case 'freunde':
@@ -645,7 +648,7 @@ function App() {
   return (
     <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
       {renderScreen()}
-      {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'checkin' && (
+      {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'checkin' && screen !== 'calendar' && (
         <button
           className="floating-checkin-button"
           onClick={() => setScreen('checkin')}
@@ -657,7 +660,11 @@ function App() {
         </button>
       )}
       {!authScreens.includes(screen) && screen !== 'profileSettings' && (
-        <Navbar activeScreen={screen} items={Object.entries(t.nav).map(([id, label]) => ({ id, label }))} onNavigate={setScreen} />
+        <Navbar
+          activeScreen={screen}
+          items={['dashboard', 'calendar', 'habits', 'progress', 'profile'].map((id) => ({ id, label: t.nav[id] }))}
+          onNavigate={setScreen}
+        />
       )}
     </main>
   )
