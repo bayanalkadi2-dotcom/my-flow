@@ -229,6 +229,7 @@ CREATE TABLE IF NOT EXISTS public.daily_checkins (
   physical_energy TEXT NOT NULL,
   mental_energy TEXT NOT NULL,
   concentration_level TEXT NOT NULL,
+  context_stressor TEXT,
   mood TEXT NOT NULL,
   available_time_minutes INTEGER NOT NULL,
   support_goal TEXT NOT NULL,
@@ -242,6 +243,9 @@ ALTER TABLE public.daily_checkins
 
 ALTER TABLE public.daily_checkins
   ADD COLUMN IF NOT EXISTS available_time_minutes INTEGER;
+
+ALTER TABLE public.daily_checkins
+  ADD COLUMN IF NOT EXISTS context_stressor TEXT;
 
 DO $$
 BEGIN

@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import FlowtreeProgress from '../commponents/progress/FlowtreeProgress'
+import { useProfile } from '../context/profileContextValue'
 import { getUserCheckIns } from '../services/checkInService'
 import { calculateFlowtreeStats } from '../utils/flowtreeStats'
 
 function Statistik({ habits = [], t }) {
+  const { personalizedTexts } = useProfile()
   const [checkIns, setCheckIns] = useState([])
   const [checkInsLoading, setCheckInsLoading] = useState(true)
   const [checkInsError, setCheckInsError] = useState('')
   const stats = useMemo(() => calculateFlowtreeStats({ routines: habits, checkIns }), [habits, checkIns])
   const hasProgress = stats.growthPoints > 0 || stats.checkIns > 0 || stats.completedRoutines > 0
   const headerMessage = hasProgress
-    ? 'Dein Flowtree wächst mit deinen echten Check-ins und Routinen.'
+    ? personalizedTexts.statisticsIntro
     : 'Starte deine erste Routine oder deinen ersten Check-in.'
 
   const loadCheckIns = useCallback(async () => {
@@ -55,7 +57,7 @@ function Statistik({ habits = [], t }) {
       <header className="stats-hero flowtree-hero">
         <div>
           <p className="eyebrow">{t.stats.eyebrow}</p>
-          <h1>{t.stats.title}</h1>
+          <h1>{personalizedTexts.statisticsTitle}</h1>
           <p>{headerMessage}</p>
         </div>
         <span className="stats-date-chip">Heute</span>

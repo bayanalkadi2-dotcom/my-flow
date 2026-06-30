@@ -1,4 +1,7 @@
+import { useProfile } from '../context/profileContextValue'
+
 function DashboardHome({ habits, profileName, t }) {
+  const { personalizedTexts } = useProfile()
   const completedHabits = habits.filter((habit) => habit.done || habit.progress >= 100).length
   const totalProgress = habits.reduce((sum, habit) => sum + habit.progress, 0)
   const dayProgress = habits.length ? Math.round(totalProgress / habits.length) : 0
@@ -14,15 +17,15 @@ function DashboardHome({ habits, profileName, t }) {
       <div className="page-header">
         <div>
           <p className="eyebrow">{t.dashboard.hello.replace('{name}', firstName)}</p>
-          <h1>{t.dashboard.title}</h1>
+          <h1>{personalizedTexts.homeQuestion}</h1>
         </div>
       </div>
 
       <article className="day-overview-card">
         <div>
-          <span>{t.dashboard.dayFeeling}</span>
+          <span>{personalizedTexts.contextLabel}</span>
           <h2>{dayProgress >= 70 ? t.dashboard.goodFlow : t.dashboard.moreRoom}</h2>
-          <p>{t.dashboard.progressMessage}</p>
+          <p>{personalizedTexts.dashboardSubtitle}</p>
           <div className="day-progress-track" aria-label={`${dayProgress}% Tagesfortschritt`}>
             <span style={{ width: `${dayProgress}%` }} />
           </div>

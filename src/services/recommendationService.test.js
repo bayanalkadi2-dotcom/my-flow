@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { evaluateGroundingAnswer } from '../data/groundingExercise.js'
 import { buildDailyCheckInPayload } from './checkInPayload.js'
 import { recommendTasks } from './recommendationService.js'
 
@@ -156,6 +157,38 @@ test('no exact match still returns a safe fallback', () => {
   assert.ok(!ids(result).includes('active-task'))
 })
 
+test('school exam stress can refine recommendations with a small learning step', () => {
+  const result = recommendTasks({
+    ...baseAnswers,
+    context_stressor: 'exams',
+  }, undefined, { studentStatus: 'school' })
+
+  assert.ok(ids(result).includes('choose-mini-task'))
+})
+
+test('university assignment stress favors a concrete next step', () => {
+  const result = recommendTasks({
+    ...baseAnswers,
+    context_stressor: 'assignments',
+    support_goal: 'focus',
+  }, undefined, { studentStatus: 'university' })
+
+  assert.equal(result[0].task.id, 'choose-mini-task')
+})
+
+test('training with low energy keeps recovery ahead of contextual productivity', () => {
+  const result = recommendTasks({
+    ...baseAnswers,
+    tiredness_level: 'exhausted',
+    physical_energy: 'very_low',
+    mental_energy: 'low',
+    context_stressor: 'little_recovery',
+  }, undefined, { studentStatus: 'training' })
+
+  assert.equal(result[0].task.id, 'short-recovery-break')
+  assert.ok(!ids(result).includes('active-task'))
+})
+
 test('user without login is rejected before saving', () => {
   const result = buildDailyCheckInPayload('', baseAnswers, recommendTasks(baseAnswers))
 
@@ -169,5 +202,28 @@ test('check-in payload uses the Supabase column names from the schema', () => {
   assert.equal(result.success, true)
   assert.equal(result.payload.mood, 'balanced')
   assert.equal(result.payload.available_time_minutes, 10)
+  assert.equal(result.payload.context_stressor, null)
   assert.ok(Array.isArray(result.payload.recommended_task_ids))
+})
+
+test('grounding exercise accepts enough separated answers', () => {
+  const result = evaluateGroundingAnswer('Fenster, Tisch, Lampe, Pflanze und Tür', 5)
+
+  assert.equal(result.isEnough, true)
+  assert.equal(result.count, 5)
+})
+
+test('grounding exercise asks for the missing number of answers', () => {
+  const result = evaluateGroundingAnswer('Tisch, Lampe, Fenster', 5)
+
+  assert.equal(result.isEnough, false)
+  assert.match(result.feedback, /noch 2 weitere/)
+})
+
+test('grounding exercise handles an empty answer without evaluation claims', () => {
+  const result = evaluateGroundingAnswer('', 5)
+
+  assert.equal(result.isEnough, false)
+  assert.equal(result.count, 0)
+  assert.match(result.feedback, /nicht gut verstehen/)
 })

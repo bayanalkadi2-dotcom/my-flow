@@ -52,7 +52,7 @@ function addScore(scoreMap, taskId, points) {
   scoreMap.set(taskId, (scoreMap.get(taskId) || 0) + points)
 }
 
-function buildPriorityMap(answers) {
+function buildPriorityMap(answers, options = {}) {
   const scoreMap = new Map()
   const mood = getMood(answers)
   const physicalEnergy = energyRank(answers.physical_energy)
@@ -125,6 +125,29 @@ function buildPriorityMap(answers) {
     addScore(scoreMap, 'simple-muscle-relaxation', 8)
   }
 
+  const studentStatus = options.studentStatus ?? 'other'
+  const contextStressor = answers.context_stressor
+
+  if (studentStatus === 'school' && contextStressor === 'exams') {
+    addScore(scoreMap, 'choose-mini-task', 9)
+    addScore(scoreMap, 'five-minute-focus', mentalEnergy >= 2 ? 7 : -5)
+  }
+
+  if (studentStatus === 'university' && contextStressor === 'assignments') {
+    addScore(scoreMap, 'choose-mini-task', 9)
+    addScore(scoreMap, 'start-most-important-task', mentalEnergy >= 2 ? 7 : -8)
+  }
+
+  if (studentStatus === 'training' && (contextStressor === 'little_recovery' || lowValues.has(answers.mental_energy))) {
+    addScore(scoreMap, 'short-recovery-break', 8)
+    addScore(scoreMap, 'screen-free-break', 4)
+  }
+
+  if (contextStressor === 'self_organization' || contextStressor === 'tasks') {
+    addScore(scoreMap, 'choose-mini-task', 5)
+    addScore(scoreMap, 'start-most-important-task', mentalEnergy >= 2 ? 3 : -5)
+  }
+
   return scoreMap
 }
 
@@ -171,6 +194,10 @@ export function getRecommendationExplanation(answers, task) {
     reasons.push(`sie in dein Zeitfenster von ${allowedMinutes(answers.available_time)} Minuten passt`)
   }
 
+  if (answers.context_stressor) {
+    reasons.push('sie zu deiner heutigen Situation passt')
+  }
+
   const baseReason = reasons.length
     ? `Diese Aufgabe wurde gewählt, weil ${reasons.join(', ')}.`
     : 'Diese Aufgabe passt am besten zu deinen heutigen Angaben.'
@@ -182,7 +209,7 @@ export function recommendTasks(answers, tasks = wellbeingTasks, options = {}) {
   const maxResults = options.maxResults ?? 2
   const availableMinutes = allowedMinutes(answers.available_time)
   const mood = getMood(answers)
-  const priorityMap = buildPriorityMap(answers)
+  const priorityMap = buildPriorityMap(answers, options)
 
   const eligibleTasks = tasks.filter((task) => isTaskSafeForAnswers(task, answers))
 
@@ -235,6 +262,7 @@ export function buildCheckInSummary(answers) {
     physical_energy: answers.physical_energy,
     mental_energy: answers.mental_energy,
     concentration_level: answers.concentration_level,
+    context_stressor: answers.context_stressor,
     mood: getMood(answers),
     available_time_minutes: allowedMinutes(answers.available_time),
     support_goal: answers.support_goal,

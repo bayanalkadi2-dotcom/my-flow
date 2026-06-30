@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import HabitCard from '../commponents/HabitCard'
+import { useProfile } from '../context/profileContextValue'
 import { translateCategory, translateHabitTitle } from '../i18n'
 
 const routineCategories = [
@@ -46,12 +47,17 @@ const routineCategories = [
 ]
 
 function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
+  const { personalizedTexts, routineSuggestions } = useProfile()
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('4')
   const [unit, setUnit] = useState('Gläser (500 ml)')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
   const [openCategory, setOpenCategory] = useState('')
   const existingTitles = new Set(habits.map((habit) => habit.title.toLowerCase()))
+  const availableCategories = [
+    { title: 'Für dich', routines: routineSuggestions },
+    ...routineCategories,
+  ]
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -91,8 +97,8 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
       <header className="routines-page-header">
         <div>
           <p className="eyebrow">ROUTINEN</p>
-          <h1>Meine Routinen</h1>
-          <p>Behalte deine täglichen Gewohnheiten im Blick.</p>
+          <h1>{personalizedTexts.routinesTitle}</h1>
+          <p>Passende Vorschläge für deinen {personalizedTexts.contextLabel.toLowerCase()} – du entscheidest, was du hinzufügst.</p>
         </div>
         <button
           className="routine-add-circle"
@@ -123,7 +129,7 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
       {addPanelOpen && (
         <div className="routine-add-panel">
           <div className="routine-picker">
-            {routineCategories.map((category) => {
+            {availableCategories.map((category) => {
               const isOpen = openCategory === category.title
 
               return (

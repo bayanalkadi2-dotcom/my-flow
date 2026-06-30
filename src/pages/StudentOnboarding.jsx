@@ -114,12 +114,14 @@ function OptionCard({ active, children, onClick, type = 'button' }) {
   )
 }
 
-function StudentOnboarding({ initialAnswers = {}, mode = 'register', onBack, onComplete, saving = false }) {
+function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mode = 'register', onBack, onComplete, saving = false }) {
   const [step, setStep] = useState(0)
   const [error, setError] = useState('')
   const [answers, setAnswers] = useState({ ...emptyAnswers, ...initialAnswers })
   const education = educationOptions[answers.student_status] ?? educationOptions.school
-  const steps = ['status', 'education']
+  const steps = includePreferences
+    ? ['status', 'education', 'challenges', 'goals']
+    : ['status', 'education']
   const currentStep = steps[step]
   const progress = Math.round(((step + 1) / steps.length) * 100)
   const secondaryAudience = false

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../context/authContextValue'
+import { useProfile } from '../context/profileContextValue'
 import logo from '../assets/Icon Gruppe H.png'
 import iconCommunication from '../assets/settings-icons/communication.png'
 import iconDesign from '../assets/settings-icons/design.png'
@@ -185,6 +186,7 @@ function Profil({
   onSelectStyle,
 }) {
   const { signout } = useAuth()
+  const { profileSituation } = useProfile()
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
   const [gender, setGender] = useState('male')
@@ -353,6 +355,35 @@ function Profil({
           <label className="profile-picture-button" htmlFor="profile-image-input">Bild ändern</label>
         </div>
       </div>
+      {!settingsPage && (
+        <section className="profile-situation-card" aria-labelledby="profile-situation-title">
+          <div className="profile-situation-header">
+            <div>
+              <p className="eyebrow">PERSONALISIERUNG</p>
+              <h2 id="profile-situation-title">Meine Situation</h2>
+            </div>
+            <button type="button" onClick={() => onNavigate('profileOnboarding')}>Angaben bearbeiten</button>
+          </div>
+          <dl className="profile-situation-list">
+            <div>
+              <dt>Nutzertyp</dt>
+              <dd>{profileSituation.userType}</dd>
+            </div>
+            <div>
+              <dt>Bildungsstufe</dt>
+              <dd>{profileSituation.educationLevel}</dd>
+            </div>
+            <div>
+              <dt>Belastungen</dt>
+              <dd>{profileSituation.challenges.join(', ')}</dd>
+            </div>
+            <div>
+              <dt>Unterstützungsziele</dt>
+              <dd>{profileSituation.supportGoals.join(', ')}</dd>
+            </div>
+          </dl>
+        </section>
+      )}
       {showSettings && (
         <section className="register-settings-panel profile-settings-panel" aria-label="Profil-Einstellungen">
           <div className="register-settings-header">
@@ -487,9 +518,9 @@ function Profil({
 
         <div className="profile-setting-row">
           <SettingIcon type="onboarding" />
-          <span>Schule & Studium</span>
+          <span>Meine Situation</span>
           <strong>Angaben</strong>
-          <button type="button" onClick={() => onNavigate('profileOnboarding')}>{t.common.change}</button>
+          <button type="button" onClick={() => onNavigate('profileOnboarding')}>Angaben bearbeiten</button>
         </div>
 
         <span className="settings-section-label">Einstellungen</span>

@@ -13,6 +13,7 @@ export function buildDailyCheckInPayload(userId, answers, recommendations) {
       physical_energy: answers.physical_energy ?? null,
       mental_energy: answers.mental_energy ?? null,
       concentration_level: answers.concentration_level ?? null,
+      context_stressor: answers.context_stressor ?? null,
       mood: Array.isArray(answers.mood_tags) ? answers.mood_tags[0] ?? null : answers.mood_tags ?? null,
       available_time_minutes: Number(answers.available_time) || null,
       support_goal: answers.support_goal ?? null,

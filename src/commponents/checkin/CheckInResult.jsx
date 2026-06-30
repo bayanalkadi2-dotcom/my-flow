@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import flowCharacter from '../../assets/flow-character-wall-final.jpg'
+import { groundingExercise } from '../../data/groundingExercise'
+import VoiceExercise from '../exercises/VoiceExercise'
 
 const labelMap = {
   balanced: 'Ausgeglichen',
@@ -36,15 +39,39 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
   const [activeIndex, setActiveIndex] = useState(0)
   const [startedTaskId, setStartedTaskId] = useState('')
   const [completedTaskIds, setCompletedTaskIds] = useState([])
+  const [guidedStepIndex, setGuidedStepIndex] = useState(0)
   const activeRecommendation = recommendations[activeIndex]
+  const isVoiceExerciseActive = activeRecommendation?.task.id === groundingExercise.id
+    && startedTaskId === activeRecommendation.task.id
 
   function showNextRecommendation() {
     setActiveIndex((index) => (index + 1) % recommendations.length)
     setStartedTaskId('')
+    setGuidedStepIndex(0)
   }
 
   function completeTask(taskId) {
     setCompletedTaskIds((taskIds) => (taskIds.includes(taskId) ? taskIds : [...taskIds, taskId]))
+  }
+
+  function restartTask(taskId) {
+    setCompletedTaskIds((taskIds) => taskIds.filter((currentTaskId) => currentTaskId !== taskId))
+  }
+
+  function startTask(taskId) {
+    setStartedTaskId(taskId)
+    setGuidedStepIndex(0)
+  }
+
+  function completeGuidedStep() {
+    const instructions = activeRecommendation?.task.instructions ?? []
+
+    if (guidedStepIndex < instructions.length - 1) {
+      setGuidedStepIndex((index) => index + 1)
+      return
+    }
+
+    if (activeRecommendation) completeTask(activeRecommendation.task.id)
   }
 
   return (
@@ -91,19 +118,56 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
               <p>{activeRecommendation.task.description}</p>
             </div>
             <p className="checkin-reason">{activeRecommendation.reason}</p>
-            <ol>
+            {!isVoiceExerciseActive && <ol>
               {activeRecommendation.task.instructions.map((instruction) => (
                 <li key={instruction}>{instruction}</li>
               ))}
-            </ol>
+            </ol>}
+            {isVoiceExerciseActive && (
+              <VoiceExercise
+                onComplete={() => completeTask(activeRecommendation.task.id)}
+                onDashboard={onBackToDashboard}
+                onExit={() => setStartedTaskId('')}
+                onRestart={() => restartTask(activeRecommendation.task.id)}
+              />
+            )}
+            {startedTaskId === activeRecommendation.task.id
+              && activeRecommendation.task.id !== groundingExercise.id
+              && !completedTaskIds.includes(activeRecommendation.task.id) && (
+              <section className="task-companion" aria-live="polite">
+                <div className="task-companion-header">
+                  <img src={flowCharacter} alt="Flow begleitet dich bei der Übung" />
+                  <div>
+                    <span>ICH BLEIBE BEI DIR</span>
+                    <h3>Wir machen das Schritt für Schritt.</h3>
+                    <p>Du musst gerade nichts anderes schaffen.</p>
+                  </div>
+                </div>
+                <div
+                  className="task-companion-progress"
+                  aria-label={`Schritt ${guidedStepIndex + 1} von ${activeRecommendation.task.instructions.length}`}
+                >
+                  <span style={{ width: `${((guidedStepIndex + 1) / activeRecommendation.task.instructions.length) * 100}%` }} />
+                </div>
+                <div className="task-companion-step">
+                  <span>Schritt {guidedStepIndex + 1} von {activeRecommendation.task.instructions.length}</span>
+                  <strong>{activeRecommendation.task.instructions[guidedStepIndex]}</strong>
+                </div>
+                <button className="wide-button" onClick={completeGuidedStep} type="button">
+                  {guidedStepIndex === activeRecommendation.task.instructions.length - 1
+                    ? 'Übung gemeinsam abschließen'
+                    : 'Schritt geschafft'}
+                </button>
+              </section>
+            )}
             {activeRecommendation.task.warning && <small>{activeRecommendation.task.warning}</small>}
-            {completedTaskIds.includes(activeRecommendation.task.id) && (
+            {completedTaskIds.includes(activeRecommendation.task.id) && !isVoiceExerciseActive && (
               <p className="checkin-status">Aufgabe abgeschlossen.</p>
             )}
-            <div className="checkin-actions">
+            {!isVoiceExerciseActive && <div className="checkin-actions">
               <button
                 className="wide-button"
-                onClick={() => setStartedTaskId(activeRecommendation.task.id)}
+                onClick={() => startTask(activeRecommendation.task.id)}
                 type="button"
               >
                 {startedTaskId === activeRecommendation.task.id ? 'Aufgabe läuft' : 'Aufgabe starten'}
@@ -124,7 +188,7 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
                   Andere passende Aufgabe
                 </button>
               )}
-            </div>
+            </div>}
           </article>
         ) : (
           <article className="checkin-recommendation">
@@ -137,14 +201,14 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
         )}
       </div>
 
-      <div className="checkin-actions">
+      {!isVoiceExerciseActive && <div className="checkin-actions">
         <button className="secondary-button checkin-restart" onClick={onRestart} type="button">
           Check-in neu starten
         </button>
         <button className="primary-cta" onClick={onBackToDashboard} type="button">
           Zum Dashboard zurück
         </button>
-      </div>
+      </div>}
     </section>
   )
 }

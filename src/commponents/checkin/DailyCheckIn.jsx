@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { checkInQuestions } from '../../data/checkInQuestions'
+import { getContextCheckInQuestion } from '../../config/userPersonalization'
+import { useProfile } from '../../context/profileContextValue'
 import { saveDailyCheckIn } from '../../services/checkInService'
 import { buildCheckInSummary, recommendTasks } from '../../services/recommendationService'
 import CheckInProgress from './CheckInProgress'
@@ -7,6 +9,7 @@ import CheckInQuestion from './CheckInQuestion'
 import CheckInResult from './CheckInResult'
 
 function DailyCheckIn({ onNavigate, user }) {
+  const { personalization, personalizedTexts, profile } = useProfile()
   const [answers, setAnswers] = useState({})
   const [currentStep, setCurrentStep] = useState(0)
   const [hasConsent, setHasConsent] = useState(false)
@@ -14,10 +17,15 @@ function DailyCheckIn({ onNavigate, user }) {
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [savedCheckIn, setSavedCheckIn] = useState(null)
-  const currentQuestion = checkInQuestions[currentStep]
+  const personalizedQuestions = useMemo(() => [
+    ...checkInQuestions.slice(0, 2),
+    getContextCheckInQuestion(profile),
+    ...checkInQuestions.slice(2),
+  ], [profile])
+  const currentQuestion = personalizedQuestions[currentStep]
   const recommendations = useMemo(
-    () => (isComplete ? recommendTasks(answers) : []),
-    [answers, isComplete],
+    () => (isComplete ? recommendTasks(answers, undefined, { studentStatus: personalization.status }) : []),
+    [answers, isComplete, personalization.status],
   )
 
   function selectAnswer(questionId, value) {
@@ -46,7 +54,7 @@ function DailyCheckIn({ onNavigate, user }) {
     setSavedCheckIn(null)
 
     try {
-      const nextRecommendations = recommendTasks(nextAnswers)
+      const nextRecommendations = recommendTasks(nextAnswers, undefined, { studentStatus: personalization.status })
       const savedDailyCheckIn = await saveDailyCheckIn(nextAnswers, nextRecommendations)
       console.log('Check-in gespeichert:', savedDailyCheckIn)
       setSaveError('')
@@ -67,7 +75,7 @@ function DailyCheckIn({ onNavigate, user }) {
 
     setSaveError('')
 
-    if (currentStep < checkInQuestions.length - 1) {
+    if (currentStep < personalizedQuestions.length - 1) {
       setCurrentStep((step) => step + 1)
       return
     }
@@ -92,7 +100,7 @@ function DailyCheckIn({ onNavigate, user }) {
       <section className="screen checkin-screen">
         <div className="checkin-intro-card">
           <p className="eyebrow">Tages-Check-in</p>
-          <h1>Wie geht es dir heute?</h1>
+          <h1>{personalizedTexts.checkInIntro}</h1>
           <p>
             MyFlow stellt dir Schritt für Schritt kurze Fragen und speichert deine Antworten in deinem Konto, damit
             passende Empfehlungen angezeigt werden können.
@@ -127,7 +135,7 @@ function DailyCheckIn({ onNavigate, user }) {
 
   return (
     <section className="screen checkin-screen">
-      <CheckInProgress currentStep={currentStep} totalSteps={checkInQuestions.length} />
+      <CheckInProgress currentStep={currentStep} totalSteps={personalizedQuestions.length} />
       <CheckInQuestion
         question={currentQuestion}
         selectedValue={answers[currentQuestion.id]}
@@ -142,7 +150,7 @@ function DailyCheckIn({ onNavigate, user }) {
           Abbrechen
         </button>
         <button className="primary-cta" onClick={continueCheckIn} type="button">
-          {currentStep === checkInQuestions.length - 1 ? 'Auswerten' : 'Weiter'}
+          {currentStep === personalizedQuestions.length - 1 ? 'Auswerten' : 'Weiter'}
         </button>
       </div>
     </section>
