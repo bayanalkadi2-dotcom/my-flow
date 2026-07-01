@@ -4634,8 +4634,7 @@ input {
 .profile-settings-screen .profile-picture-card,
 .profile-settings-screen .bmi-card,
 .profile-settings-screen .profile-level-card,
-.profile-settings-screen .flow-tree-card,
-.profile-settings-screen .profile-logout-button {
+.profile-settings-screen .flow-tree-card {
   display: none;
 }
 
@@ -4850,6 +4849,17 @@ input {
   box-shadow: 0 12px 28px rgba(110, 90, 170, 0.08);
 }
 
+.profile-settings-screen .profile-logout-button {
+  width: 100%;
+  min-height: 58px;
+  margin-top: 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #ef4b7a;
+  border: 1px solid rgba(239, 75, 122, 0.16);
+  box-shadow: 0 16px 34px rgba(115, 84, 220, 0.12);
+}
+
 .app.theme-dark .profile-settings-screen {
   background:
     radial-gradient(circle at 12% 8%, rgba(144, 89, 255, 0.24), transparent 30%),
@@ -4923,6 +4933,13 @@ input {
 
 .app.theme-dark .profile-settings-screen .profile-setting-row::after {
   color: #9d93ba;
+}
+
+.app.theme-dark .profile-settings-screen .profile-logout-button {
+  background: rgba(60, 37, 57, 0.92);
+  color: #ff9fbe;
+  border-color: rgba(255, 159, 190, 0.22);
+  box-shadow: 0 16px 34px rgba(6, 4, 18, 0.24);
 }
 
 .profile-screen {
