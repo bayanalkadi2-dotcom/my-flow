@@ -8595,7 +8595,36 @@ h3,
 }
 
 .flowtree-stat-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.flowtree-stat-grid article {
+  gap: 7px;
+  min-height: 76px;
+  padding: 10px 9px;
+}
+
+.flowtree-stat-icon {
+  flex-basis: 28px;
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+}
+
+.flowtree-stat-grid article > div > span {
+  font-size: 9px;
+  line-height: 1.1;
+}
+
+.flowtree-stat-grid strong {
+  font-size: clamp(20px, 4vw, 26px);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.flowtree-stat-grid small {
+  font-size: 9px;
+  line-height: 1.1;
 }
 
 .flowtree-week-days {
