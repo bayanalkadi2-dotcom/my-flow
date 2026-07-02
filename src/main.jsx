@@ -4,13 +4,16 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ProfileProvider } from './context/ProfileContext.jsx'
+import { CheckinProvider } from './context/CheckinContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <ProfileProvider>
-        <App />
-      </ProfileProvider>
+      <CheckinProvider>
+        <ProfileProvider>
+          <App />
+        </ProfileProvider>
+      </CheckinProvider>
     </AuthProvider>
   </StrictMode>,
 )

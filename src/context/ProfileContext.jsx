@@ -9,6 +9,17 @@ import { getProfile } from '../services/authService'
 import { useAuth } from './authContextValue'
 import { ProfileContext } from './profileContextValue'
 
+function mergePersonalDetails(profile, user) {
+  if (!profile) return profile
+  const metadata = user?.user_metadata ?? {}
+  return {
+    ...profile,
+    gender: profile.gender ?? metadata.gender ?? null,
+    height_cm: profile.height_cm ?? metadata.height_cm ?? null,
+    weight_kg: profile.weight_kg ?? metadata.weight_kg ?? null,
+  }
+}
+
 export function ProfileProvider({ children }) {
   const { isAuthenticated, user } = useAuth()
   const [profile, setProfile] = useState(null)
@@ -35,7 +46,7 @@ export function ProfileProvider({ children }) {
 
       if (!isActive) return
       if (result.success) {
-        setProfile(result.profile ?? null)
+        setProfile(mergePersonalDetails(result.profile ?? null, user))
       } else {
         setProfile(null)
         setError(result.error || 'Das Profil konnte nicht geladen werden.')
@@ -65,8 +76,9 @@ export function ProfileProvider({ children }) {
       return null
     }
 
-    setProfile(result.profile ?? null)
-    return result.profile ?? null
+    const nextProfile = mergePersonalDetails(result.profile ?? null, user)
+    setProfile(nextProfile)
+    return nextProfile
   }, [isAuthenticated, user])
 
   const personalization = useMemo(() => getUserPersonalization(profile), [profile])

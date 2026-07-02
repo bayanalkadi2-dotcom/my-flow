@@ -309,9 +309,10 @@ export function getRoutineSuggestions(profile) {
 export function getContextCheckInQuestion(profile) {
   const personalization = getUserPersonalization(profile)
 
-  return {
-    id: 'context_stressor',
-    label: personalization.contextLabel,
+    return {
+      id: 'context_stressor',
+      multiple: true,
+      label: personalization.contextLabel,
     question: 'Was hat dich heute am meisten belastet?',
     options: personalization.contextQuestionOptions.map((option) => ({ ...option })),
   }

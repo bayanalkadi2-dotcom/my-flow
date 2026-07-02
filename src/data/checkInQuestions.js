@@ -73,6 +73,7 @@
   },
   {
     id: 'mood_tags',
+    multiple: true,
     label: 'Stimmung',
     question: 'Welche Stimmung beschreibt dich heute am besten?',
     options: [
@@ -99,6 +100,7 @@
   },
   {
     id: 'support_goal',
+    multiple: true,
     label: 'Art der Unterstützung',
     question: 'Was würde dir gerade am meisten helfen?',
     options: [

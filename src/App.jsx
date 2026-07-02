@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from './context/authContextValue'
 import { useProfile } from './context/profileContextValue'
+import { useCheckins } from './context/checkinContextValue'
 import { getRoutines, bulkCreateRoutines } from './services/routineService'
 import { getUserSettings, saveOnboardingProfile } from './services/authService'
 import Navbar from './commponents/Navbar'
@@ -25,6 +26,13 @@ import flowCharacter from './assets/flow-character-wall-final.jpg'
 import './App.css'
 
 const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter']
+const persistentScreens = new Set(['dashboard', 'calendar', 'habits', 'progress', 'profile', 'profileSettings', 'freunde'])
+
+function loadLastScreen(userId) {
+  if (!userId) return 'dashboard'
+  const savedScreen = localStorage.getItem(`myflow-last-screen-${userId}`)
+  return persistentScreens.has(savedScreen) ? savedScreen : 'dashboard'
+}
 const removedRoutineTitles = new Set([
   'tagebuch',
   'lesen',
@@ -99,8 +107,9 @@ function LoadingScreen() {
 function App() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth()
   const { profile, setProfile, isLoading: profileLoading } = useProfile()
+  const { addCheckin } = useCheckins()
   const [screen, setScreen] = useState('dashboard')
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(() => localStorage.getItem('hasSeenOnboarding') === 'true')
   const [languageStyle, setLanguageStyle] = useState('german')
   const [communicationStyle, setCommunicationStyle] = useState('casual')
   const [profileName, setProfileName] = useState('Gast')
@@ -170,10 +179,10 @@ function App() {
             setRoutineItems(routinesRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
           }
         }
-        setScreen('dashboard')
+        setScreen(loadLastScreen(user.id))
       } catch (err) {
         console.error('Fehler beim Laden der Benutzerdaten:', err)
-        setScreen('dashboard')
+        setScreen(loadLastScreen(user.id))
       } finally {
         setIsLoadingData(false)
         setRoutinesLoaded(true)
@@ -182,6 +191,12 @@ function App() {
 
     loadUserData()
   }, [isAuthenticated, user])
+
+  useEffect(() => {
+    if (isAuthenticated && user?.id && persistentScreens.has(screen)) {
+      localStorage.setItem(`myflow-last-screen-${user.id}`, screen)
+    }
+  }, [isAuthenticated, screen, user?.id])
 
   const tone = languageStyles[languageStyle]
   const t = getAppTranslations(languageStyle, communicationStyle)
@@ -235,6 +250,14 @@ function App() {
   }
 
   function incrementHabit(id) {
+    const currentHabit = routineItems.find((habit) => habit.id === id)
+    if (currentHabit) {
+      const nextValue = Math.min(Number(currentHabit.current ?? 0) + 1, Number(currentHabit.target ?? 1))
+      if (nextValue >= Number(currentHabit.target ?? 1) && !currentHabit.done) {
+        addCheckin({ routineId: currentHabit.id, title: currentHabit.title })
+      }
+    }
+
     setRoutineItems((current) =>
       current.map((habit) => {
         if (habit.id !== id) return habit
@@ -283,6 +306,9 @@ function App() {
   function toggleHabitDone(selectedHabit) {
     const nextDone = !selectedHabit.done
     const nextCurrent = nextDone ? selectedHabit.target : selectedHabit.current
+    if (nextDone) {
+      addCheckin({ routineId: selectedHabit.id, title: selectedHabit.title })
+    }
     setRoutineItems((current) =>
       current.map((habit) =>
         habit.id === selectedHabit.id
@@ -305,6 +331,9 @@ function App() {
   function setHabitMood(id, mood) {
     const currentHabit = routineItems.find((habit) => habit.id === id)
     const nextCurrent = Number(currentHabit?.target ?? 1)
+    if (currentHabit) {
+      addCheckin({ routineId: currentHabit.id, title: currentHabit.title })
+    }
 
     setRoutineItems((current) =>
       current.map((habit) =>
@@ -333,6 +362,9 @@ function App() {
   function updateHabitPeriod(id, changes) {
     const currentHabit = routineItems.find(h => h.id === id)
     const updatedPeriod = { ...(currentHabit?.period ?? {}), ...changes }
+    if (currentHabit) {
+      addCheckin({ routineId: currentHabit.id, title: currentHabit.title })
+    }
 
     setRoutineItems((current) =>
       current.map((habit) =>
@@ -447,6 +479,7 @@ function App() {
   }
 
   function handleOnboardingFinish() {
+    localStorage.setItem('hasSeenOnboarding', 'true')
     setHasSeenOnboarding(true)
     setScreen(isAuthenticated ? 'dashboard' : 'start')
   }

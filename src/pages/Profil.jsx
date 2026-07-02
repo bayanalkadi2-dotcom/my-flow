@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useAuth } from '../context/authContextValue'
 import { useProfile } from '../context/profileContextValue'
 import logo from '../assets/Icon Gruppe H.png'
-import iconCommunication from '../assets/settings-icons/communication.png'
 import iconDesign from '../assets/settings-icons/design.png'
 import iconGender from '../assets/settings-icons/gender.png'
 import iconHeight from '../assets/settings-icons/height.png'
@@ -12,6 +11,7 @@ import iconReminders from '../assets/settings-icons/reminders.png'
 import iconSubscription from '../assets/settings-icons/subscription.png'
 import iconWeight from '../assets/settings-icons/weight.png'
 import { calculateChallengePoints } from '../utils/progressLevels'
+import { updateProfile } from '../services/authService'
 
 const languageOptions = [
   { id: 'german', label: 'Deutsch' },
@@ -23,15 +23,16 @@ const languageOptions = [
 const genderOptions = [
   { id: 'male', label: 'Männlich', name: 'Student' },
   { id: 'female', label: 'Weiblich', name: 'Studentin' },
+  { id: 'diverse', label: 'Divers', name: 'Student:in' },
   { id: 'none', label: 'Keine Angabe', name: 'Student' },
 ]
 
 const designOptions = ['Hell', 'Dunkel']
 
 const paymentPlans = [
-  { id: 'free', label: 'Kostenlos', price: '0 EUR' },
-  { id: 'plus', label: 'Plus Tools', price: '4,99 EUR' },
-  { id: 'pro', label: 'Pro Tools', price: '9,99 EUR' },
+  { id: 'free', label: 'Kostenlos', monthlyPrice: '0 EUR', yearlyPrice: '0 EUR' },
+  { id: 'plus', label: 'Plus Tools', monthlyPrice: '4,99 EUR', yearlyPrice: '49,88 EUR' },
+  { id: 'pro', label: 'Pro Tools', monthlyPrice: '9,99 EUR', yearlyPrice: '109,88 EUR' },
 ]
 
 const billingCycles = ['Monatlich', 'Jährlich']
@@ -39,13 +40,6 @@ const billingCycles = ['Monatlich', 'Jährlich']
 const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 'Google Pay']
 
 const paidTools = ['KI-Coach', 'Erweiterte Statistik', 'Premium-Routinen']
-
-const defaultAccountProfile = {
-  age: '',
-  goals: '',
-  dailyRoutine: '',
-  interests: '',
-}
 
 const levelSteps = [
   { name: 'Starter', min: 0 },
@@ -157,22 +151,6 @@ function getHealthRecommendation(bmi, weight) {
   return { water: waterLiters, steps: '7.500', note: 'sanft anfangen' }
 }
 
-function loadAccountProfile() {
-  try {
-    return { ...defaultAccountProfile, ...JSON.parse(localStorage.getItem('myflow-account-profile') || '{}') }
-  } catch {
-    return defaultAccountProfile
-  }
-}
-
-function getAccountSummary(accountProfile) {
-  const filledFields = [accountProfile.age, accountProfile.goals, accountProfile.dailyRoutine, accountProfile.interests]
-    .filter((value) => String(value).trim())
-    .length
-
-  return filledFields > 0 ? `${filledFields}/4 ausgefuellt` : 'Einrichten'
-}
-
 function SettingIcon({ type }) {
   const icons = {
     name: iconName,
@@ -181,20 +159,31 @@ function SettingIcon({ type }) {
     height: iconHeight,
     reminders: iconReminders,
     language: iconLanguage,
-    communication: iconCommunication,
     design: iconDesign,
     subscription: iconSubscription,
   }
 
   return (
     <span className="setting-row-icon" aria-hidden="true">
-      <img src={icons[type] ?? iconName} alt="" />
+      {type === 'communication' ? (
+        <svg className="communication-bubbles-icon" viewBox="0 0 32 32">
+          <defs>
+            <linearGradient id="communication-icon-gradient" x1="2" y1="5" x2="30" y2="28" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#ff78bd" />
+              <stop offset="1" stopColor="#8d63ff" />
+            </linearGradient>
+          </defs>
+          <path stroke="url(#communication-icon-gradient)" d="M5 7.5h13a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-6.5L7 22v-3.5H5a3 3 0 0 1-3-3v-5a3 3 0 0 1 3-3Z" />
+          <path stroke="url(#communication-icon-gradient)" d="M17 13.5h10a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-2V28l-4.5-3.5H17a3 3 0 0 1-3-3v-3" />
+        </svg>
+      ) : (
+        <img src={icons[type] ?? iconName} alt="" />
+      )}
     </span>
   )
 }
 
 function Profil({
-  accountProfile,
   appTheme,
   communicationStyle,
   languageStyle,
@@ -203,7 +192,6 @@ function Profil({
   settingsPage = false,
   tone,
   t,
-  onAccountProfileChange,
   onAppThemeChange,
   onCommunicationStyleChange,
   onNavigate,
@@ -211,13 +199,13 @@ function Profil({
   onSelectStyle,
 }) {
   const { signout } = useAuth()
-  const { profileSituation } = useProfile()
+  const { profile, profileSituation, setProfile } = useProfile()
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
-  const [gender, setGender] = useState('male')
+  const [gender, setGender] = useState(profile?.gender || 'male')
   const [reminders, setReminders] = useState(true)
-  const [weight, setWeight] = useState(70)
-  const [height, setHeight] = useState(175)
+  const [weight, setWeight] = useState(Number(profile?.weight_kg) || 0)
+  const [height, setHeight] = useState(Number(profile?.height_cm) || 175)
   const [paymentPlan, setPaymentPlan] = useState('free')
   const [billingCycle, setBillingCycle] = useState('Monatlich')
   const [paymentMethod, setPaymentMethod] = useState('PayPal')
@@ -227,7 +215,6 @@ function Profil({
   const [paymentEmail, setPaymentEmail] = useState('')
   const [treeType, setTreeType] = useState('oak')
   const [profileImage, setProfileImage] = useState(() => localStorage.getItem('myflow-profile-image') || '')
-  const visibleAccountProfile = accountProfile ?? loadAccountProfile()
   const [draftSettings, setDraftSettings] = useState({
     name: profileName || 'Gast',
     gender,
@@ -237,10 +224,12 @@ function Profil({
     communicationStyle,
     languageStyle,
     design: appTheme,
-    accountProfile: visibleAccountProfile,
   })
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
+  const selectedPlanPrice = billingCycle === 'Jährlich'
+    ? `${selectedPlan.yearlyPrice} pro Jahr`
+    : selectedPlan.monthlyPrice
   const name = profileName || 'Gast'
   const profileInitial = name.trim().charAt(0).toUpperCase() || 'G'
   const heightInMeters = height / 100
@@ -253,6 +242,16 @@ function Profil({
   const flowTree = getFlowTree(challengePoints, treeType)
   const treeChoiceUnlocked = challengePoints >= 800
   const showSettings = settingsPage || showProfileSettings
+
+  async function savePersonalDetails(updates) {
+    if (!profile?.id) return
+    const result = await updateProfile(profile.id, updates)
+    if (result.success) {
+      setProfile((current) => ({ ...current, ...updates, ...(result.profile ?? {}) }))
+    } else {
+      console.error('Profilangabe konnte nicht gespeichert werden:', result.error)
+    }
+  }
 
   function openEditor(editor) {
     if (activeEditor === editor) {
@@ -269,7 +268,6 @@ function Profil({
       communicationStyle,
       languageStyle,
       design: appTheme,
-      accountProfile: visibleAccountProfile,
     })
     setActiveEditor(editor)
   }
@@ -294,18 +292,18 @@ function Profil({
         break
       case 'gender':
         setGender(draftSettings.gender)
+        savePersonalDetails({ gender: draftSettings.gender })
         break
       case 'weight':
-        setWeight(Number(draftSettings.weight) || weight)
+        setWeight(Number(draftSettings.weight) || 0)
+        savePersonalDetails({ weight_kg: Number(draftSettings.weight) || null })
         break
       case 'height':
         setHeight(Number(draftSettings.height) || height)
+        savePersonalDetails({ height_cm: Number(draftSettings.height) || height })
         break
       case 'reminders':
         setReminders(draftSettings.reminders)
-        break
-      case 'accountProfile':
-        onAccountProfileChange?.(draftSettings.accountProfile)
         break
       case 'language':
         onSelectStyle(draftSettings.languageStyle)
@@ -329,7 +327,7 @@ function Profil({
       return
     }
 
-    setPaymentStatus(`${selectedPlan.label} mit ${paymentMethod} aktiviert`)
+    setPaymentStatus(`${selectedPlan.label}: ${selectedPlanPrice} mit ${paymentMethod} aktiviert`)
   }
 
   function handleProfileImageChange(event) {
@@ -478,7 +476,7 @@ function Profil({
         <div className="profile-setting-row">
           <SettingIcon type="weight" />
           <span>{t.profile.weight}</span>
-          <strong>{weight} kg</strong>
+          <strong>{weight ? `${weight} kg` : 'Keine Angabe'}</strong>
           <button type="button" onClick={() => openEditor('weight')}>{t.common.change}</button>
         </div>
         {activeEditor === 'weight' && (
@@ -548,53 +546,6 @@ function Profil({
         )}
 
         <div className="profile-setting-row">
-          <SettingIcon type="name" />
-          <span>Profil / Konto</span>
-          <strong>{getAccountSummary(visibleAccountProfile)}</strong>
-          <button type="button" onClick={() => openEditor('accountProfile')}>{t.common.change}</button>
-        </div>
-        {activeEditor === 'accountProfile' && (
-          <div className="profile-edit-panel account-profile-editor">
-            <label>
-              Alter
-              <input
-                min="10"
-                max="99"
-                type="number"
-                value={draftSettings.accountProfile.age}
-                onChange={(event) => updateDraft('accountProfile', { ...draftSettings.accountProfile, age: event.target.value })}
-                placeholder="z. B. 17"
-              />
-            </label>
-            <label>
-              Ziele
-              <textarea
-                value={draftSettings.accountProfile.goals}
-                onChange={(event) => updateDraft('accountProfile', { ...draftSettings.accountProfile, goals: event.target.value })}
-                placeholder="z. B. mehr Sport, besser schlafen, weniger Stress"
-              />
-            </label>
-            <label>
-              Tagesablauf
-              <textarea
-                value={draftSettings.accountProfile.dailyRoutine}
-                onChange={(event) => updateDraft('accountProfile', { ...draftSettings.accountProfile, dailyRoutine: event.target.value })}
-                placeholder="z. B. Schule, Lernen, Training, Freizeit"
-              />
-            </label>
-            <label>
-              Interessen
-              <textarea
-                value={draftSettings.accountProfile.interests}
-                onChange={(event) => updateDraft('accountProfile', { ...draftSettings.accountProfile, interests: event.target.value })}
-                placeholder="z. B. Fitness, Musik, Gaming, Freunde"
-              />
-            </label>
-            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>Speichern</button>
-          </div>
-        )}
-
-        <div className="profile-setting-row">
           <SettingIcon type="onboarding" />
           <span>Meine Situation</span>
           <strong>Angaben</strong>
@@ -609,7 +560,7 @@ function Profil({
           <button type="button" onClick={() => openEditor('language')}>{t.common.change}</button>
         </div>
         {activeEditor === 'language' && (
-          <div className="profile-edit-panel">
+          <div className="profile-edit-panel language-settings-options">
             <div className="option-grid">
               {languageOptions.map((option) => (
                 <button
@@ -682,7 +633,7 @@ function Profil({
           <div className="settings-group payment-settings">
             <div className="payment-settings-title">
               <strong>{t.profile.payment}</strong>
-              <span>{selectedPlan.label} / {selectedPlan.price}</span>
+              <span>{selectedPlan.label} / {selectedPlanPrice}</span>
             </div>
             <div className="paid-tools-list">
               {paidTools.map((tool) => (
@@ -694,7 +645,10 @@ function Profil({
                 <button
                   className={`payment-method ${billingCycle === cycle ? 'selected' : ''}`}
                   key={cycle}
-                  onClick={() => setBillingCycle(cycle)}
+                  onClick={() => {
+                    setBillingCycle(cycle)
+                    setPaymentStatus('Nicht gestartet')
+                  }}
                   type="button"
                 >
                   {cycle}
@@ -706,11 +660,16 @@ function Profil({
                 <button
                   className={`payment-option ${paymentPlan === plan.id ? 'selected' : ''}`}
                   key={plan.id}
-                  onClick={() => setPaymentPlan(plan.id)}
+                  onClick={() => {
+                    setPaymentPlan(plan.id)
+                    setPaymentStatus('Nicht gestartet')
+                  }}
                   type="button"
                 >
                   <span>{plan.label}</span>
-                  <strong>{plan.price}</strong>
+                  <strong>
+                    {billingCycle === 'Jährlich' ? `${plan.yearlyPrice} pro Jahr` : plan.monthlyPrice}
+                  </strong>
                 </button>
               ))}
             </div>
@@ -836,20 +795,22 @@ function Profil({
           ))}
         </div>
       </div>
-      <button
-        className="profile-logout-button"
-        onClick={async () => {
-          try {
-            await signout()
-            // App.jsx will automatically navigate to login screen after auth state changes
-          } catch (err) {
-            console.error('Logout error:', err)
-            alert('Abmeldung fehlgeschlagen')
-          }
-        }}
-      >
-        {t.profile.logout}
-      </button>
+      {showSettings && (
+        <button
+          className="profile-logout-button"
+          onClick={async () => {
+            try {
+              await signout()
+              // App.jsx will automatically navigate to login screen after auth state changes
+            } catch (err) {
+              console.error('Logout error:', err)
+              alert('Abmeldung fehlgeschlagen')
+            }
+          }}
+        >
+          {t.profile.logout}
+        </button>
+      )}
     </section>
   )
 }

@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
 const statusOptions = [
-  { value: 'school', label: 'Schüler:in', text: 'Schule, Prüfungen und Alltag besser sortieren.' },
-  { value: 'university', label: 'Student:in', text: 'Studium, Lernphasen und Erholung bewusster planen.' },
-  { value: 'training', label: 'Auszubildende:r', text: 'Ausbildung und Alltag mit mehr Struktur begleiten.' },
-  { value: 'other', label: 'Sonstiges', text: 'Du kannst MyFlow trotzdem nutzen.' },
+  { value: 'school', label: 'Schüler:in' },
+  { value: 'university', label: 'Student:in' },
+  { value: 'training', label: 'Auszubildende:r' },
+  { value: 'other', label: 'Sonstiges' },
 ]
 
 const ageGroups = [
@@ -14,6 +14,12 @@ const ageGroups = [
   ['25_34', '25-34'],
   ['35_plus', '35 oder älter'],
   ['prefer_not_to_say', 'Keine Angabe'],
+]
+
+const genderOptions = [
+  ['female', 'Weiblich'],
+  ['male', 'Männlich'],
+  ['diverse', 'Divers'],
 ]
 
 const educationOptions = {
@@ -92,6 +98,9 @@ const goalOptions = [
 ]
 
 const emptyAnswers = {
+  gender: '',
+  height_cm: '',
+  weight_kg: '',
   student_status: '',
   age_group: '',
   education_level: '',
@@ -121,7 +130,7 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
   const education = educationOptions[answers.student_status] ?? educationOptions.school
   const steps = includePreferences
     ? ['status', 'education', 'challenges', 'goals']
-    : ['status', 'education']
+    : ['personal', 'status', 'education']
   const currentStep = steps[step]
   const progress = Math.round(((step + 1) / steps.length) * 100)
   const secondaryAudience = false
@@ -132,6 +141,9 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
   }
 
   function validate() {
+    if (currentStep === 'personal' && !answers.gender) return 'Bitte wähle dein Geschlecht aus.'
+    if (currentStep === 'personal' && (!answers.height_cm || Number(answers.height_cm) <= 0)) return 'Bitte gib deine Größe an.'
+    if (currentStep === 'personal' && answers.weight_kg && Number(answers.weight_kg) <= 0) return 'Bitte gib ein gültiges Gewicht an.'
     if (currentStep === 'status' && !answers.student_status) return 'Bitte wähle eine Option aus.'
     if (currentStep === 'challenges' && answers.main_challenges.length === 0) return 'Bitte wähle mindestens eine Option aus.'
     if (currentStep === 'goals' && answers.support_goals.length === 0) return 'Bitte wähle mindestens ein Unterstützungsziel aus.'
@@ -197,15 +209,59 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
         <div className="student-onboarding-panel">
           <p className="eyebrow">AKTUELLE SITUATION</p>
           <h1>Was beschreibt dich aktuell am besten?</h1>
-          <div className="student-onboarding-grid">
+          <div className="student-onboarding-grid status-options-grid">
             {statusOptions.map((option) => (
               <OptionCard active={answers.student_status === option.value} key={option.value} onClick={() => update('student_status', option.value)}>
                 <strong>{option.label}</strong>
-                <small>{option.text}</small>
               </OptionCard>
             ))}
           </div>
           {secondaryAudience && <p className="student-onboarding-note">MyFlow ist aktuell besonders auf Schule und Studium ausgerichtet. Einige Inhalte passen möglicherweise nicht vollständig zu deiner Situation.</p>}
+        </div>
+      )}
+
+      {currentStep === 'personal' && (
+        <div className="student-onboarding-panel">
+          <p className="eyebrow">DEIN PROFIL</p>
+          <h1>Erzähl uns kurz etwas über dich.</h1>
+          <label className="student-onboarding-label">
+            Geschlecht
+            <div className="student-chip-grid">
+              {genderOptions.map(([value, label]) => (
+                <OptionCard active={answers.gender === value} key={value} onClick={() => update('gender', value)}>
+                  <strong>{label}</strong>
+                </OptionCard>
+              ))}
+            </div>
+          </label>
+          <label className="student-onboarding-label">
+            Größe in cm
+            <input
+              inputMode="numeric"
+              min="1"
+              onChange={(event) => update('height_cm', event.target.value)}
+              placeholder="z. B. 175"
+              type="number"
+              value={answers.height_cm ?? ''}
+            />
+          </label>
+          <label className="student-onboarding-label">
+            Gewicht in kg (optional)
+            <input
+              inputMode="decimal"
+              min="1"
+              onChange={(event) => update('weight_kg', event.target.value)}
+              placeholder="z. B. 70"
+              step="0.1"
+              type="number"
+              value={answers.weight_kg ?? ''}
+            />
+          </label>
+          {!answers.weight_kg && (
+            <p className="student-onboarding-note">
+              Ohne Gewichtsangabe sind manche Funktionen der App nicht verfügbar.
+            </p>
+          )}
         </div>
       )}
 
