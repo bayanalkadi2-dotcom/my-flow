@@ -2315,7 +2315,7 @@ input {
 .routine-status-control {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
+  gap: clamp(5px, 1.5vw, 7px);
   margin-top: 14px;
   padding: 5px;
   border-radius: 17px;
@@ -2327,15 +2327,17 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
   min-height: 40px;
-  padding: 8px 7px;
+  padding: 8px clamp(5px, 1.4vw, 7px);
   border-radius: 13px;
   background: rgba(255, 255, 255, 0.84);
   color: #6d6784;
   border: 1px solid rgba(101, 96, 127, 0.12);
   box-shadow: none;
-  font-size: 12px;
+  font-size: clamp(10.5px, 2.4vw, 12px);
   font-weight: 850;
   white-space: nowrap;
 }
@@ -2343,8 +2345,9 @@ input {
 .routine-status-option span {
   display: grid;
   place-items: center;
-  width: 18px;
-  height: 18px;
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
   border-radius: 999px;
   font-size: 13px;
   line-height: 1;
@@ -6597,6 +6600,92 @@ h3,
   border-color: rgba(255, 255, 255, 0.12);
 }
 
+.routine-content {
+  container-type: inline-size;
+}
+
+@container (max-width: 380px) {
+  .routine-status-control {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    padding: 5px;
+  }
+
+  .routine-status-option {
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    min-height: 58px;
+    padding: 7px 3px;
+    font-size: 10.5px;
+    line-height: 1.1;
+    text-align: center;
+  }
+
+  .routine-status-option span {
+    width: 19px;
+    height: 19px;
+    font-size: 13px;
+  }
+}
+
+@container (max-width: 255px) {
+  .routine-status-control {
+    grid-template-columns: 1fr;
+  }
+
+  .routine-status-option {
+    flex-direction: row;
+    justify-content: flex-start;
+    min-height: 40px;
+    padding-inline: 12px;
+    font-size: 12px;
+  }
+}
+
+.status-options-grid .student-onboarding-option {
+  min-height: 50px;
+  padding: 12px 14px;
+}
+
+.setting-row-icon .communication-bubbles-icon {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Einheitlicher Auswahlzustand für alle Optionen der Einstellungsseite. */
+.profile-settings-screen .profile-choice.selected,
+.profile-settings-screen .payment-option.selected,
+.profile-settings-screen .payment-method.selected {
+  background: rgba(141, 99, 255, 0.12);
+  color: var(--logo-ink);
+  border-color: rgba(141, 99, 255, 0.58);
+  box-shadow: 0 8px 18px rgba(115, 84, 220, 0.12);
+}
+
+.profile-settings-screen .payment-option.selected strong,
+.profile-settings-screen .payment-option.selected small {
+  color: var(--logo-ink);
+}
+
+.app.theme-dark .profile-settings-screen .profile-choice.selected,
+.app.theme-dark .profile-settings-screen .payment-option.selected,
+.app.theme-dark .profile-settings-screen .payment-method.selected {
+  background: rgba(141, 99, 255, 0.2);
+  color: #faf7ff;
+  border-color: rgba(173, 148, 255, 0.64);
+}
+
+.app.theme-dark .profile-settings-screen .payment-option.selected strong,
+.app.theme-dark .profile-settings-screen .payment-option.selected small {
+  color: #faf7ff;
+}
+
 .app.theme-dark .secondary-button,
 .app.theme-dark .settings-gear-button,
 .app.theme-dark .profile-setting-row button,
@@ -7877,17 +7966,6 @@ h3,
   .routine-progress-ring {
     width: 52px;
     height: 52px;
-  }
-
-  .routine-status-control {
-    grid-template-columns: 1fr;
-  }
-
-  .routine-status-option {
-    justify-content: flex-start;
-    min-height: 42px;
-    padding-inline: 12px;
-    white-space: normal;
   }
 
   .mood-choice-grid {

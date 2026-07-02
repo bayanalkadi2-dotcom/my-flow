@@ -51,7 +51,7 @@ function DashboardHome({ accountProfile = {}, habits, profileName, t, onNavigate
             <span>Mein Alltag</span>
             <h2>{visibleGoals.length > 0 || visibleDailyRoutine.length > 0 ? 'Ziele und Tagesablauf' : 'Noch nichts eingetragen'}</h2>
           </div>
-          <button type="button" onClick={() => onNavigate?.('profileSettings')}>
+          <button type="button" onClick={() => onNavigate?.('calendar')}>
             Bearbeiten
           </button>
         </div>

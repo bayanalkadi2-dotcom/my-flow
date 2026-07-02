@@ -2,6 +2,9 @@ import { supabase } from '../lib/supabase'
 
 export function normalizeOnboardingProfile(onboardingData = {}) {
   return {
+    gender: onboardingData.gender || null,
+    height_cm: onboardingData.height_cm ? Number(onboardingData.height_cm) : null,
+    weight_kg: onboardingData.weight_kg ? Number(onboardingData.weight_kg) : null,
     student_status: onboardingData.student_status ?? null,
     age_group: onboardingData.age_group ?? null,
     education_level: onboardingData.education_level ?? null,
@@ -81,11 +84,35 @@ export async function saveOnboardingProfile(onboardingData = {}, displayName = n
 
     if (displayName) profile.display_name = displayName
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('profiles')
       .upsert(profile, { onConflict: 'id' })
       .select()
       .single()
+
+    // Bis die neuen Spalten migriert wurden, bleibt das bestehende Onboarding nutzbar.
+    if (error?.code === 'PGRST204') {
+      const personalDetails = {
+        gender: profile.gender,
+        height_cm: profile.height_cm,
+        weight_kg: profile.weight_kg,
+      }
+      await supabase.auth.updateUser({
+        data: { ...user.user_metadata, ...personalDetails },
+      })
+      const compatibleProfile = { ...profile }
+      delete compatibleProfile.gender
+      delete compatibleProfile.height_cm
+      delete compatibleProfile.weight_kg
+      const fallback = await supabase
+        .from('profiles')
+        .upsert(compatibleProfile, { onConflict: 'id' })
+        .select()
+        .single()
+      data = fallback.data
+      error = fallback.error
+      if (!error) data = { ...data, ...personalDetails }
+    }
 
     if (error) throw error
     return { success: true, profile: data }
@@ -118,6 +145,17 @@ export async function updateProfile(userId, updates) {
       .update(updates)
       .eq('id', userId)
       .select()
+
+    if (error?.code === 'PGRST204') {
+      const { data: authData, error: authError } = await supabase.auth.getUser()
+      if (authError || authData.user?.id !== userId) throw authError || error
+
+      const authUpdate = await supabase.auth.updateUser({
+        data: { ...authData.user.user_metadata, ...updates },
+      })
+      if (authUpdate.error) throw authUpdate.error
+      return { success: true, profile: updates }
+    }
 
     if (error) throw error
     return { success: true, profile: data?.[0] }

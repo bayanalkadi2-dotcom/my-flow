@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 );
 
 ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS gender TEXT,
+  ADD COLUMN IF NOT EXISTS height_cm NUMERIC(5, 1),
+  ADD COLUMN IF NOT EXISTS weight_kg NUMERIC(5, 1),
   ADD COLUMN IF NOT EXISTS student_status TEXT,
   ADD COLUMN IF NOT EXISTS age_group TEXT,
   ADD COLUMN IF NOT EXISTS education_level TEXT,

@@ -26,6 +26,13 @@ import flowCharacter from './assets/flow-character-wall-final.jpg'
 import './App.css'
 
 const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter']
+const persistentScreens = new Set(['dashboard', 'calendar', 'habits', 'progress', 'profile', 'profileSettings', 'freunde'])
+
+function loadLastScreen(userId) {
+  if (!userId) return 'dashboard'
+  const savedScreen = localStorage.getItem(`myflow-last-screen-${userId}`)
+  return persistentScreens.has(savedScreen) ? savedScreen : 'dashboard'
+}
 const removedRoutineTitles = new Set([
   'tagebuch',
   'lesen',
@@ -102,7 +109,7 @@ function App() {
   const { profile, setProfile, isLoading: profileLoading } = useProfile()
   const { addCheckin } = useCheckins()
   const [screen, setScreen] = useState('dashboard')
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(() => localStorage.getItem('hasSeenOnboarding') === 'true')
   const [languageStyle, setLanguageStyle] = useState('german')
   const [communicationStyle, setCommunicationStyle] = useState('casual')
   const [profileName, setProfileName] = useState('Gast')
@@ -172,10 +179,10 @@ function App() {
             setRoutineItems(routinesRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
           }
         }
-        setScreen('dashboard')
+        setScreen(loadLastScreen(user.id))
       } catch (err) {
         console.error('Fehler beim Laden der Benutzerdaten:', err)
-        setScreen('dashboard')
+        setScreen(loadLastScreen(user.id))
       } finally {
         setIsLoadingData(false)
         setRoutinesLoaded(true)
@@ -184,6 +191,12 @@ function App() {
 
     loadUserData()
   }, [isAuthenticated, user])
+
+  useEffect(() => {
+    if (isAuthenticated && user?.id && persistentScreens.has(screen)) {
+      localStorage.setItem(`myflow-last-screen-${user.id}`, screen)
+    }
+  }, [isAuthenticated, screen, user?.id])
 
   const tone = languageStyles[languageStyle]
   const t = getAppTranslations(languageStyle, communicationStyle)
@@ -466,6 +479,7 @@ function App() {
   }
 
   function handleOnboardingFinish() {
+    localStorage.setItem('hasSeenOnboarding', 'true')
     setHasSeenOnboarding(true)
     setScreen(isAuthenticated ? 'dashboard' : 'start')
   }
