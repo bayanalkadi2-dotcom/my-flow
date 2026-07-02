@@ -8,7 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:recommendations": "node src/services/recommendationService.test.js"
+    "test": "node src/app.test.js",
+    "test:recommendations": "node src/services/recommendationService.test.js",
+    "test:calendar": "node src/utils/calendarPlanner.test.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",

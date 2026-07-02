@@ -1,4 +1,10 @@
 import { useMemo, useState } from 'react'
+import {
+  getEventsForDate,
+  isCalendarEventDone,
+  toggleCalendarEventDone,
+  updateCalendarNote,
+} from '../utils/calendarPlanner'
 
 const storageKey = 'myflow-calendar-events'
 const noteStorageKey = 'myflow-calendar-notes'
@@ -119,9 +125,7 @@ function Kalender() {
   const [draft, setDraft] = useState(emptyDraft)
   const selectedKey = getDateKey(selectedDate)
   const weekDays = getWeekDays(selectedDate)
-  const selectedEvents = events
-    .filter((event) => event.date === selectedKey || (event.repeat === 'daily' && event.date <= selectedKey))
-    .sort((firstEvent, secondEvent) => firstEvent.time.localeCompare(secondEvent.time))
+  const selectedEvents = getEventsForDate(events, selectedKey)
   const selectedNote = notes[selectedKey] || ''
 
   function updateEvents(nextEvents) {
@@ -165,33 +169,17 @@ function Kalender() {
   }
 
   function toggleEvent(eventId) {
-    updateEvents(events.map((event) => (
-      event.id === eventId && event.repeat === 'daily'
-        ? {
-            ...event,
-            doneDates: event.doneDates?.includes(selectedKey)
-              ? event.doneDates.filter((date) => date !== selectedKey)
-              : [...(event.doneDates || []), selectedKey],
-          }
-        : event.id === eventId
-          ? { ...event, done: !event.done }
-          : event
-    )))
+    updateEvents(toggleCalendarEventDone(events, eventId, selectedKey))
   }
 
   function updateNote(value) {
-    const nextNotes = { ...notes, [selectedKey]: value }
-
-    if (!value.trim()) {
-      delete nextNotes[selectedKey]
-    }
-
+    const nextNotes = updateCalendarNote(notes, selectedKey, value)
     setNotes(nextNotes)
     saveNotes(nextNotes)
   }
 
   function isEventDone(event) {
-    return event.repeat === 'daily' ? event.doneDates?.includes(selectedKey) : event.done
+    return isCalendarEventDone(event, selectedKey)
   }
 
   return (
