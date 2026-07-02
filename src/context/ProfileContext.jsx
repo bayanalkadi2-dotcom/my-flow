@@ -15,6 +15,7 @@ function mergePersonalDetails(profile, user) {
   return {
     ...profile,
     gender: profile.gender ?? metadata.gender ?? null,
+    age: profile.age ?? metadata.age ?? null,
     height_cm: profile.height_cm ?? metadata.height_cm ?? null,
     weight_kg: profile.weight_kg ?? metadata.weight_kg ?? null,
   }

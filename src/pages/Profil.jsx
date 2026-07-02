@@ -154,6 +154,7 @@ function getHealthRecommendation(bmi, weight) {
 function SettingIcon({ type }) {
   const icons = {
     name: iconName,
+    age: iconName,
     gender: iconGender,
     weight: iconWeight,
     height: iconHeight,
@@ -204,6 +205,7 @@ function Profil({
   const [activeEditor, setActiveEditor] = useState(null)
   const [gender, setGender] = useState(profile?.gender || 'male')
   const [reminders, setReminders] = useState(true)
+  const [age, setAge] = useState(Number(profile?.age) || 0)
   const [weight, setWeight] = useState(Number(profile?.weight_kg) || 0)
   const [height, setHeight] = useState(Number(profile?.height_cm) || 175)
   const [paymentPlan, setPaymentPlan] = useState('free')
@@ -218,6 +220,7 @@ function Profil({
   const [draftSettings, setDraftSettings] = useState({
     name: profileName || 'Gast',
     gender,
+    age,
     weight,
     height,
     reminders,
@@ -262,6 +265,7 @@ function Profil({
     setDraftSettings({
       name,
       gender,
+      age,
       weight,
       height,
       reminders,
@@ -293,6 +297,10 @@ function Profil({
       case 'gender':
         setGender(draftSettings.gender)
         savePersonalDetails({ gender: draftSettings.gender })
+        break
+      case 'age':
+        setAge(Number(draftSettings.age) || 0)
+        savePersonalDetails({ age: Number(draftSettings.age) || null })
         break
       case 'weight':
         setWeight(Number(draftSettings.weight) || 0)
@@ -469,6 +477,28 @@ function Profil({
                 </button>
               ))}
             </div>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
+          </div>
+        )}
+
+        <div className="profile-setting-row">
+          <SettingIcon type="age" />
+          <span>{t.profile.age}</span>
+          <strong>{age ? `${age} Jahre` : 'Keine Angabe'}</strong>
+          <button type="button" onClick={() => openEditor('age')}>{t.common.change}</button>
+        </div>
+        {activeEditor === 'age' && (
+          <div className="profile-edit-panel">
+            <label>
+              {t.profile.age} in Jahren
+              <input
+                min="10"
+                max="120"
+                type="number"
+                value={draftSettings.age}
+                onChange={(event) => updateDraft('age', event.target.value)}
+              />
+            </label>
             <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}

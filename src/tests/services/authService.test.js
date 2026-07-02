@@ -68,6 +68,10 @@ describe('authService Supabase access', () => {
       main_challenges: 'stress',
       support_goals: ['focus'],
     })).toEqual({
+      gender: null,
+      age: null,
+      height_cm: null,
+      weight_kg: null,
       student_status: 'university',
       age_group: null,
       education_level: null,

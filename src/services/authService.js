@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 export function normalizeOnboardingProfile(onboardingData = {}) {
   return {
     gender: onboardingData.gender || null,
+    age: onboardingData.age ? Number(onboardingData.age) : null,
     height_cm: onboardingData.height_cm ? Number(onboardingData.height_cm) : null,
     weight_kg: onboardingData.weight_kg ? Number(onboardingData.weight_kg) : null,
     student_status: onboardingData.student_status ?? null,
@@ -94,6 +95,7 @@ export async function saveOnboardingProfile(onboardingData = {}, displayName = n
     if (error?.code === 'PGRST204') {
       const personalDetails = {
         gender: profile.gender,
+        age: profile.age,
         height_cm: profile.height_cm,
         weight_kg: profile.weight_kg,
       }
@@ -102,6 +104,7 @@ export async function saveOnboardingProfile(onboardingData = {}, displayName = n
       })
       const compatibleProfile = { ...profile }
       delete compatibleProfile.gender
+      delete compatibleProfile.age
       delete compatibleProfile.height_cm
       delete compatibleProfile.weight_kg
       const fallback = await supabase
