@@ -13,6 +13,7 @@ import {
   getFlowTree,
   getLevel,
 } from './utils/progressLevels.js'
+import { findCheckin, getLocalDateKey } from './utils/checkins.js'
 
 function test(name, fn) {
   try {
@@ -23,6 +24,15 @@ function test(name, fn) {
     throw err
   }
 }
+
+test('check-ins use local YYYY-MM-DD dates and reject routine duplicates', () => {
+  const date = getLocalDateKey(new Date(2026, 6, 2, 8, 30))
+  const checkIns = [{ routineId: 'water', date, checked: true }]
+
+  assert.equal(date, '2026-07-02')
+  assert.equal(findCheckin(checkIns, 'water', date), checkIns[0])
+  assert.equal(findCheckin(checkIns, 'sleep', date), undefined)
+})
 
 const checkInAnswers = {
   general_mood: 'neutral',

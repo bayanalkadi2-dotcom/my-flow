@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from './context/authContextValue'
 import { useProfile } from './context/profileContextValue'
+import { useCheckins } from './context/checkinContextValue'
 import { getRoutines, bulkCreateRoutines } from './services/routineService'
 import { getUserSettings, saveOnboardingProfile } from './services/authService'
 import Navbar from './commponents/Navbar'
@@ -99,6 +100,7 @@ function LoadingScreen() {
 function App() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth()
   const { profile, setProfile, isLoading: profileLoading } = useProfile()
+  const { addCheckin } = useCheckins()
   const [screen, setScreen] = useState('dashboard')
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
   const [languageStyle, setLanguageStyle] = useState('german')
@@ -235,6 +237,14 @@ function App() {
   }
 
   function incrementHabit(id) {
+    const currentHabit = routineItems.find((habit) => habit.id === id)
+    if (currentHabit) {
+      const nextValue = Math.min(Number(currentHabit.current ?? 0) + 1, Number(currentHabit.target ?? 1))
+      if (nextValue >= Number(currentHabit.target ?? 1) && !currentHabit.done) {
+        addCheckin({ routineId: currentHabit.id, title: currentHabit.title })
+      }
+    }
+
     setRoutineItems((current) =>
       current.map((habit) => {
         if (habit.id !== id) return habit
@@ -283,6 +293,9 @@ function App() {
   function toggleHabitDone(selectedHabit) {
     const nextDone = !selectedHabit.done
     const nextCurrent = nextDone ? selectedHabit.target : selectedHabit.current
+    if (nextDone) {
+      addCheckin({ routineId: selectedHabit.id, title: selectedHabit.title })
+    }
     setRoutineItems((current) =>
       current.map((habit) =>
         habit.id === selectedHabit.id
@@ -305,6 +318,9 @@ function App() {
   function setHabitMood(id, mood) {
     const currentHabit = routineItems.find((habit) => habit.id === id)
     const nextCurrent = Number(currentHabit?.target ?? 1)
+    if (currentHabit) {
+      addCheckin({ routineId: currentHabit.id, title: currentHabit.title })
+    }
 
     setRoutineItems((current) =>
       current.map((habit) =>
@@ -333,6 +349,9 @@ function App() {
   function updateHabitPeriod(id, changes) {
     const currentHabit = routineItems.find(h => h.id === id)
     const updatedPeriod = { ...(currentHabit?.period ?? {}), ...changes }
+    if (currentHabit) {
+      addCheckin({ routineId: currentHabit.id, title: currentHabit.title })
+    }
 
     setRoutineItems((current) =>
       current.map((habit) =>

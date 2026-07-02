@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import { checkInQuestions } from '../../data/checkInQuestions'
 import { getContextCheckInQuestion } from '../../config/userPersonalization'
 import { useProfile } from '../../context/profileContextValue'
+import { useCheckins } from '../../context/checkinContextValue'
+import { getLocalDateKey } from '../../utils/checkins'
 import { saveDailyCheckIn } from '../../services/checkInService'
 import { buildCheckInSummary, recommendTasks } from '../../services/recommendationService'
 import CheckInProgress from './CheckInProgress'
@@ -10,6 +12,7 @@ import CheckInResult from './CheckInResult'
 
 function DailyCheckIn({ onNavigate, user }) {
   const { personalization, personalizedTexts, profile } = useProfile()
+  const { addCheckin, hasCheckin } = useCheckins()
   const [answers, setAnswers] = useState({})
   const [currentStep, setCurrentStep] = useState(0)
   const [hasConsent, setHasConsent] = useState(false)
@@ -54,11 +57,23 @@ function DailyCheckIn({ onNavigate, user }) {
     setSavedCheckIn(null)
 
     try {
+      if (hasCheckin('daily-check-in', getLocalDateKey())) {
+        setSavedCheckIn({ duplicate: true })
+        return
+      }
+
       const nextRecommendations = recommendTasks(nextAnswers, undefined, { studentStatus: personalization.status })
       const savedDailyCheckIn = await saveDailyCheckIn(nextAnswers, nextRecommendations)
       console.log('Check-in gespeichert:', savedDailyCheckIn)
       setSaveError('')
       setSavedCheckIn(savedDailyCheckIn)
+      addCheckin({
+        id: savedDailyCheckIn.id,
+        routineId: 'daily-check-in',
+        title: 'Tages-Check-in',
+        createdAt: savedDailyCheckIn.created_at,
+        source: 'supabase',
+      })
     } catch (error) {
       console.error('Check-in-Speicherfehler:', error)
       setSaveError(error.message)

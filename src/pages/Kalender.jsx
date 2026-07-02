@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useCheckins } from '../context/checkinContextValue'
 import {
   getEventsForDate,
   isCalendarEventDone,
@@ -113,6 +114,7 @@ function MenuIcon() {
 }
 
 function Kalender() {
+  const { checkins } = useCheckins()
   const today = useMemo(() => {
     const currentDate = new Date()
     currentDate.setHours(12, 0, 0, 0)
@@ -126,6 +128,7 @@ function Kalender() {
   const selectedKey = getDateKey(selectedDate)
   const weekDays = getWeekDays(selectedDate)
   const selectedEvents = getEventsForDate(events, selectedKey)
+  const selectedCheckins = checkins.filter((checkin) => checkin.date === selectedKey && checkin.checked)
   const selectedNote = notes[selectedKey] || ''
 
   function updateEvents(nextEvents) {
@@ -209,6 +212,7 @@ function Kalender() {
           const isToday = day.key === getDateKey(today)
           const isSelected = day.key === selectedKey
           const hasEvents = events.some((event) => event.date === day.key || (event.repeat === 'daily' && event.date <= day.key))
+            || checkins.some((checkin) => checkin.date === day.key && checkin.checked)
 
           return (
             <button
@@ -293,11 +297,12 @@ function Kalender() {
       <section className="calendar-timeline-card">
         <div className="calendar-section-title">
           <span>Heute geplant</span>
-          <small>{selectedEvents.length} Einträge</small>
+          <small>{selectedEvents.length + selectedCheckins.length} Einträge</small>
         </div>
         <div className="calendar-timeline">
-          {selectedEvents.length > 0 ? (
-            selectedEvents.map((event) => (
+          {selectedEvents.length > 0 || selectedCheckins.length > 0 ? (
+            <>
+            {selectedEvents.map((event) => (
               <article className={`calendar-event-card ${event.tone} ${isEventDone(event) ? 'done' : ''}`} key={event.id}>
                 <time>{event.time}</time>
                 <span className="calendar-event-icon">{event.icon}</span>
@@ -314,7 +319,19 @@ function Kalender() {
                   {isEventDone(event) && '✓'}
                 </button>
               </article>
-            ))
+            ))}
+            {selectedCheckins.map((checkin) => (
+              <article className="calendar-event-card blue done" key={`checkin-${checkin.id}`}>
+                <time>{checkin.time || '--:--'}</time>
+                <span className="calendar-event-icon">✓</span>
+                <div>
+                  <strong>{checkin.title}</strong>
+                  <small>Eingecheckt</small>
+                </div>
+                <span className="calendar-check-button" aria-label={`${checkin.title} eingecheckt`}>✓</span>
+              </article>
+            ))}
+            </>
           ) : (
             <div className="calendar-empty-state">
               <strong>Noch nichts geplant</strong>

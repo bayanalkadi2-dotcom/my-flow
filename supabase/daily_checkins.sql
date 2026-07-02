@@ -7,6 +7,7 @@ create table if not exists public.daily_checkins (
   physical_energy text not null,
   mental_energy text not null,
   concentration_level text not null,
+  context_stressor text,
   mood text not null,
   available_time_minutes integer not null,
   support_goal text not null,
@@ -20,6 +21,9 @@ alter table public.daily_checkins
 
 alter table public.daily_checkins
   add column if not exists available_time_minutes integer;
+
+alter table public.daily_checkins
+  add column if not exists context_stressor text;
 
 do $$
 begin

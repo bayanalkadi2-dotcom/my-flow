@@ -1,6 +1,28 @@
 import { supabase } from '../lib/supabase'
 import { buildDailyCheckInPayload } from './checkInPayload'
 
+async function insertDailyCheckIn(payload) {
+  let result = await supabase
+    .from('daily_checkins')
+    .insert(payload)
+    .select()
+    .single()
+
+  // Ältere Supabase-Projekte besitzen context_stressor eventuell noch nicht.
+  // Der Check-in bleibt speicherbar, bis die Migration ausgeführt wurde.
+  if (result.error?.message?.includes("'context_stressor' column")) {
+    const compatiblePayload = { ...payload }
+    delete compatiblePayload.context_stressor
+    result = await supabase
+      .from('daily_checkins')
+      .insert(compatiblePayload)
+      .select()
+      .single()
+  }
+
+  return result
+}
+
 export async function saveDailyCheckIn(answers, recommendations) {
   const {
     data: { user },
@@ -26,11 +48,29 @@ export async function saveDailyCheckIn(answers, recommendations) {
   const payload = payloadResult.payload
   console.log('Daily-Check-in-Payload:', payload)
 
-  const { data, error } = await supabase
+  // Pro Nutzer wird höchstens ein Tages-Check-in pro lokalem Kalendertag angelegt.
+  const startOfDay = new Date()
+  startOfDay.setHours(0, 0, 0, 0)
+  const startOfNextDay = new Date(startOfDay)
+  startOfNextDay.setDate(startOfNextDay.getDate() + 1)
+
+  const { data: existing, error: existingError } = await supabase
     .from('daily_checkins')
-    .insert(payload)
-    .select()
-    .single()
+    .select('*')
+    .eq('user_id', user.id)
+    .gte('created_at', startOfDay.toISOString())
+    .lt('created_at', startOfNextDay.toISOString())
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (existingError) {
+    throw new Error(`Check-in konnte nicht geprüft werden: ${existingError.message}`)
+  }
+
+  if (existing) return existing
+
+  const { data, error } = await insertDailyCheckIn(payload)
 
   if (error) {
     console.error('Supabase-Insert-Fehler:', {
@@ -53,11 +93,7 @@ export async function createDailyCheckIn(userId, answers, recommendations) {
   if (!payloadResult.success) return payloadResult
 
   try {
-    const { data, error } = await supabase
-      .from('daily_checkins')
-      .insert(payloadResult.payload)
-      .select()
-      .single()
+    const { data, error } = await insertDailyCheckIn(payloadResult.payload)
 
     if (error) throw error
 
