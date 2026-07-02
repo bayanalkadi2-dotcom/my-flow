@@ -836,20 +836,22 @@ function Profil({
           ))}
         </div>
       </div>
-      <button
-        className="profile-logout-button"
-        onClick={async () => {
-          try {
-            await signout()
-            // App.jsx will automatically navigate to login screen after auth state changes
-          } catch (err) {
-            console.error('Logout error:', err)
-            alert('Abmeldung fehlgeschlagen')
-          }
-        }}
-      >
-        {t.profile.logout}
-      </button>
+      {showSettings && (
+        <button
+          className="profile-logout-button"
+          onClick={async () => {
+            try {
+              await signout()
+              // App.jsx will automatically navigate to login screen after auth state changes
+            } catch (err) {
+              console.error('Logout error:', err)
+              alert('Abmeldung fehlgeschlagen')
+            }
+          }}
+        >
+          {t.profile.logout}
+        </button>
+      )}
     </section>
   )
 }

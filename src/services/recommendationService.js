@@ -44,8 +44,12 @@ function taskEnergyRank(value) {
   return ranks[value] ?? 1
 }
 
+function firstAnswerValue(value) {
+  return Array.isArray(value) ? value[0] : value
+}
+
 function getMood(answers) {
-  return Array.isArray(answers.mood_tags) ? answers.mood_tags[0] : answers.mood_tags
+  return firstAnswerValue(answers.mood_tags)
 }
 
 function addScore(scoreMap, taskId, points) {
@@ -119,14 +123,16 @@ function buildPriorityMap(answers, options = {}) {
     addScore(scoreMap, 'start-most-important-task', 10)
   }
 
-  if (answers.support_goal === 'sleep_preparation') {
+  const supportGoal = firstAnswerValue(answers.support_goal)
+
+  if (supportGoal === 'sleep_preparation') {
     addScore(scoreMap, 'screen-free-break', 13)
     addScore(scoreMap, 'daily-wrap-up', 10)
     addScore(scoreMap, 'simple-muscle-relaxation', 8)
   }
 
   const studentStatus = options.studentStatus ?? 'other'
-  const contextStressor = answers.context_stressor
+  const contextStressor = firstAnswerValue(answers.context_stressor)
 
   if (studentStatus === 'school' && contextStressor === 'exams') {
     addScore(scoreMap, 'choose-mini-task', 9)
@@ -186,7 +192,9 @@ export function getRecommendationExplanation(answers, task) {
     reasons.push(`deine Stimmung "${mood}" dazu passt`)
   }
 
-  if (answers.support_goal && task.supportGoals.includes(answers.support_goal)) {
+  const supportGoal = firstAnswerValue(answers.support_goal)
+
+  if (supportGoal && task.supportGoals.includes(supportGoal)) {
     reasons.push('sie zu deiner gewünschten Unterstützung passt')
   }
 
@@ -218,7 +226,7 @@ export function recommendTasks(answers, tasks = wellbeingTasks, options = {}) {
       let score = 0
 
       score += priorityMap.get(task.id) || 0
-      if (task.supportGoals.includes(answers.support_goal)) score += 4
+      if (task.supportGoals.includes(firstAnswerValue(answers.support_goal))) score += 4
       if (task.suitableStressLevels.includes(answers.stress_level)) score += 3
       if (task.suitableTirednessLevels.includes(answers.tiredness_level)) score += 3
       if (mood && task.suitableMoods?.includes(mood)) score += 4
@@ -262,9 +270,9 @@ export function buildCheckInSummary(answers) {
     physical_energy: answers.physical_energy,
     mental_energy: answers.mental_energy,
     concentration_level: answers.concentration_level,
-    context_stressor: answers.context_stressor,
+    context_stressor: firstAnswerValue(answers.context_stressor),
     mood: getMood(answers),
     available_time_minutes: allowedMinutes(answers.available_time),
-    support_goal: answers.support_goal,
+    support_goal: firstAnswerValue(answers.support_goal),
   }
 }

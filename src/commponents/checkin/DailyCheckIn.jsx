@@ -11,7 +11,7 @@ import CheckInQuestion from './CheckInQuestion'
 import CheckInResult from './CheckInResult'
 
 function DailyCheckIn({ onNavigate, user }) {
-  const { personalization, personalizedTexts, profile } = useProfile()
+  const { personalization, profile } = useProfile()
   const { addCheckin, hasCheckin } = useCheckins()
   const [answers, setAnswers] = useState({})
   const [currentStep, setCurrentStep] = useState(0)
@@ -31,11 +31,19 @@ function DailyCheckIn({ onNavigate, user }) {
     [answers, isComplete, personalization.status],
   )
 
-  function selectAnswer(questionId, value) {
-    setAnswers((currentAnswers) => ({
-      ...currentAnswers,
-      [questionId]: value,
-    }))
+  function selectAnswer(questionId, value, multiple = false) {
+    setAnswers((currentAnswers) => {
+      if (!multiple) {
+        return { ...currentAnswers, [questionId]: value }
+      }
+
+      const selectedValues = Array.isArray(currentAnswers[questionId]) ? currentAnswers[questionId] : []
+      const nextValues = selectedValues.includes(value)
+        ? selectedValues.filter((selectedValue) => selectedValue !== value)
+        : [...selectedValues, value]
+
+      return { ...currentAnswers, [questionId]: nextValues }
+    })
   }
 
   function goBack() {
@@ -83,7 +91,8 @@ function DailyCheckIn({ onNavigate, user }) {
   }
 
   function continueCheckIn() {
-    if (!answers[currentQuestion.id]) {
+    const currentAnswer = answers[currentQuestion.id]
+    if (!currentAnswer || (Array.isArray(currentAnswer) && currentAnswer.length === 0)) {
       setSaveError('Bitte wähle eine Antwort aus.')
       return
     }
@@ -115,14 +124,10 @@ function DailyCheckIn({ onNavigate, user }) {
       <section className="screen checkin-screen">
         <div className="checkin-intro-card">
           <p className="eyebrow">Tages-Check-in</p>
-          <h1>{personalizedTexts.checkInIntro}</h1>
-          <p>
-            MyFlow stellt dir Schritt für Schritt kurze Fragen und speichert deine Antworten in deinem Konto, damit
-            passende Empfehlungen angezeigt werden können.
-          </p>
+          <h1>Wie geht es dir heute mit Studium, Lernen und Erholung?</h1>
+          <p>Beantworte kurze Fragen. Deine Antworten werden gespeichert und für passende Empfehlungen genutzt.</p>
           <p className="checkin-disclaimer">
-            Die Funktion ersetzt keine medizinische Beratung, stellt keine Diagnose und gibt keine therapeutischen
-            Aussagen. Bei akuter Gefahr wird später ein sicherer Hilfe-Hinweis ergänzt.
+            Kein Ersatz für medizinische Beratung, Diagnose oder Therapie. Bei akuter Gefahr wird ein Hilfe-Hinweis angezeigt.
           </p>
           <button className="primary-cta" onClick={() => setHasConsent(true)} type="button">
             Check-in starten
