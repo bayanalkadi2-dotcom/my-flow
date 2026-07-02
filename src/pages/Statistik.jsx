@@ -4,12 +4,33 @@ import { useProfile } from '../context/profileContextValue'
 import { getUserCheckIns } from '../services/checkInService'
 import { calculateFlowtreeStats } from '../utils/flowtreeStats'
 
+const USAGE_STORAGE_KEY = 'myflow_app_usage_ms'
+
+function formatUsageTime(milliseconds) {
+  const totalMinutes = Math.floor(milliseconds / 60000)
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+
+  if (hours <= 0) return `${minutes} Min`
+  if (minutes === 0) return `${hours} Std`
+  return `${hours} Std ${minutes} Min`
+}
+
+function readStoredUsageTime() {
+  const storedValue = Number(localStorage.getItem(USAGE_STORAGE_KEY))
+  return Number.isFinite(storedValue) && storedValue > 0 ? storedValue : 0
+}
+
 function Statistik({ habits = [], t }) {
   const { personalizedTexts } = useProfile()
   const [checkIns, setCheckIns] = useState([])
   const [checkInsLoading, setCheckInsLoading] = useState(true)
   const [checkInsError, setCheckInsError] = useState('')
-  const stats = useMemo(() => calculateFlowtreeStats({ routines: habits, checkIns }), [habits, checkIns])
+  const [usageTimeMs, setUsageTimeMs] = useState(readStoredUsageTime)
+  const stats = useMemo(() => ({
+    ...calculateFlowtreeStats({ routines: habits, checkIns }),
+    usageTime: formatUsageTime(usageTimeMs),
+  }), [habits, checkIns, usageTimeMs])
   const hasProgress = stats.growthPoints > 0 || stats.checkIns > 0 || stats.completedRoutines > 0
   const headerMessage = hasProgress
     ? personalizedTexts.statisticsIntro
@@ -51,6 +72,42 @@ function Statistik({ habits = [], t }) {
     window.addEventListener('focus', handleFocus)
     return () => window.removeEventListener('focus', handleFocus)
   }, [loadCheckIns])
+
+  useEffect(() => {
+    let activeSince = document.visibilityState === 'visible' ? Date.now() : null
+
+    function saveUsageTime() {
+      if (!activeSince) return
+
+      const now = Date.now()
+      const nextUsageTime = readStoredUsageTime() + now - activeSince
+      activeSince = now
+      localStorage.setItem(USAGE_STORAGE_KEY, String(nextUsageTime))
+      setUsageTimeMs(nextUsageTime)
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        activeSince = Date.now()
+        return
+      }
+
+      saveUsageTime()
+      activeSince = null
+    }
+
+    const intervalId = window.setInterval(saveUsageTime, 30000)
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('beforeunload', saveUsageTime)
+
+    return () => {
+      saveUsageTime()
+      window.clearInterval(intervalId)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('beforeunload', saveUsageTime)
+    }
+  }, [])
 
   return (
     <section className="screen stats-page flowtree-stats-page">

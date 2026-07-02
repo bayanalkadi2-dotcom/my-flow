@@ -8517,7 +8517,7 @@ h3,
 }
 
 .flowtree-stat-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .flowtree-week-days {
@@ -8544,5 +8544,11 @@ h3,
 
   .flowtree-stat-grid::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@media (min-width: 381px) and (max-width: 720px) {
+  .flowtree-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

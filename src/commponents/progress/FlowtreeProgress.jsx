@@ -15,6 +15,7 @@ function FlowtreeProgress({ stats }) {
     { icon: '✓', label: 'Check-ins', value: stats.checkIns, note: 'abgeschlossen' },
     { icon: '↟', label: 'Routinen', value: stats.completedRoutines, note: 'erledigt' },
     { icon: '•', label: 'Serie', value: stats.streak, note: 'Tage aktiv' },
+    { icon: '◷', label: 'App-Zeit', value: stats.usageTime, note: 'insgesamt genutzt' },
   ]
 
   return (
