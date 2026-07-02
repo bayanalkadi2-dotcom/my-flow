@@ -3931,6 +3931,7 @@ input {
 .flowtree-card,
 .flowtree-week-card,
 .flowtree-explain-card,
+.flowtree-graph-card,
 .flowtree-loading-card {
   border: 1px solid rgba(118, 92, 255, 0.12);
   border-radius: 28px;
@@ -4119,6 +4120,7 @@ input {
 }
 
 .flowtree-week-card,
+.flowtree-graph-card,
 .flowtree-explain-card {
   padding: 18px;
 }
@@ -8016,6 +8018,7 @@ h3,
 
   .flowtree-card,
   .flowtree-week-card,
+  .flowtree-graph-card,
   .flowtree-explain-card {
     border-radius: 22px;
     padding: 14px;
@@ -8627,6 +8630,148 @@ h3,
   line-height: 1.1;
 }
 
+.flowtree-graph-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.flowtree-graph-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.flowtree-graph-grid article {
+  min-width: 0;
+  border: 1px solid rgba(118, 92, 255, 0.11);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.flowtree-donut-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+}
+
+.flowtree-donut {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #fff 0 57%, transparent 58%),
+    conic-gradient(#765cff var(--progress), rgba(123, 97, 255, 0.13) 0);
+  box-shadow: inset 0 0 0 1px rgba(118, 92, 255, 0.08);
+}
+
+.flowtree-donut strong {
+  color: #17133f;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.flowtree-donut span {
+  margin-top: -22px;
+  color: #80799a;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.flowtree-donut-card > div:last-child span,
+.flowtree-bars-card > div:first-child span,
+.flowtree-streak-card span:first-child {
+  color: #765cff;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.flowtree-donut-card p,
+.flowtree-streak-card p {
+  margin: 4px 0 0;
+  color: #80799a;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.flowtree-bars-card,
+.flowtree-streak-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.flowtree-bars-card > div:first-child,
+.flowtree-streak-card > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.flowtree-bars-card strong,
+.flowtree-streak-card strong {
+  color: #17133f;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.flowtree-week-bars {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+  align-items: end;
+  min-height: 96px;
+}
+
+.flowtree-week-bars div {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 6px;
+  align-items: end;
+  min-width: 0;
+  height: 96px;
+}
+
+.flowtree-week-bars i {
+  display: block;
+  width: 100%;
+  min-height: 14px;
+  border-radius: 999px 999px 8px 8px;
+  background: linear-gradient(180deg, #73cfff, #765cff);
+  opacity: 0.9;
+}
+
+.flowtree-week-bars span {
+  color: #80799a;
+  font-size: 10px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.flowtree-streak-dots {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.flowtree-streak-dots span {
+  display: block;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.12);
+}
+
+.flowtree-streak-dots span.active {
+  background: linear-gradient(135deg, #ff9fd2, #765cff);
+  box-shadow: 0 6px 16px rgba(123, 97, 255, 0.18);
+}
+
 .flowtree-week-days {
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
@@ -8642,10 +8787,8 @@ h3,
   }
 
   .flowtree-stat-grid {
-    grid-auto-flow: column;
-    grid-auto-columns: 132px;
-    grid-template-columns: none;
-    overflow-x: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
     scrollbar-width: none;
   }
 

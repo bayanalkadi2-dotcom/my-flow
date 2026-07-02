@@ -81,6 +81,8 @@ function getWeekOverview(activityDates) {
 
 export function calculateFlowtreeStats({ routines = [], checkIns = [] } = {}) {
   const completedRoutines = routines.filter((routine) => getRoutineProgress(routine) >= 100).length
+  const routineProgressTotal = routines.reduce((sum, routine) => sum + getRoutineProgress(routine), 0)
+  const dailyGoalProgress = routines.length > 0 ? Math.round(routineProgressTotal / routines.length) : 0
   const activityDates = getActivityDates(routines, checkIns)
   const week = getWeekOverview(activityDates)
   const activeDays = week.filter((day) => day.active)
@@ -91,6 +93,9 @@ export function calculateFlowtreeStats({ routines = [], checkIns = [] } = {}) {
     growthPoints,
     checkIns: checkIns.length,
     completedRoutines,
+    dailyGoalProgress,
+    dailyGoalTotal: routines.length,
+    dailyGoalCompleted: completedRoutines,
     streak: getCurrentStreak(activityDates),
     activeDays,
     week,
