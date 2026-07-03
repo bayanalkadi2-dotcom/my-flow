@@ -5,6 +5,7 @@ import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ProfileProvider } from './context/ProfileContext.jsx'
 import { CheckinProvider } from './context/CheckinContext.jsx'
+import { registerSW } from 'virtual:pwa-register'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -30,8 +31,6 @@ if (import.meta.env.DEV && 'serviceWorker' in navigator) {
   }
 }
 
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-  })
+if (import.meta.env.PROD) {
+  registerSW({ immediate: true })
 }

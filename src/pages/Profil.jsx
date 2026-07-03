@@ -12,6 +12,7 @@ import iconSubscription from '../assets/settings-icons/subscription.png'
 import iconWeight from '../assets/settings-icons/weight.png'
 import { calculateChallengePoints } from '../utils/progressLevels'
 import { updateProfile } from '../services/authService'
+import PwaInstallOption from '../commponents/PwaInstallOption'
 
 const languageOptions = [
   { id: 'german', label: 'Deutsch' },
@@ -234,6 +235,9 @@ function Profil({
     ? `${selectedPlan.yearlyPrice} pro Jahr`
     : selectedPlan.monthlyPrice
   const name = profileName || 'Gast'
+  const profileCardTitle = profile?.display_name?.trim()
+    || (profileName && profileName !== 'Gast' ? profileName : '')
+    || 'Dein Profil'
   const profileInitial = name.trim().charAt(0).toUpperCase() || 'G'
   const heightInMeters = height / 100
   const bmi = weight > 0 && height > 0 ? weight / (heightInMeters * heightInMeters) : 0
@@ -436,8 +440,8 @@ function Profil({
             <label className="settings-profile-avatar" htmlFor="profile-image-input" aria-label="Profilbild ändern">
               {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
             </label>
-            <strong>Dein Profil</strong>
-            <p>{t.profile.pictureText}</p>
+            <strong>{profileCardTitle}</strong>
+            <p>Hier kannst du dein Profil und deine persönlichen Angaben verwalten.</p>
           </div>
           <div className="settings-list">
         <span className="settings-section-label">Profil</span>
@@ -583,6 +587,7 @@ function Profil({
         </div>
 
         <span className="settings-section-label">Einstellungen</span>
+        <PwaInstallOption />
         <div className="profile-setting-row">
           <SettingIcon type="language" />
           <span>{t.profile.language}</span>

@@ -7,6 +7,7 @@ import { getUserSettings, saveOnboardingProfile } from './services/authService'
 import Navbar from './commponents/Navbar'
 import { habits, languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
+import { loadCalendarNotes, saveCalendarNotes } from './utils/calendarNotes'
 import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
 import Einloggen from './pages/Einloggen'
@@ -118,6 +119,7 @@ function App() {
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [routinesLoaded, setRoutinesLoaded] = useState(false)
   const [accountProfile, setAccountProfile] = useState(loadAccountProfile)
+  const [calendarNotes, setCalendarNotes] = useState({})
   const [isSavingOnboarding, setIsSavingOnboarding] = useState(false)
   const needsStudentOnboarding = isAuthenticated
     && !profileLoading
@@ -133,6 +135,7 @@ function App() {
         setProfileName('Gast')
         setAppTheme('Hell')
         setRoutineItems([])
+        setCalendarNotes({})
         setProfile(null)
         setAccountProfile(loadAccountProfile())
         setScreen('start')
@@ -144,6 +147,7 @@ function App() {
     async function loadUserData() {
       setIsLoadingData(true)
       try {
+        setCalendarNotes(loadCalendarNotes(user.id))
         // Load settings
         const settingsRes = await getUserSettings(user.id)
         if (settingsRes.success && settingsRes.settings) {
@@ -204,6 +208,13 @@ function App() {
     () => routineItems.map((habit) => translateHabit(prepareRoutineData(habit), languageStyle)),
     [languageStyle, routineItems],
   )
+
+  function handleCalendarNotesChange(nextNotes) {
+    setCalendarNotes(nextNotes)
+    if (isAuthenticated && user?.id) {
+      saveCalendarNotes(user.id, nextNotes)
+    }
+  }
 
   function addHabit(newHabit) {
     if (isRemovedRoutine(newHabit)) {
@@ -565,6 +576,7 @@ function App() {
         return (
           <DashboardHome
             accountProfile={accountProfile}
+            calendarNotes={calendarNotes}
             habits={preparedHabits}
             communicationStyle={communicationStyle}
             languageStyle={languageStyle}
@@ -599,7 +611,7 @@ function App() {
       case 'checkin':
         return <DailyCheckIn onNavigate={setScreen} user={user} />
       case 'calendar':
-        return <Kalender />
+        return <Kalender notes={calendarNotes} onNotesChange={handleCalendarNotesChange} />
       case 'progress':
         return <Statistik habits={preparedHabits} languageStyle={languageStyle} onNavigate={setScreen} t={t} />
       case 'freunde':
@@ -660,6 +672,7 @@ function App() {
         return (
           <DashboardHome
             accountProfile={accountProfile}
+            calendarNotes={calendarNotes}
             habits={preparedHabits}
             communicationStyle={communicationStyle}
             languageStyle={languageStyle}
