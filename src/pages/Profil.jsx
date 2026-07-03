@@ -12,6 +12,7 @@ import iconSubscription from '../assets/settings-icons/subscription.png'
 import iconWeight from '../assets/settings-icons/weight.png'
 import { calculateChallengePoints } from '../utils/progressLevels'
 import { updateProfile } from '../services/authService'
+import PwaInstallOption from '../commponents/PwaInstallOption'
 
 const languageOptions = [
   { id: 'german', label: 'Deutsch' },
@@ -586,6 +587,7 @@ function Profil({
         </div>
 
         <span className="settings-section-label">Einstellungen</span>
+        <PwaInstallOption />
         <div className="profile-setting-row">
           <SettingIcon type="language" />
           <span>{t.profile.language}</span>
