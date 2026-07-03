@@ -1190,6 +1190,18 @@ input {
   gap: 14px;
 }
 
+.home-day-note {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: #65607f;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+
 .home-goals-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useCheckins } from '../context/checkinContextValue'
+import { getLocalDateKey } from '../utils/checkins'
 import {
   getEventsForDate,
   isCalendarEventDone,
@@ -8,7 +9,6 @@ import {
 } from '../utils/calendarPlanner'
 
 const storageKey = 'myflow-calendar-events'
-const noteStorageKey = 'myflow-calendar-notes'
 const weekdays = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
 const monthNames = [
   'Januar',
@@ -53,23 +53,6 @@ function saveEvents(events) {
   localStorage.setItem(storageKey, JSON.stringify(events))
 }
 
-function loadNotes() {
-  try {
-    const storedNotes = JSON.parse(localStorage.getItem(noteStorageKey) || '{}')
-    return storedNotes && typeof storedNotes === 'object' ? storedNotes : {}
-  } catch {
-    return {}
-  }
-}
-
-function saveNotes(notes) {
-  localStorage.setItem(noteStorageKey, JSON.stringify(notes))
-}
-
-function getDateKey(date) {
-  return date.toISOString().slice(0, 10)
-}
-
 function getStartOfWeek(date) {
   const start = new Date(date)
   const day = start.getDay() || 7
@@ -86,7 +69,7 @@ function getWeekDays(date) {
     return {
       weekday,
       date: day,
-      key: getDateKey(day),
+      key: getLocalDateKey(day),
       dayNumber: day.getDate(),
     }
   })
@@ -113,7 +96,7 @@ function MenuIcon() {
   )
 }
 
-function Kalender() {
+function Kalender({ notes = {}, onNotesChange }) {
   const { checkins } = useCheckins()
   const today = useMemo(() => {
     const currentDate = new Date()
@@ -122,10 +105,9 @@ function Kalender() {
   }, [])
   const [selectedDate, setSelectedDate] = useState(today)
   const [events, setEvents] = useState(loadEvents)
-  const [notes, setNotes] = useState(loadNotes)
   const [showForm, setShowForm] = useState(false)
   const [draft, setDraft] = useState(emptyDraft)
-  const selectedKey = getDateKey(selectedDate)
+  const selectedKey = getLocalDateKey(selectedDate)
   const weekDays = getWeekDays(selectedDate)
   const selectedEvents = getEventsForDate(events, selectedKey)
   const selectedCheckins = checkins.filter((checkin) => checkin.date === selectedKey && checkin.checked)
@@ -177,8 +159,7 @@ function Kalender() {
 
   function updateNote(value) {
     const nextNotes = updateCalendarNote(notes, selectedKey, value)
-    setNotes(nextNotes)
-    saveNotes(nextNotes)
+    onNotesChange?.(nextNotes)
   }
 
   function isEventDone(event) {
@@ -209,7 +190,7 @@ function Kalender() {
 
       <section className="calendar-week-card" aria-label="Wochenübersicht">
         {weekDays.map((day) => {
-          const isToday = day.key === getDateKey(today)
+          const isToday = day.key === getLocalDateKey(today)
           const isSelected = day.key === selectedKey
           const hasEvents = events.some((event) => event.date === day.key || (event.repeat === 'daily' && event.date <= day.key))
             || checkins.some((checkin) => checkin.date === day.key && checkin.checked)

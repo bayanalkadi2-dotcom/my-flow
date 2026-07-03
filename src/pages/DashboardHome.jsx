@@ -1,4 +1,6 @@
 import { useProfile } from '../context/profileContextValue'
+import { calculateDailyRoutineProgress } from '../utils/dailyRoutineProgress'
+import { getLocalDateKey } from '../utils/checkins'
 
 function formatProfileList(value) {
   return String(value || '')
@@ -8,12 +10,12 @@ function formatProfileList(value) {
     .slice(0, 4)
 }
 
-function DashboardHome({ accountProfile = {}, habits, profileName, t, onNavigate }) {
+function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profileName, t, onNavigate }) {
   const { personalizedTexts } = useProfile()
-  const completedHabits = habits.filter((habit) => habit.done || habit.progress >= 100).length
-  const totalProgress = habits.reduce((sum, habit) => sum + habit.progress, 0)
-  const dayProgress = habits.length ? Math.round(totalProgress / habits.length) : 0
-  const openHabits = habits.length - completedHabits
+  const dailyProgress = calculateDailyRoutineProgress(habits)
+  const completedHabits = dailyProgress.completed
+  const dayProgress = dailyProgress.percent
+  const openHabits = dailyProgress.open
   const topFocus = habits
     .filter((habit) => !habit.done && habit.progress < 100)
     .sort((firstHabit, secondHabit) => secondHabit.progress - firstHabit.progress)
@@ -21,6 +23,8 @@ function DashboardHome({ accountProfile = {}, habits, profileName, t, onNavigate
   const firstName = profileName.trim() || 'Gast'
   const visibleGoals = formatProfileList(accountProfile.goals)
   const visibleDailyRoutine = formatProfileList(accountProfile.dailyRoutine)
+  const todayNote = String(calendarNotes[getLocalDateKey()] || '').trim()
+  const hasProfileDetails = visibleGoals.length > 0 || visibleDailyRoutine.length > 0
 
   return (
     <section className="screen home-screen">
@@ -49,13 +53,14 @@ function DashboardHome({ accountProfile = {}, habits, profileName, t, onNavigate
         <div className="home-goals-header">
           <div>
             <span>Mein Alltag</span>
-            <h2>{visibleGoals.length > 0 || visibleDailyRoutine.length > 0 ? 'Ziele und Tagesablauf' : 'Noch nichts eingetragen'}</h2>
+            <h2>{todayNote ? 'Notiz für heute' : hasProfileDetails ? 'Ziele und Tagesablauf' : 'Noch nichts eingetragen'}</h2>
           </div>
           <button type="button" onClick={() => onNavigate?.('calendar')}>
             Bearbeiten
           </button>
         </div>
-        {visibleGoals.length > 0 || visibleDailyRoutine.length > 0 ? (
+        {todayNote && <p className="home-day-note">{todayNote}</p>}
+        {hasProfileDetails ? (
           <div className="home-profile-summary">
             <div>
               <small>Meine Ziele</small>
@@ -82,9 +87,9 @@ function DashboardHome({ accountProfile = {}, habits, profileName, t, onNavigate
               )}
             </div>
           </div>
-        ) : (
+        ) : !todayNote ? (
           <p>Trage Ziele und Tagesablauf ein, damit MyFlow passende Routinen und Erinnerungen anzeigen kann.</p>
-        )}
+        ) : null}
       </section>
 
       <div className="home-status-grid">
