@@ -708,7 +708,7 @@ function App() {
       {!authScreens.includes(screen) && screen !== 'profileSettings' && (
         <Navbar
           activeScreen={screen}
-          items={['dashboard', 'calendar', 'habits', 'progress', 'profile'].map((id) => ({ id, label: t.nav[id] }))}
+          items={['dashboard', 'calendar', 'habits', 'progress', 'freunde', 'profile'].map((id) => ({ id, label: t.nav[id] }))}
           onNavigate={setScreen}
         />
       )}

@@ -146,38 +146,6 @@ function FlowtreeProgress({ stats }) {
         </div>
       </section>
 
-      <section className="flowtree-week-card">
-        <div className="stats-section-header flowtree-week-header">
-          <div>
-            <span>Wochenübersicht</span>
-            <h2>Deine Woche im Überblick</h2>
-          </div>
-          <button type="button">Diese Woche</button>
-        </div>
-        <div className="flowtree-week-days">
-          {stats.week.map((day) => (
-            <div className={day.active ? 'active' : ''} key={day.dateKey}>
-              <span>{day.label}</span>
-              <b>{day.active ? '✓' : ''}</b>
-            </div>
-          ))}
-        </div>
-        <div className="flowtree-week-meta">
-          <span>{stats.activeDays.length} von 7 Tagen aktiv</span>
-          <strong>{stats.weekProgress}%</strong>
-        </div>
-        <div
-          className="flowtree-progress-track"
-          role="progressbar"
-          aria-label="Aktive Tage dieser Woche"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-valuenow={stats.weekProgress}
-        >
-          <span style={{ width: `${stats.weekProgress}%` }} />
-        </div>
-      </section>
-
       <article className="flowtree-explain-card">
         <span>So wächst dein Flowtree</span>
         <p>Erledige Check-ins und Routinen, um Wachstumspunkte zu sammeln und deinen Flowtree wachsen zu lassen.</p>
