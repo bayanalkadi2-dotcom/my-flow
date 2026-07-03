@@ -1,13 +1,9 @@
 import { getFlowtreeProgress } from '../data/flowtreeLevels'
 import { calculateGrowthPoints } from './progressLevels'
 import { calculateDailyRoutineProgress } from './dailyRoutineProgress'
+import { getRoutineProgress } from './routineProgress'
 
 const dayLabels = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
-
-function getRoutineProgress(routine) {
-  if (routine.done) return 100
-  return Math.min(Math.max(Math.round(Number(routine.progress) || 0), 0), 100)
-}
 
 function toDateKey(value) {
   if (!value) return ''

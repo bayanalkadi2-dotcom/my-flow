@@ -29,6 +29,20 @@ describe('daily routine progress', () => {
     })
   })
 
+  it('includes partial routines in the daily percentage without counting them as completed', () => {
+    const routines = [
+      { id: 1, current: 1, target: 1, progress: 100, done: true },
+      { id: 2, current: 1, target: 2, progress: 50, done: false },
+    ]
+
+    expect(calculateDailyRoutineProgress(routines, today)).toMatchObject({
+      completed: 1,
+      open: 1,
+      total: 2,
+      percent: 75,
+    })
+  })
+
   it('uses the local day for dated routines', () => {
     const routines = [
       { id: 1, done: true, date: '2026-07-03' },

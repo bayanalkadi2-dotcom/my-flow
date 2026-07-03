@@ -46,7 +46,7 @@ const routineCategories = [
   },
 ]
 
-function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
+function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onResetProgress, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
   const { personalizedTexts, routineSuggestions } = useProfile()
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('4')
@@ -117,7 +117,9 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
             key={habit.id}
             onIncrement={onIncrement}
             onDecrement={onDecrement}
+            onResetProgress={onResetProgress}
             onSetMood={onSetMood}
+            onSetPartial={onSetPartial}
             onUpdatePeriod={onUpdatePeriod}
             onRemove={onRemove}
             onToggleDone={onToggleDone}

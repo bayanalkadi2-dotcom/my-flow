@@ -12,21 +12,16 @@ export const treeOptions = [
   { id: 'flower', label: 'Blüte', symbol: '🌸' },
 ]
 
-function getRoutineProgress(routine) {
-  if (routine.done) return 100
-  return Math.min(Math.max(Math.round(Number(routine.progress) || 0), 0), 100)
-}
-
 export function calculateChallengePoints(routines = []) {
-  return routines.reduce((sum, routine) => sum + (getRoutineProgress(routine) >= 100 ? 10 : 0), 0)
+  return routines.reduce((sum, routine) => sum + getRoutineCredits(routine), 0)
 }
 
 export function calculateGrowthPoints({ routines = [], checkIns = [] } = {}) {
-  const completedRoutinePoints = routines.filter((routine) => getRoutineProgress(routine) >= 100).length * 10
+  const routinePoints = routines.reduce((sum, routine) => sum + getRoutineCredits(routine), 0)
   const checkInPoints = checkIns.length * 5
-  const allDoneBonus = routines.length > 0 && routines.every((routine) => getRoutineProgress(routine) >= 100) ? 10 : 0
+  const allDoneBonus = routines.length > 0 && routines.every(isRoutineCompleted) ? 10 : 0
 
-  return completedRoutinePoints + checkInPoints + allDoneBonus
+  return routinePoints + checkInPoints + allDoneBonus
 }
 
 export function getFlowTree(score, treeType = 'oak') {
@@ -72,3 +67,4 @@ export function getLevel(score) {
     progress,
   }
 }
+import { getRoutineCredits, isRoutineCompleted } from './routineProgress'

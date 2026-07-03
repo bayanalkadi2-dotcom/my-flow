@@ -118,10 +118,10 @@ function Kalender({ notes = {}, onNotesChange }) {
     saveEvents(nextEvents)
   }
 
-  function changeMonth(direction) {
+  function changeWeek(direction) {
     setSelectedDate((currentDate) => {
       const nextDate = new Date(currentDate)
-      nextDate.setMonth(nextDate.getMonth() + direction)
+      nextDate.setDate(nextDate.getDate() + (direction * 7))
       return nextDate
     })
   }
@@ -179,11 +179,11 @@ function Kalender({ notes = {}, onNotesChange }) {
       </header>
 
       <section className="calendar-month-card">
-        <button type="button" onClick={() => changeMonth(-1)} aria-label="Vorheriger Monat">
+        <button type="button" onClick={() => changeWeek(-1)} aria-label="Vorherige Woche">
           ‹
         </button>
         <strong>{monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}</strong>
-        <button type="button" onClick={() => changeMonth(1)} aria-label="Nächster Monat">
+        <button type="button" onClick={() => changeWeek(1)} aria-label="Nächste Woche">
           ›
         </button>
       </section>

@@ -101,12 +101,20 @@ describe('authService Supabase access', () => {
     await expect(upsertProfile('user-1', 'test@example.com', 'Test', {
       student_status: 'school',
       age_group: '16_18',
+      age: '21',
     })).resolves.toEqual({ success: true, profile })
     expect(upsert.mock.calls[0][0]).toMatchObject({
       id: 'user-1',
       student_status: 'school',
       age_group: '16_18',
+      age: 21,
     })
+  })
+
+  it('rejects non-integer or unrealistic profile ages', () => {
+    expect(normalizeOnboardingProfile({ age: '20.5' }).age).toBeNull()
+    expect(normalizeOnboardingProfile({ age: '-1' }).age).toBeNull()
+    expect(normalizeOnboardingProfile({ age: '121' }).age).toBeNull()
   })
 
   it('saveOnboardingProfile uses the authenticated user', async () => {

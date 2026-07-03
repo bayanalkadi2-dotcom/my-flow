@@ -1,4 +1,5 @@
 import { getLocalDateKey } from './checkins.js'
+import { getRoutineProgress, isRoutineCompleted } from './routineProgress.js'
 
 function getScheduledDateKey(routine) {
   const value = routine?.scheduled_date ?? routine?.due_date ?? routine?.date
@@ -29,14 +30,15 @@ export function getTodayRoutines(routines = [], today = new Date()) {
 
 export function calculateDailyRoutineProgress(routines = [], today = new Date()) {
   const todayRoutines = getTodayRoutines(routines, today)
-  const completed = todayRoutines.filter((routine) => routine.done === true).length
+  const completed = todayRoutines.filter(isRoutineCompleted).length
   const total = todayRoutines.length
+  const progressTotal = todayRoutines.reduce((sum, routine) => sum + getRoutineProgress(routine), 0)
 
   return {
     routines: todayRoutines,
     completed,
     open: total - completed,
     total,
-    percent: total > 0 ? Math.round((completed / total) * 100) : 0,
+    percent: total > 0 ? Math.round(progressTotal / total) : 0,
   }
 }

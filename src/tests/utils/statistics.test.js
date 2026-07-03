@@ -9,11 +9,11 @@ import {
 
 describe('statistics helpers', () => {
   it('calculates challenge and growth points from completed routines and check-ins', () => {
-    const routines = [{ progress: 100 }, { done: true }, { progress: 40 }]
+    const routines = [{ progress: 100, done: true }, { done: true }, { progress: 40 }]
     const checkIns = [{ id: 1 }, { id: 2 }]
 
-    expect(calculateChallengePoints(routines)).toBe(20)
-    expect(calculateGrowthPoints({ routines, checkIns })).toBe(30)
+    expect(calculateChallengePoints(routines)).toBe(24)
+    expect(calculateGrowthPoints({ routines, checkIns })).toBe(34)
   })
 
   it('calculates level and flow tree progress', () => {
@@ -25,7 +25,7 @@ describe('statistics helpers', () => {
     vi.setSystemTime(new Date('2026-07-02T12:00:00.000Z'))
 
     const stats = calculateFlowtreeStats({
-      routines: [{ progress: 100, updated_at: '2026-07-02T08:00:00.000Z' }],
+      routines: [{ progress: 100, done: true, updated_at: '2026-07-02T08:00:00.000Z' }],
       checkIns: [{ created_at: '2026-07-01T08:00:00.000Z' }],
     })
 

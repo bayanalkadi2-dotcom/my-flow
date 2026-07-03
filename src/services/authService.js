@@ -1,9 +1,10 @@
 import { supabase } from '../lib/supabase'
+import { parseProfileAge } from '../utils/profileValidation'
 
 export function normalizeOnboardingProfile(onboardingData = {}) {
   return {
     gender: onboardingData.gender || null,
-    age: onboardingData.age ? Number(onboardingData.age) : null,
+    age: parseProfileAge(onboardingData.age),
     height_cm: onboardingData.height_cm ? Number(onboardingData.height_cm) : null,
     weight_kg: onboardingData.weight_kg ? Number(onboardingData.weight_kg) : null,
     student_status: onboardingData.student_status ?? null,

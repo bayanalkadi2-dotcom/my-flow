@@ -10,27 +10,39 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    // Check current session on mount
-    supabase.auth.getSession()
-      .then(({ data: { session } }) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-      })
-      .catch((err) => {
-        console.error('Fehler beim Laden der Session:', err)
-        setError(err.message)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+    let isMounted = true
 
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
+    function applySession(nextSession) {
+      if (!isMounted) return
+      setSession(nextSession)
+      setUser(nextSession?.user ?? null)
+    }
+
+    // Login, Logout und automatisch erneuerte Tokens direkt übernehmen.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      applySession(nextSession)
+      if (isMounted) setIsLoading(false)
     })
 
+    async function restoreSession() {
+      try {
+        const { data, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError) throw sessionError
+        applySession(data.session)
+      } catch (err) {
+        if (!isMounted) return
+        console.error('Fehler beim Laden der Session:', err)
+        setError(err.message)
+        applySession(null)
+      } finally {
+        if (isMounted) setIsLoading(false)
+      }
+    }
+
+    restoreSession()
+
     return () => {
+      isMounted = false
       subscription?.unsubscribe()
     }
   }, [])
@@ -90,6 +102,8 @@ export function AuthProvider({ children }) {
     try {
       const { error: signoutError } = await supabase.auth.signOut()
       if (signoutError) throw signoutError
+      setSession(null)
+      setUser(null)
     } catch (err) {
       const message = err.message || 'Abmeldung fehlgeschlagen'
       setError(message)

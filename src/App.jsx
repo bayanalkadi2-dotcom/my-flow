@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from './context/authContextValue'
 import { useProfile } from './context/profileContextValue'
 import { useCheckins } from './context/checkinContextValue'
-import { getRoutines, bulkCreateRoutines } from './services/routineService'
+import { getRoutines, bulkCreateRoutines, updateRoutine } from './services/routineService'
 import { getUserSettings, saveOnboardingProfile } from './services/authService'
 import Navbar from './commponents/Navbar'
 import { habits, languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import { loadCalendarNotes, saveCalendarNotes } from './utils/calendarNotes'
+import { calculateRoutineProgress, getRoutineProgress } from './utils/routineProgress'
 import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
 import Einloggen from './pages/Einloggen'
@@ -70,7 +71,7 @@ function isRemovedRoutine(routine) {
 
 function prepareRoutineData(routine) {
   const detail = routine.detail || `${routine.current ?? 0} / ${routine.target ?? 1} ${routine.unit || 'Mal'}`
-  const progress = routine.progress ?? (Math.round((Number(routine.current ?? 0) / Number(routine.target ?? 1)) * 100))
+  const progress = getRoutineProgress(routine)
   const done = routine.done ?? progress >= 100
 
   return {
@@ -194,7 +195,7 @@ function App() {
     }
 
     loadUserData()
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, setProfile, user])
 
   useEffect(() => {
     if (isAuthenticated && user?.id && persistentScreens.has(screen)) {
@@ -229,6 +230,7 @@ function App() {
       target: newHabit.target || 1,
       unit: newHabit.unit || 'Mal',
       done: false,
+      progress: 0,
       period: newHabit.type === 'period' ? {} : undefined,
     }
 
@@ -274,13 +276,14 @@ function App() {
         if (habit.id !== id) return habit
 
         const nextCurrent = Math.min(Number(habit.current ?? 0) + 1, Number(habit.target ?? 1))
-        const updated = { ...habit, current: nextCurrent, done: nextCurrent >= Number(habit.target ?? 1) }
+        const progress = calculateRoutineProgress(nextCurrent, habit.target)
+        const updated = { ...habit, current: nextCurrent, progress, done: progress >= 100 }
 
         // If authenticated, save to Supabase
         if (isAuthenticated && user) {
           (async () => {
             const { updateRoutine } = await import('./services/routineService')
-            updateRoutine(id, user.id, { current: nextCurrent, done: updated.done }).catch((err) => {
+            updateRoutine(id, user.id, { current: nextCurrent, progress, done: updated.done }).catch((err) => {
               console.error('Fehler beim Aktualisieren der Routine:', err)
             })
           })()
@@ -297,13 +300,14 @@ function App() {
         if (habit.id !== id) return habit
 
         const nextCurrent = Math.max(Number(habit.current ?? 0) - 1, 0)
-        const updated = { ...habit, current: nextCurrent, done: false }
+        const progress = calculateRoutineProgress(nextCurrent, habit.target)
+        const updated = { ...habit, current: nextCurrent, progress, done: false }
 
         // If authenticated, save to Supabase
         if (isAuthenticated && user) {
           (async () => {
             const { updateRoutine } = await import('./services/routineService')
-            updateRoutine(id, user.id, { current: nextCurrent, done: false }).catch((err) => {
+            updateRoutine(id, user.id, { current: nextCurrent, progress, done: false }).catch((err) => {
               console.error('Fehler beim Aktualisieren der Routine:', err)
             })
           })()
@@ -317,13 +321,14 @@ function App() {
   function toggleHabitDone(selectedHabit) {
     const nextDone = !selectedHabit.done
     const nextCurrent = nextDone ? selectedHabit.target : selectedHabit.current
+    const nextProgress = nextDone ? 100 : getRoutineProgress({ ...selectedHabit, done: false, current: nextCurrent })
     if (nextDone) {
       addCheckin({ routineId: selectedHabit.id, title: selectedHabit.title })
     }
     setRoutineItems((current) =>
       current.map((habit) =>
         habit.id === selectedHabit.id
-          ? { ...habit, done: nextDone, current: nextCurrent }
+          ? { ...habit, done: nextDone, current: nextCurrent, progress: nextProgress }
           : habit,
       ),
     )
@@ -332,7 +337,7 @@ function App() {
     if (isAuthenticated && user) {
       (async () => {
         const { updateRoutine } = await import('./services/routineService')
-        updateRoutine(selectedHabit.id, user.id, { current: nextCurrent, done: nextDone }).catch((err) => {
+        updateRoutine(selectedHabit.id, user.id, { current: nextCurrent, progress: nextProgress, done: nextDone }).catch((err) => {
           console.error('Fehler beim Aktualisieren der Routine:', err)
         })
       })()
@@ -353,6 +358,7 @@ function App() {
               ...habit,
               mood,
               current: Number(habit.target ?? 1),
+              progress: 100,
               done: true,
             }
           : habit,
@@ -363,7 +369,7 @@ function App() {
     if (isAuthenticated && user) {
       (async () => {
         const { updateRoutine } = await import('./services/routineService')
-        updateRoutine(id, user.id, { current: nextCurrent, mood, done: true }).catch((err) => {
+        updateRoutine(id, user.id, { current: nextCurrent, progress: 100, mood, done: true }).catch((err) => {
           console.error('Fehler beim Aktualisieren der Routine:', err)
         })
       })()
@@ -384,6 +390,7 @@ function App() {
               ...habit,
               period: updatedPeriod,
               current: Number(habit.target ?? 1),
+              progress: 100,
               done: true,
             }
           : habit,
@@ -394,7 +401,7 @@ function App() {
     if (isAuthenticated && user) {
       (async () => {
         const { updateRoutine } = await import('./services/routineService')
-        updateRoutine(id, user.id, { period: updatedPeriod, done: true }).catch((err) => {
+        updateRoutine(id, user.id, { period: updatedPeriod, current: Number(currentHabit?.target ?? 1), progress: 100, done: true }).catch((err) => {
           console.error('Fehler beim Aktualisieren der Routine:', err)
         })
       })()
@@ -495,17 +502,43 @@ function App() {
     setScreen(isAuthenticated ? 'dashboard' : 'start')
   }
 
+  // Erst die gespeicherte Supabase-Sitzung prüfen, bevor irgendeine Seite weiterleitet.
+  if (authLoading) {
+    return <LoadingScreen />
+  }
+
+  function setHabitPartial(selectedHabit) {
+    const updates = { current: 0, progress: 50, done: false }
+    setRoutineItems((current) => current.map((habit) => (
+      habit.id === selectedHabit.id ? { ...habit, ...updates } : habit
+    )))
+
+    if (isAuthenticated && user) {
+      updateRoutine(selectedHabit.id, user.id, updates).catch((err) => {
+        console.error('Fehler beim Aktualisieren der Routine:', err)
+      })
+    }
+  }
+
+  function resetHabitProgress(selectedHabit) {
+    const updates = { current: 0, progress: 0, done: false }
+    setRoutineItems((current) => current.map((habit) => (
+      habit.id === selectedHabit.id ? { ...habit, ...updates } : habit
+    )))
+
+    if (isAuthenticated && user) {
+      updateRoutine(selectedHabit.id, user.id, updates).catch((err) => {
+        console.error('Fehler beim Aktualisieren der Routine:', err)
+      })
+    }
+  }
+
   if (!hasSeenOnboarding) {
     return (
       <main className={`app onboarding-app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
         <Onboarding onFinish={handleOnboardingFinish} />
       </main>
     )
-  }
-
-  // Show loading screen while checking auth, after the introductory pages.
-  if (authLoading) {
-    return <LoadingScreen />
   }
 
   // Show login if not authenticated
@@ -586,7 +619,9 @@ function App() {
             onNavigate={setScreen}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
+            onResetProgress={resetHabitProgress}
             onSetMood={setHabitMood}
+            onSetPartial={setHabitPartial}
             onUpdatePeriod={updateHabitPeriod}
             onRemove={removeHabit}
             onToggleDone={toggleHabitDone}
@@ -602,7 +637,9 @@ function App() {
             onAddHabit={addHabit}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
+            onResetProgress={resetHabitProgress}
             onSetMood={setHabitMood}
+            onSetPartial={setHabitPartial}
             onUpdatePeriod={updateHabitPeriod}
             onRemove={removeHabit}
             onToggleDone={toggleHabitDone}
@@ -682,7 +719,9 @@ function App() {
             onNavigate={setScreen}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
+            onResetProgress={resetHabitProgress}
             onSetMood={setHabitMood}
+            onSetPartial={setHabitPartial}
             onUpdatePeriod={updateHabitPeriod}
             onRemove={removeHabit}
             onToggleDone={toggleHabitDone}

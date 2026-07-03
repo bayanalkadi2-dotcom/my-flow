@@ -7,7 +7,9 @@ function notify() {
 }
 
 if (typeof window !== 'undefined') {
-  installed = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+  installed = (typeof window.matchMedia === 'function'
+    && window.matchMedia('(display-mode: standalone)').matches)
+    || window.navigator.standalone === true
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault()

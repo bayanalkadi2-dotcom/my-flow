@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import waterGlassEmpty from '../assets/water-glass-empty.svg'
 import waterGlassFull from '../assets/water-glass-full.svg'
+import { getRoutineProgress } from '../utils/routineProgress'
 
 const routineVisuals = {
   'Wasser trinken': {
@@ -34,13 +35,8 @@ const iconTypes = [
   { match: ['Wasser'], type: 'drop' },
 ]
 
-function getProgress(habit) {
-  if (habit.done) return 100
-  return Math.min(Math.max(Math.round(Number(habit.progress) || 0), 0), 100)
-}
-
 function getStatus(habit) {
-  const progress = getProgress(habit)
+  const progress = getRoutineProgress(habit)
   if (habit.done || progress >= 100) return 'done'
   if (progress > 0) return 'partial'
   return 'skipped'
@@ -119,7 +115,7 @@ function getProgressText(habit) {
   return `${current.toLocaleString('de-DE')} von ${target.toLocaleString('de-DE')} ${unit}`.trim()
 }
 
-function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod, onRemove, onToggleDone, t }) {
+function HabitCard({ habit, onIncrement, onResetProgress, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [selectedMood, setSelectedMood] = useState(() => getMoodOption(habit.mood)?.value ?? '')
   const [moodSaved, setMoodSaved] = useState(false)
@@ -127,7 +123,7 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
   const isPeriodRoutine = habit.type === 'period'
   const routineVisual = routineVisuals[habit.title]
   const title = habit.displayTitle ?? habit.title
-  const progress = getProgress(habit)
+  const progress = getRoutineProgress(habit)
   const status = getStatus(habit)
   const current = Math.max(Number(habit.current ?? 0), 0)
   const target = Math.max(Number(habit.target ?? 1), 1)
@@ -135,17 +131,13 @@ function HabitCard({ habit, onIncrement, onDecrement, onSetMood, onUpdatePeriod,
   const savedMood = getMoodOption(habit.mood)
 
   function markSkipped() {
-    if (habit.done) {
-      onToggleDone(habit)
-    }
-
-    Array.from({ length: Math.ceil(current) }).forEach(() => onDecrement(habit.id))
+    onResetProgress(habit)
   }
 
   function markPartial() {
-    if (progress < 100 && !habit.done) {
-      onIncrement(habit.id)
-    }
+    if (progress >= 100 || habit.done) return
+    if (target <= 1) onSetPartial(habit)
+    else onIncrement(habit.id)
   }
 
   function markDone() {

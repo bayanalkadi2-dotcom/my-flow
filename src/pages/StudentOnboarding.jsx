@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getProfileAgeError, MAX_PROFILE_AGE, MIN_PROFILE_AGE } from '../utils/profileValidation'
 
 const statusOptions = [
   { value: 'school', label: 'Schüler:in' },
@@ -99,6 +100,7 @@ const goalOptions = [
 
 const emptyAnswers = {
   gender: '',
+  age: '',
   height_cm: '',
   weight_kg: '',
   student_status: '',
@@ -141,6 +143,10 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
   }
 
   function validate() {
+    if (currentStep === 'personal') {
+      const ageError = getProfileAgeError(answers.age)
+      if (ageError) return ageError
+    }
     if (currentStep === 'personal' && !answers.gender) return 'Bitte wähle dein Geschlecht aus.'
     if (currentStep === 'personal' && (!answers.height_cm || Number(answers.height_cm) <= 0)) return 'Bitte gib deine Größe an.'
     if (currentStep === 'personal' && answers.weight_kg && Number(answers.weight_kg) <= 0) return 'Bitte gib ein gültiges Gewicht an.'
@@ -233,6 +239,19 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
                 </OptionCard>
               ))}
             </div>
+          </label>
+          <label className="student-onboarding-label">
+            Alter in Jahren
+            <input
+              inputMode="numeric"
+              min={MIN_PROFILE_AGE}
+              max={MAX_PROFILE_AGE}
+              onChange={(event) => update('age', event.target.value)}
+              placeholder="z. B. 21"
+              step="1"
+              type="number"
+              value={answers.age ?? ''}
+            />
           </label>
           <label className="student-onboarding-label">
             Größe in cm

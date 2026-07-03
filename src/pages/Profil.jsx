@@ -13,6 +13,7 @@ import iconWeight from '../assets/settings-icons/weight.png'
 import { calculateChallengePoints } from '../utils/progressLevels'
 import { updateProfile } from '../services/authService'
 import PwaInstallOption from '../commponents/PwaInstallOption'
+import { getProfileAgeError, MAX_PROFILE_AGE, MIN_PROFILE_AGE, parseProfileAge } from '../utils/profileValidation'
 
 const languageOptions = [
   { id: 'german', label: 'Deutsch' },
@@ -204,6 +205,7 @@ function Profil({
   const { profile, profileSituation, setProfile } = useProfile()
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
+  const [ageError, setAgeError] = useState('')
   const [gender, setGender] = useState(profile?.gender || 'male')
   const [reminders, setReminders] = useState(true)
   const [age, setAge] = useState(Number(profile?.age) || 0)
@@ -218,10 +220,12 @@ function Profil({
   const [paymentEmail, setPaymentEmail] = useState('')
   const [treeType, setTreeType] = useState('oak')
   const [profileImage, setProfileImage] = useState(() => localStorage.getItem('myflow-profile-image') || '')
+  const storedAge = parseProfileAge(profile?.age)
+  const currentAge = storedAge ?? age
   const [draftSettings, setDraftSettings] = useState({
     name: profileName || 'Gast',
     gender,
-    age,
+    age: currentAge,
     weight,
     height,
     reminders,
@@ -229,6 +233,7 @@ function Profil({
     languageStyle,
     design: appTheme,
   })
+
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
   const selectedPlanPrice = billingCycle === 'Jährlich'
@@ -261,6 +266,7 @@ function Profil({
   }
 
   function openEditor(editor) {
+    setAgeError('')
     if (activeEditor === editor) {
       setActiveEditor(null)
       return
@@ -269,7 +275,7 @@ function Profil({
     setDraftSettings({
       name,
       gender,
-      age,
+      age: currentAge,
       weight,
       height,
       reminders,
@@ -281,6 +287,7 @@ function Profil({
   }
 
   function updateDraft(key, value) {
+    if (key === 'age') setAgeError('')
     setDraftSettings((currentDraft) => ({
       ...currentDraft,
       [key]: value,
@@ -302,10 +309,16 @@ function Profil({
         setGender(draftSettings.gender)
         savePersonalDetails({ gender: draftSettings.gender })
         break
-      case 'age':
-        setAge(Number(draftSettings.age) || 0)
-        savePersonalDetails({ age: Number(draftSettings.age) || null })
+      case 'age': {
+        const nextAge = parseProfileAge(draftSettings.age)
+        if (nextAge === null) {
+          setAgeError(getProfileAgeError(draftSettings.age))
+          return
+        }
+        setAge(nextAge)
+        savePersonalDetails({ age: nextAge })
         break
+      }
       case 'weight':
         setWeight(Number(draftSettings.weight) || 0)
         savePersonalDetails({ weight_kg: Number(draftSettings.weight) || null })
@@ -488,7 +501,7 @@ function Profil({
         <div className="profile-setting-row">
           <SettingIcon type="age" />
           <span>{t.profile.age}</span>
-          <strong>{age ? `${age} Jahre` : 'Keine Angabe'}</strong>
+          <strong>{currentAge ? `${currentAge} Jahre` : 'Keine Angabe'}</strong>
           <button type="button" onClick={() => openEditor('age')}>{t.common.change}</button>
         </div>
         {activeEditor === 'age' && (
@@ -496,13 +509,16 @@ function Profil({
             <label>
               {t.profile.age} in Jahren
               <input
-                min="10"
-                max="120"
+                inputMode="numeric"
+                min={MIN_PROFILE_AGE}
+                max={MAX_PROFILE_AGE}
+                step="1"
                 type="number"
                 value={draftSettings.age}
                 onChange={(event) => updateDraft('age', event.target.value)}
               />
             </label>
+            {ageError && <p className="student-onboarding-error" role="alert">{ageError}</p>}
             <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
           </div>
         )}
