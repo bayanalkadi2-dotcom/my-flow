@@ -135,7 +135,28 @@ function Statistik({ habits = [], t }) {
           <span />
         </section>
       ) : (
-        <FlowtreeProgress stats={stats} />
+        <>
+          <FlowtreeProgress stats={stats} />
+          <section className="sleep-tracker-card" aria-labelledby="sleep-tracker-title">
+            <div className="sleep-tracker-header">
+              <span className="sleep-tracker-icon" aria-hidden="true">Zz</span>
+              <div>
+                <span>Schlaf</span>
+                <h2 id="sleep-tracker-title">Schlaf-Tracker</h2>
+              </div>
+            </div>
+
+            <p>Der Nutzer traegt ein:</p>
+            <ul>
+              <li>Wann bin ich schlafen gegangen?</li>
+              <li>Wie lange habe ich geschlafen?</li>
+            </ul>
+            <div className="sleep-tracker-average">
+              <span>Wochendurchschnitt</span>
+              <strong>Die App zeigt den Durchschnitt der Woche.</strong>
+            </div>
+          </section>
+        </>
       )}
     </section>
   )
