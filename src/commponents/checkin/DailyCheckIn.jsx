@@ -166,9 +166,6 @@ function DailyCheckIn({ onNavigate, user }) {
         <button className="secondary-button" disabled={currentStep === 0} onClick={goBack} type="button">
           Zurück
         </button>
-        <button className="secondary-button" onClick={cancelCheckIn} type="button">
-          Abbrechen
-        </button>
         <button className="primary-cta" onClick={continueCheckIn} type="button">
           {currentStep === personalizedQuestions.length - 1 ? 'Auswerten' : 'Weiter'}
         </button>

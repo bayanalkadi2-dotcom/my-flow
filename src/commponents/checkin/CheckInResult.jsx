@@ -117,7 +117,6 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
               <h2>{activeRecommendation.task.title}</h2>
               <p>{activeRecommendation.task.description}</p>
             </div>
-            <p className="checkin-reason">{activeRecommendation.reason}</p>
             {!isVoiceExerciseActive && <ol>
               {activeRecommendation.task.instructions.map((instruction) => (
                 <li key={instruction}>{instruction}</li>
