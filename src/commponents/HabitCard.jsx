@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import waterGlassEmpty from '../assets/water-glass-empty.svg'
 import waterGlassFull from '../assets/water-glass-full.svg'
-import { getRoutineProgress } from '../utils/routineProgress'
+import { calculateCompletedItemsProgress, getRoutineProgress } from '../utils/routineProgress'
+import { getLocalDateKey } from '../utils/checkins'
 
 const routineVisuals = {
   'Wasser trinken': {
@@ -115,40 +116,58 @@ function getProgressText(habit) {
   return `${current.toLocaleString('de-DE')} von ${target.toLocaleString('de-DE')} ${unit}`.trim()
 }
 
-function HabitCard({ habit, onIncrement, onResetProgress, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t }) {
+function getEntryKind(title) {
+  const normalized = String(title || '').toLowerCase()
+  if (normalized === 'lernblock' || normalized === 'lernen') return 'learning'
+  if (normalized === 'wochenplanung') return 'weekly'
+  if (normalized.startsWith('mini-aufgaben')) return 'miniTasks'
+  if (normalized === 'dankbarkeit') return 'gratitude'
+  if (normalized.includes('medikament') || normalized.includes('vitamin')) return 'medication'
+  return null
+}
+
+function HabitCard({ habit, onIncrement, onResetProgress, onSaveDailyEntry, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
-  const [selectedMood, setSelectedMood] = useState(() => getMoodOption(habit.mood)?.value ?? '')
+  const dateKey = getLocalDateKey()
+  const dailyEntry = habit.period?.dailyEntries?.[dateKey] ?? {}
+  const [selectedMoods, setSelectedMoods] = useState(() => {
+    if (Array.isArray(dailyEntry.moods)) return dailyEntry.moods
+    return String(habit.mood || '').split(',').filter(Boolean)
+  })
   const [moodSaved, setMoodSaved] = useState(false)
   const isMoodRoutine = habit.type === 'mood'
   const isPeriodRoutine = habit.type === 'period'
   const routineVisual = routineVisuals[habit.title]
+  const entryKind = getEntryKind(habit.title)
   const title = habit.displayTitle ?? habit.title
   const progress = getRoutineProgress(habit)
   const status = getStatus(habit)
   const current = Math.max(Number(habit.current ?? 0), 0)
   const target = Math.max(Number(habit.target ?? 1), 1)
   const remaining = Math.max(target - current, 0)
-  const savedMood = getMoodOption(habit.mood)
+  const savedMoodLabels = selectedMoods.map((mood) => getMoodOption(mood)?.label).filter(Boolean)
 
   function markSkipped() {
     onResetProgress(habit)
   }
 
   function markPartial() {
+    if (entryKind === 'miniTasks') return
     if (progress >= 100 || habit.done) return
     if (target <= 1) onSetPartial(habit)
     else onIncrement(habit.id)
   }
 
   function markDone() {
+    if (entryKind === 'miniTasks') return
     if (!habit.done || progress < 100) {
       onToggleDone(habit)
     }
   }
 
   function saveMood() {
-    if (!selectedMood) return
-    onSetMood(habit.id, selectedMood)
+    if (selectedMoods.length === 0) return
+    onSetMood(habit.id, selectedMoods)
     setMoodSaved(true)
   }
 
@@ -178,8 +197,8 @@ function HabitCard({ habit, onIncrement, onResetProgress, onSetMood, onSetPartia
                 <>
                   <p className="routine-progress-copy">Wie fühlst du dich heute?</p>
                   <p className="routine-status-copy">
-                    {savedMood
-                      ? `Aktuell ausgewählt: ${savedMood.label}`
+                    {savedMoodLabels.length > 0
+                      ? `Aktuell ausgewählt: ${savedMoodLabels.join(', ')}`
                       : 'Heute noch keine Stimmung ausgewählt'}
                   </p>
                 </>
@@ -212,14 +231,18 @@ function HabitCard({ habit, onIncrement, onResetProgress, onSetMood, onSetPartia
               moodSaved={moodSaved}
               onSave={saveMood}
               onSelect={(value) => {
-                setSelectedMood(value)
+                setSelectedMoods((current) => (
+                  current.includes(value)
+                    ? current.filter((mood) => mood !== value)
+                    : [...current, value]
+                ))
                 setMoodSaved(false)
               }}
-              selectedMood={selectedMood}
+              selectedMoods={selectedMoods}
             />
           ) : (
             <>
-              <div className="routine-status-control" aria-label={`${title} Status auswählen`}>
+              {entryKind !== 'miniTasks' && <div className="routine-status-control" aria-label={`${title} Status auswählen`}>
                 <button
                   className={`routine-status-option skipped ${status === 'skipped' ? 'selected' : ''}`}
                   onClick={markSkipped}
@@ -244,13 +267,23 @@ function HabitCard({ habit, onIncrement, onResetProgress, onSetMood, onSetPartia
                   <span aria-hidden="true">✓</span>
                   Erledigt
                 </button>
-              </div>
+              </div>}
 
               {routineVisual && !isPeriodRoutine && (
                 <RoutineVisualAction
                   habit={habit}
                   visual={routineVisual}
                   onActivate={() => onIncrement(habit.id)}
+                />
+              )}
+
+              {entryKind && onSaveDailyEntry && (
+                <RoutineDailyEditor
+                  dateKey={dateKey}
+                  entry={dailyEntry}
+                  habit={habit}
+                  kind={entryKind}
+                  onSave={onSaveDailyEntry}
                 />
               )}
 
@@ -355,14 +388,142 @@ function RoutineVisualAction({ habit, visual, onActivate }) {
   )
 }
 
-function MoodRoutineSelector({ moodSaved, onSave, onSelect, selectedMood }) {
-  const selectedOption = getMoodOption(selectedMood)
+const entryEditorCopy = {
+  learning: {
+    question: 'Was möchtest du lernen?',
+    placeholder: 'Kapitel, Karteikarten oder Übungsaufgaben',
+  },
+  weekly: {
+    question: 'Wie sieht deine Wochenplanung aus?',
+    placeholder: 'Was möchtest du diese Woche erledigen?',
+  },
+  gratitude: {
+    question: 'Wofür bist du heute dankbar?',
+    placeholder: 'Schreibe deine Gedanken hier auf.',
+  },
+  medication: {
+    question: 'Was hast du eingenommen?',
+    placeholder: 'Vitamin, Medikament oder mehrere Einträge',
+  },
+}
 
+function RoutineDailyEditor({ dateKey, entry, habit, kind, onSave }) {
+  const [text, setText] = useState(entry.text ?? '')
+  const [dosage, setDosage] = useState(entry.dosage ?? '')
+  const [newTask, setNewTask] = useState('')
+  const [saved, setSaved] = useState(false)
+  const tasks = Array.isArray(entry.miniTasks) ? entry.miniTasks : []
+
+  function saveTextEntry() {
+    onSave(habit.id, dateKey, { ...entry, text: text.trim(), dosage: dosage.trim() })
+    setSaved(true)
+  }
+
+  function saveTasks(nextTasks) {
+    onSave(
+      habit.id,
+      dateKey,
+      { ...entry, miniTasks: nextTasks },
+      calculateCompletedItemsProgress(nextTasks),
+    )
+  }
+
+  function addTask() {
+    const value = newTask.trim()
+    if (!value) return
+    const task = {
+      id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${tasks.length}`,
+      text: value,
+      done: false,
+    }
+    saveTasks([...tasks, task])
+    setNewTask('')
+  }
+
+  if (kind === 'miniTasks') {
+    return (
+      <div className="routine-entry-panel">
+        <strong>Welche Mini-Aufgabe möchtest du erledigen?</strong>
+        {tasks.length > 0 && (
+          <div className="routine-mini-task-list">
+            {tasks.map((task) => (
+              <button
+                aria-pressed={task.done}
+                className={task.done ? 'is-done' : ''}
+                key={task.id}
+                onClick={() => saveTasks(tasks.map((item) => (
+                  item.id === task.id ? { ...item, done: !item.done } : item
+                )))}
+                type="button"
+              >
+                <span aria-hidden="true">{task.done ? '✓' : '○'}</span>
+                {task.text}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="routine-entry-add-row">
+          <input
+            onChange={(event) => setNewTask(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault()
+                addTask()
+              }
+            }}
+            placeholder="Eigene Mini-Aufgabe"
+            type="text"
+            value={newTask}
+          />
+          <button disabled={!newTask.trim()} onClick={addTask} type="button">Hinzufügen</button>
+        </div>
+      </div>
+    )
+  }
+
+  const copy = entryEditorCopy[kind]
+  if (!copy) return null
+
+  return (
+    <div className="routine-entry-panel">
+      <label>
+        <strong>{copy.question}</strong>
+        <textarea
+          onChange={(event) => {
+            setText(event.target.value)
+            setSaved(false)
+          }}
+          placeholder={copy.placeholder}
+          rows={kind === 'weekly' ? 5 : 4}
+          value={text}
+        />
+      </label>
+      {kind === 'medication' && (
+        <label>
+          <span>Menge oder Dosierung (optional)</span>
+          <input
+            onChange={(event) => {
+              setDosage(event.target.value)
+              setSaved(false)
+            }}
+            placeholder="Freiwillige Angabe"
+            type="text"
+            value={dosage}
+          />
+        </label>
+      )}
+      <button className="routine-entry-save" onClick={saveTextEntry} type="button">Eintrag speichern</button>
+      {saved && <small className="routine-entry-feedback">Gespeichert.</small>}
+    </div>
+  )
+}
+
+function MoodRoutineSelector({ moodSaved, onSave, onSelect, selectedMoods }) {
   return (
     <div className="mood-routine-panel">
       <div className="mood-choice-grid" aria-label="Stimmung auswählen">
         {moodOptions.map((mood) => {
-          const isSelected = selectedMood === mood.value
+          const isSelected = selectedMoods.includes(mood.value)
 
           return (
             <button
@@ -383,7 +544,7 @@ function MoodRoutineSelector({ moodSaved, onSave, onSelect, selectedMood }) {
 
       <button
         className="mood-save-button"
-        disabled={!selectedOption}
+        disabled={selectedMoods.length === 0}
         onClick={onSave}
         type="button"
       >

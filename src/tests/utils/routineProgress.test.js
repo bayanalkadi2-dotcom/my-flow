@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  calculateCompletedItemsProgress,
   calculateRoutineProgress,
   getRoutineCredits,
   getRoutineProgress,
@@ -42,5 +43,19 @@ describe('routine progress and credits', () => {
     expect(beforeReload).toBe(5)
     expect(afterReload).toBe(beforeReload)
     expect(getRoutineCredits({ ...savedRoutine, current: 4, progress: 100, done: true })).toBe(10)
+  })
+
+  it('calculates partial and complete mini-task progress', () => {
+    expect(calculateCompletedItemsProgress([
+      { done: true },
+      { done: false },
+      { done: false },
+      { done: false },
+    ])).toMatchObject({ current: 1, target: 4, progress: 25, done: false })
+
+    expect(calculateCompletedItemsProgress([
+      { done: true },
+      { done: true },
+    ])).toMatchObject({ current: 2, target: 2, progress: 100, done: true })
   })
 })

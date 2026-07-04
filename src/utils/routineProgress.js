@@ -40,3 +40,16 @@ export function isRoutineCompleted(routine = {}) {
 export function getRoutineCredits(routine = {}, fullCredits = FULL_ROUTINE_CREDITS) {
   return Math.round((Math.max(Number(fullCredits) || 0, 0) * getRoutineProgress(routine)) / 100)
 }
+
+export function calculateCompletedItemsProgress(items = []) {
+  const validItems = Array.isArray(items) ? items : []
+  const current = validItems.filter((item) => item.done === true).length
+  const total = validItems.length
+
+  return {
+    current,
+    target: Math.max(total, 1),
+    progress: total > 0 ? Math.round((current / total) * 100) : 0,
+    done: total > 0 && current === total,
+  }
+}

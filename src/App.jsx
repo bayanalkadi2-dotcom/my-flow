@@ -8,6 +8,7 @@ import Navbar from './commponents/Navbar'
 import { habits, languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import { loadCalendarNotes, saveCalendarNotes } from './utils/calendarNotes'
+import { getLocalDateKey } from './utils/checkins'
 import { calculateRoutineProgress, getRoutineProgress } from './utils/routineProgress'
 import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
@@ -344,36 +345,51 @@ function App() {
     }
   }
 
-  function setHabitMood(id, mood) {
+  function saveHabitDailyEntry(id, date, entry, routineUpdates = {}) {
     const currentHabit = routineItems.find((habit) => habit.id === id)
-    const nextCurrent = Number(currentHabit?.target ?? 1)
-    if (currentHabit) {
+    if (!currentHabit) return
+
+    const nextPeriod = {
+      ...(currentHabit.period ?? {}),
+      dailyEntries: {
+        ...(currentHabit.period?.dailyEntries ?? {}),
+        [date]: entry,
+      },
+    }
+    const updates = { period: nextPeriod, ...routineUpdates }
+
+    if (routineUpdates.done === true && currentHabit.done !== true) {
       addCheckin({ routineId: currentHabit.id, title: currentHabit.title })
     }
 
     setRoutineItems((current) =>
       current.map((habit) =>
         habit.id === id
-          ? {
-              ...habit,
-              mood,
-              current: Number(habit.target ?? 1),
-              progress: 100,
-              done: true,
-            }
+          ? { ...habit, ...updates }
           : habit,
       ),
     )
 
-    // If authenticated, save to Supabase
     if (isAuthenticated && user) {
-      (async () => {
-        const { updateRoutine } = await import('./services/routineService')
-        updateRoutine(id, user.id, { current: nextCurrent, progress: 100, mood, done: true }).catch((err) => {
-          console.error('Fehler beim Aktualisieren der Routine:', err)
-        })
-      })()
+      updateRoutine(id, user.id, updates).catch((err) => {
+        console.error('Fehler beim Speichern des Routine-Eintrags:', err)
+      })
     }
+  }
+
+  function setHabitMood(id, moods) {
+    const currentHabit = routineItems.find((habit) => habit.id === id)
+    if (!currentHabit) return
+
+    const date = getLocalDateKey()
+    const currentEntry = currentHabit.period?.dailyEntries?.[date] ?? {}
+    const selectedMoods = Array.isArray(moods) ? moods : [moods].filter(Boolean)
+    saveHabitDailyEntry(id, date, { ...currentEntry, moods: selectedMoods }, {
+      mood: selectedMoods.join(','),
+      current: selectedMoods.length > 0 ? Number(currentHabit.target ?? 1) : 0,
+      progress: selectedMoods.length > 0 ? 100 : 0,
+      done: selectedMoods.length > 0,
+    })
   }
 
   function updateHabitPeriod(id, changes) {
@@ -620,6 +636,7 @@ function App() {
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
             onResetProgress={resetHabitProgress}
+            onSaveDailyEntry={saveHabitDailyEntry}
             onSetMood={setHabitMood}
             onSetPartial={setHabitPartial}
             onUpdatePeriod={updateHabitPeriod}
@@ -638,6 +655,7 @@ function App() {
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
             onResetProgress={resetHabitProgress}
+            onSaveDailyEntry={saveHabitDailyEntry}
             onSetMood={setHabitMood}
             onSetPartial={setHabitPartial}
             onUpdatePeriod={updateHabitPeriod}
@@ -720,6 +738,7 @@ function App() {
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
             onResetProgress={resetHabitProgress}
+            onSaveDailyEntry={saveHabitDailyEntry}
             onSetMood={setHabitMood}
             onSetPartial={setHabitPartial}
             onUpdatePeriod={updateHabitPeriod}

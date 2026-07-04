@@ -8976,6 +8976,119 @@ h3,
   }
 }
 
+.routine-entry-panel {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 13px;
+  border: 1px solid rgba(123, 97, 255, 0.14);
+  border-radius: 17px;
+  background: rgba(247, 243, 255, 0.72);
+  box-sizing: border-box;
+}
+
+.routine-entry-panel label {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  color: #312b5b;
+}
+
+.routine-entry-panel textarea,
+.routine-entry-panel input {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 11px 12px;
+  border: 1px solid rgba(123, 97, 255, 0.2);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #17133f;
+  font: inherit;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+.routine-entry-panel textarea {
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+
+.routine-entry-save,
+.routine-entry-add-row button {
+  min-height: 40px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: rgba(123, 97, 255, 0.12);
+  color: #4f35c7;
+  border: 1px solid rgba(123, 97, 255, 0.26);
+  font-weight: 700;
+}
+
+.routine-entry-feedback {
+  color: #23845d;
+  font-weight: 700;
+}
+
+.routine-entry-add-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+.routine-mini-task-list {
+  display: grid;
+  gap: 7px;
+}
+
+.routine-mini-task-list button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(123, 97, 255, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #312b5b;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.routine-mini-task-list button.is-done {
+  border-color: rgba(34, 168, 111, 0.32);
+  background: rgba(34, 168, 111, 0.1);
+  color: #176a49;
+}
+
+.app.theme-dark .routine-entry-panel {
+  background: rgba(45, 35, 69, 0.78);
+  border-color: rgba(185, 160, 255, 0.2);
+}
+
+.app.theme-dark .routine-entry-panel label,
+.app.theme-dark .routine-mini-task-list button {
+  color: #f5f1ff;
+}
+
+.app.theme-dark .routine-entry-panel textarea,
+.app.theme-dark .routine-entry-panel input,
+.app.theme-dark .routine-mini-task-list button {
+  background: rgba(30, 24, 47, 0.86);
+  color: #f5f1ff;
+}
+
+@media (max-width: 380px) {
+  .routine-entry-add-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Kompakte Navigation mit sechs gleichmäßig verteilten Bereichen. */
 .bottom-nav {
   width: min(420px, calc(100vw - 12px));

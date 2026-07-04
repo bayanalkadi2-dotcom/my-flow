@@ -32,6 +32,9 @@ const routineCategories = [
   {
     title: 'Produktivität',
     routines: [
+      { title: 'Lernblock', target: 1, unit: 'Eintrag', incrementLabel: 'Lernblock erledigt' },
+      { title: 'Wochenplanung', target: 1, unit: 'Planung', incrementLabel: 'Wochenplanung erledigt' },
+      { title: 'Mini-Aufgaben erledigen', target: 1, unit: 'Aufgabe', incrementLabel: 'Mini-Aufgabe erledigt' },
       { title: 'Lernen', target: 60, unit: 'Minuten', incrementLabel: '1 Minute gelernt' },
       { title: 'Aufräumen', target: 15, unit: 'Minuten', incrementLabel: '1 Minute aufgeräumt' },
     ],
@@ -46,7 +49,7 @@ const routineCategories = [
   },
 ]
 
-function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onResetProgress, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
+function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onResetProgress, onSaveDailyEntry, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
   const { personalizedTexts, routineSuggestions } = useProfile()
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('4')
@@ -118,6 +121,7 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
             onIncrement={onIncrement}
             onDecrement={onDecrement}
             onResetProgress={onResetProgress}
+            onSaveDailyEntry={onSaveDailyEntry}
             onSetMood={onSetMood}
             onSetPartial={onSetPartial}
             onUpdatePeriod={onUpdatePeriod}
