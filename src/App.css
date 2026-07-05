@@ -6552,6 +6552,18 @@ input {
   margin: 0;
 }
 
+.register-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 460px) {
+  .register-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 body {
   background:
     radial-gradient(circle at 8% 12%, rgba(255, 159, 210, 0.42), transparent 30%),

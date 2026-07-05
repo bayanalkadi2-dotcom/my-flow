@@ -23,6 +23,29 @@ const genderOptions = [
   ['diverse', 'Divers'],
 ]
 
+const activityOptions = [
+  ['low', 'Wenig aktiv'],
+  ['medium', 'Normal aktiv'],
+  ['high', 'Sehr aktiv'],
+]
+
+const languageOptions = [
+  ['german', 'Deutsch'],
+  ['english', 'English'],
+  ['turkish', 'Türkçe'],
+  ['arabic', 'العربية'],
+]
+
+const communicationOptions = [
+  ['casual', 'Locker'],
+  ['formal', 'Formal'],
+]
+
+const designOptions = [
+  ['Hell', 'Hell'],
+  ['Dunkel', 'Dunkel'],
+]
+
 const educationOptions = {
   school: {
     question: 'Welche Schulstufe passt am besten?',
@@ -100,15 +123,20 @@ const goalOptions = [
 
 const emptyAnswers = {
   gender: '',
+  display_name: '',
   age: '',
   height_cm: '',
   weight_kg: '',
+  activity_level: '',
   student_status: '',
   age_group: '',
   education_level: '',
   daily_context: '',
   main_challenges: [],
   support_goals: [],
+  language_style: 'german',
+  communication_style: 'casual',
+  theme: 'Hell',
   onboarding_completed: true,
 }
 
@@ -130,7 +158,9 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
   const [error, setError] = useState('')
   const [answers, setAnswers] = useState({ ...emptyAnswers, ...initialAnswers })
   const education = educationOptions[answers.student_status] ?? educationOptions.school
-  const steps = includePreferences
+  const steps = mode === 'quickStart'
+    ? ['name', 'personal', 'activity', 'situation', 'preferences']
+    : includePreferences
     ? ['status', 'education', 'challenges', 'goals']
     : ['personal', 'status', 'education']
   const currentStep = steps[step]
@@ -147,9 +177,12 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
       const ageError = getProfileAgeError(answers.age)
       if (ageError) return ageError
     }
+    if (currentStep === 'name' && !answers.display_name.trim()) return 'Bitte gib deinen Namen ein.'
     if (currentStep === 'personal' && !answers.gender) return 'Bitte wähle dein Geschlecht aus.'
     if (currentStep === 'personal' && (!answers.height_cm || Number(answers.height_cm) <= 0)) return 'Bitte gib deine Größe an.'
     if (currentStep === 'personal' && answers.weight_kg && Number(answers.weight_kg) <= 0) return 'Bitte gib ein gültiges Gewicht an.'
+    if (currentStep === 'activity' && !answers.activity_level) return 'Bitte wähle deine Aktivität aus.'
+    if (currentStep === 'situation' && !answers.daily_context) return 'Bitte wähle deine Situation aus.'
     if (currentStep === 'status' && !answers.student_status) return 'Bitte wähle eine Option aus.'
     if (currentStep === 'challenges' && answers.main_challenges.length === 0) return 'Bitte wähle mindestens eine Option aus.'
     if (currentStep === 'goals' && answers.support_goals.length === 0) return 'Bitte wähle mindestens ein Unterstützungsziel aus.'
@@ -223,6 +256,22 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
             ))}
           </div>
           {secondaryAudience && <p className="student-onboarding-note">MyFlow ist aktuell besonders auf Schule und Studium ausgerichtet. Einige Inhalte passen möglicherweise nicht vollständig zu deiner Situation.</p>}
+        </div>
+      )}
+
+      {currentStep === 'name' && (
+        <div className="student-onboarding-panel">
+          <p className="eyebrow">DEIN START</p>
+          <h1>Wie dürfen wir dich nennen?</h1>
+          <label className="student-onboarding-label">
+            Name
+            <input
+              onChange={(event) => update('display_name', event.target.value)}
+              placeholder="Dein Name"
+              type="text"
+              value={answers.display_name ?? ''}
+            />
+          </label>
         </div>
       )}
 
@@ -303,6 +352,71 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
             <div className="student-chip-grid">
               {education.options.map(([value, label]) => (
                 <OptionCard active={answers[education.field] === value} key={value} onClick={() => update(education.field, value)}>
+                  <strong>{label}</strong>
+                </OptionCard>
+              ))}
+            </div>
+          </label>
+        </div>
+      )}
+
+      {currentStep === 'activity' && (
+        <div className="student-onboarding-panel">
+          <p className="eyebrow">AKTIVITÄT</p>
+          <h1>Wie aktiv bist du meistens?</h1>
+          <div className="student-chip-grid">
+            {activityOptions.map(([value, label]) => (
+              <OptionCard active={answers.activity_level === value} key={value} onClick={() => update('activity_level', value)}>
+                <strong>{label}</strong>
+              </OptionCard>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {currentStep === 'situation' && (
+        <div className="student-onboarding-panel">
+          <p className="eyebrow">SITUATION</p>
+          <h1>Was beschreibt deinen Alltag am besten?</h1>
+          <div className="student-chip-grid">
+            {educationOptions.other.options.map(([value, label]) => (
+              <OptionCard active={answers.daily_context === value} key={value} onClick={() => update('daily_context', value)}>
+                <strong>{label}</strong>
+              </OptionCard>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {currentStep === 'preferences' && (
+        <div className="student-onboarding-panel">
+          <p className="eyebrow">APP EINSTELLEN</p>
+          <h1>Wie soll MyFlow sich anfühlen?</h1>
+          <label className="student-onboarding-label">
+            Sprache
+            <div className="student-chip-grid">
+              {languageOptions.map(([value, label]) => (
+                <OptionCard active={answers.language_style === value} key={value} onClick={() => update('language_style', value)}>
+                  <strong>{label}</strong>
+                </OptionCard>
+              ))}
+            </div>
+          </label>
+          <label className="student-onboarding-label">
+            Kommunikationsstil
+            <div className="student-chip-grid">
+              {communicationOptions.map(([value, label]) => (
+                <OptionCard active={answers.communication_style === value} key={value} onClick={() => update('communication_style', value)}>
+                  <strong>{label}</strong>
+                </OptionCard>
+              ))}
+            </div>
+          </label>
+          <label className="student-onboarding-label">
+            Design
+            <div className="student-chip-grid">
+              {designOptions.map(([value, label]) => (
+                <OptionCard active={answers.theme === value} key={value} onClick={() => update('theme', value)}>
                   <strong>{label}</strong>
                 </OptionCard>
               ))}

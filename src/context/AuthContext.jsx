@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { AuthContext } from './authContextValue'
-import { upsertProfile } from '../services/authService'
+import { createUserSettings, upsertProfile } from '../services/authService'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -68,6 +68,14 @@ export function AuthProvider({ children }) {
         const profileResult = await upsertProfile(data.user.id, email, displayName, onboardingData ?? {})
         if (!profileResult.success) {
           console.error('Profil konnte nach Registrierung nicht gespeichert werden:', profileResult.error)
+        }
+        const settingsResult = await createUserSettings(data.user.id, {
+          language_style: onboardingData?.language_style ?? 'german',
+          communication_style: onboardingData?.communication_style ?? 'casual',
+          theme: onboardingData?.theme ?? 'Hell',
+        })
+        if (!settingsResult.success) {
+          console.error('Einstellungen konnten nach Registrierung nicht gespeichert werden:', settingsResult.error)
         }
       }
 

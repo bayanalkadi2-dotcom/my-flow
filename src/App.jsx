@@ -28,7 +28,7 @@ import StudentOnboarding from './pages/StudentOnboarding'
 import flowCharacter from './assets/flow-character-wall-final.jpg'
 import './App.css'
 
-const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter']
+const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter', 'quickStartSetup']
 const persistentScreens = new Set(['dashboard', 'calendar', 'habits', 'progress', 'profile', 'profileSettings', 'freunde'])
 
 function loadLastScreen(userId) {
@@ -55,6 +55,28 @@ const defaultAccountProfile = {
   goals: '',
   dailyRoutine: '',
   interests: '',
+}
+
+const defaultGuestSetup = {
+  completed: false,
+  display_name: 'Gast',
+  gender: '',
+  age: '',
+  height_cm: '',
+  weight_kg: '',
+  activity_level: '',
+  daily_context: '',
+  language_style: 'german',
+  communication_style: 'casual',
+  theme: 'Hell',
+}
+
+function loadGuestSetup() {
+  try {
+    return { ...defaultGuestSetup, ...JSON.parse(localStorage.getItem('myflow-guest-setup') || '{}') }
+  } catch {
+    return defaultGuestSetup
+  }
 }
 
 function loadAccountProfile() {
@@ -123,6 +145,7 @@ function App() {
   const [accountProfile, setAccountProfile] = useState(loadAccountProfile)
   const [calendarNotes, setCalendarNotes] = useState({})
   const [isSavingOnboarding, setIsSavingOnboarding] = useState(false)
+  const [guestSetup, setGuestSetup] = useState(loadGuestSetup)
   const needsStudentOnboarding = isAuthenticated
     && !profileLoading
     && profile?.onboarding_completed !== true
@@ -140,6 +163,12 @@ function App() {
         setCalendarNotes({})
         setProfile(null)
         setAccountProfile(loadAccountProfile())
+        const savedGuestSetup = loadGuestSetup()
+        setGuestSetup(savedGuestSetup)
+        setLanguageStyle(savedGuestSetup.language_style || 'german')
+        setCommunicationStyle(savedGuestSetup.communication_style || 'casual')
+        setProfileName(savedGuestSetup.display_name || 'Gast')
+        setAppTheme(savedGuestSetup.theme || 'Hell')
         setScreen('start')
         setRoutinesLoaded(true)
       })
@@ -518,6 +547,26 @@ function App() {
     setScreen(isAuthenticated ? 'dashboard' : 'start')
   }
 
+  function handleQuickStart() {
+    setScreen(guestSetup.completed ? 'dashboard' : 'quickStartSetup')
+  }
+
+  async function handleGuestSetupComplete(answers) {
+    const nextSetup = {
+      ...defaultGuestSetup,
+      ...answers,
+      completed: true,
+      onboarding_completed: true,
+    }
+    localStorage.setItem('myflow-guest-setup', JSON.stringify(nextSetup))
+    setGuestSetup(nextSetup)
+    setProfileName(nextSetup.display_name || 'Gast')
+    setLanguageStyle(nextSetup.language_style || 'german')
+    setCommunicationStyle(nextSetup.communication_style || 'casual')
+    setAppTheme(nextSetup.theme || 'Hell')
+    setScreen('dashboard')
+  }
+
   // Erst die gespeicherte Supabase-Sitzung prüfen, bevor irgendeine Seite weiterleitet.
   if (authLoading) {
     return <LoadingScreen />
@@ -558,9 +607,18 @@ function App() {
   }
 
   // Show login if not authenticated
-  if (!isAuthenticated) {
+  if (!isAuthenticated && (!guestSetup.completed || authScreens.includes(screen))) {
     const renderAuthScreen = () => {
       switch (screen) {
+        case 'quickStartSetup':
+          return (
+            <StudentOnboarding
+              initialAnswers={guestSetup}
+              mode="quickStart"
+              onBack={() => setScreen('start')}
+              onComplete={handleGuestSetupComplete}
+            />
+          )
         case 'login':
           return <Einloggen onNavigate={setScreen} t={t} />
         case 'register':
@@ -588,7 +646,7 @@ function App() {
             />
           )
         default:
-          return <Startseite onNavigate={setScreen} t={t} />
+          return <Startseite onNavigate={setScreen} onStart={handleQuickStart} t={t} />
       }
     }
 
