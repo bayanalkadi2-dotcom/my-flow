@@ -670,7 +670,7 @@ function App() {
       case 'progress':
         return <Statistik habits={preparedHabits} languageStyle={languageStyle} onNavigate={setScreen} t={t} />
       case 'freunde':
-        return <Freunde habits={preparedHabits} t={t} />
+        return <Freunde habits={preparedHabits} profileName={resolvedProfileName} t={t} />
       case 'welcomeCharacter':
         return <Willkommen onNavigate={setScreen} profileName={resolvedProfileName} t={t} />
       case 'profile':

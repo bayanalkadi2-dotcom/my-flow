@@ -48,69 +48,39 @@ function getLevel(score) {
   }
 }
 
-function Freunde({ habits, t }) {
+function Freunde({ habits, profileName, t }) {
   const firstRoutineTitle = habits[0]?.title ?? "Wasser trinken";
   const routineLabels = new Map(habits.map((habit) => [habit.title, habit.displayTitle ?? habit.title]));
   const getRoutineLabel = (routine) => routineLabels.get(routine) ?? routine;
-  const inviteLink = "https://myflow.app/invite/nina-flow";
-  const freunde = [
-    {
-      name: "Lena",
-      score: 850,
-      progress: 72,
-      color: "#7c3aed",
-      details: [`${t.profile.water}: 2,0 L`, "Laufen: 18 km", "Sport: 4/5"],
-    },
-    {
-      name: "Du",
-      score: 650,
-      progress: 80,
-      color: "#4f46e5",
-      details: [`${t.profile.water}: 2,5 L`, "Laufen: 24 km", "Sport: 4/5"],
-    },
-    {
-      name: "Max",
-      score: 500,
-      progress: 58,
-      color: "#ec4899",
-      details: [`${t.profile.water}: 1,5 L`, "Laufen: 12 km", "Sport: 2/5"],
-    },
-    {
-      name: "Sarah",
-      score: 300,
-      progress: 45,
-      color: "#22c55e",
-      details: [`${t.profile.water}: 1,2 L`, "Laufen: 8 km", "Sport: 2/5"],
-    },
-    {
-      name: "Tom",
-      score: 150,
-      progress: 32,
-      color: "#f59e0b",
-      details: [`${t.profile.water}: 1,0 L`, "Laufen: 5 km", "Sport: 1/5"],
-    },
-  ];
+  const currentUserName = profileName && profileName !== "Gast" ? profileName : "Du";
+  const completedHabits = habits.filter((habit) => habit.done || habit.progress >= 100).length;
+  const weeklyProgress = habits.length
+    ? Math.round(habits.reduce((sum, habit) => sum + Math.min(Number(habit.progress) || 0, 100), 0) / habits.length)
+    : 0;
+  const currentUser = {
+    name: currentUserName,
+    score: completedHabits * 100 + weeklyProgress,
+    progress: weeklyProgress,
+    color: "#4f46e5",
+    details: habits.length
+      ? habits.slice(0, 3).map((habit) => `${habit.displayTitle ?? habit.title}: ${Math.min(Number(habit.progress) || 0, 100)}%`)
+      : ["Noch keine Routinen angelegt"],
+  };
+  const friends = [];
+  const inviteLink = `https://myflow.app/invite/${encodeURIComponent(currentUserName.toLowerCase().replace(/\s+/g, "-"))}`;
 
-  const [selectedFriend, setSelectedFriend] = useState(freunde[1]);
+  const [selectedFriend, setSelectedFriend] = useState(currentUser);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteStatus, setInviteStatus] = useState("");
   const [challengeRoutine, setChallengeRoutine] = useState(firstRoutineTitle);
   const [challengeDays, setChallengeDays] = useState("14");
-  const [challengeFriend, setChallengeFriend] = useState("Lena");
-  const [challenges, setChallenges] = useState([
-    {
-      id: 1,
-      routine: "Wasser trinken",
-      days: 14,
-      friend: "Lena",
-      progress: 36,
-    },
-  ]);
+  const [challengeFriend, setChallengeFriend] = useState("");
+  const [challenges, setChallenges] = useState([]);
 
   function addChallenge(event) {
     event.preventDefault();
 
-    if (!challengeRoutine) {
+    if (!challengeRoutine || !challengeFriend) {
       return;
     }
 
@@ -230,38 +200,44 @@ function Freunde({ habits, t }) {
             <label>
               {t.friends.with}
               <select value={challengeFriend} onChange={(event) => setChallengeFriend(event.target.value)}>
-                {freunde
-                  .filter((freund) => freund.name !== "Du")
-                  .map((freund) => (
-                    <option value={freund.name} key={freund.name}>
-                      {freund.name}
-                    </option>
-                  ))}
+                <option value="">Noch keine Freunde</option>
+                {friends.map((friend) => (
+                  <option value={friend.name} key={friend.name}>
+                    {friend.name}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
-          <button type="submit">{t.friends.start}</button>
+          <button type="submit" disabled={!challengeFriend}>{t.friends.start}</button>
         </form>
 
         <div className="challenge-list">
-          {challenges.map((challenge) => (
-            <article className="challenge-card" key={challenge.id}>
-              <div>
-                <span>{t.friends.days.replace('{days}', challenge.days)}</span>
-                <h3>{getRoutineLabel(challenge.routine)}</h3>
-                <p>{t.friends.against.replace('{friend}', challenge.friend)}</p>
-              </div>
-              <strong>{challenge.progress}%</strong>
-              <div className="challenge-progress">
-                <span style={{ width: `${challenge.progress}%` }} />
-              </div>
+          {challenges.length ? (
+            challenges.map((challenge) => (
+              <article className="challenge-card" key={challenge.id}>
+                <div>
+                  <span>{t.friends.days.replace('{days}', challenge.days)}</span>
+                  <h3>{getRoutineLabel(challenge.routine)}</h3>
+                  <p>{t.friends.against.replace('{friend}', challenge.friend)}</p>
+                </div>
+                <strong>{challenge.progress}%</strong>
+                <div className="challenge-progress">
+                  <span style={{ width: `${challenge.progress}%` }} />
+                </div>
+              </article>
+            ))
+          ) : (
+            <article className="friends-empty-state">
+              <strong>Noch keine Challenges</strong>
+              <p>Lade zuerst Freunde ein, dann kannst du gemeinsame Ziele starten.</p>
             </article>
-          ))}
+          )}
         </div>
       </section>
 
       <div className="leaderboard">
-        {freunde.map((freund, index) => (
+        {[currentUser, ...friends].map((freund, index) => (
           <button
             className={`friend-card ${
               selectedFriend.name === freund.name ? "active" : ""
@@ -296,6 +272,12 @@ function Freunde({ habits, t }) {
             </div>
           </button>
         ))}
+        {!friends.length && (
+          <article className="friends-empty-state">
+            <strong>Noch keine Freunde</strong>
+            <p>Hier erscheinen echte Freunde, sobald sie deiner App beitreten.</p>
+          </article>
+        )}
       </div>
     </div>
   );
