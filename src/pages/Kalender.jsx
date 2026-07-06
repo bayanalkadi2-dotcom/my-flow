@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useCheckins } from '../context/checkinContextValue'
 import { getLocalDateKey } from '../utils/checkins'
 import uploadIcon from '../assets/diary-upload-icon.jpeg'
+import uploadIconDark from '../assets/diary-upload-icon-dark.jpg'
 import {
   getEventsForDate,
   isCalendarEventDone,
@@ -42,6 +43,14 @@ const emptyDraft = {
   type: 'morning',
   repeat: 'once',
 }
+
+const diaryFilters = [
+  { id: 'all', label: 'Alle', icon: '✦' },
+  { id: 'today', label: 'Heute', icon: '●' },
+  { id: 'notes', label: 'Notizen', icon: '✎' },
+  { id: 'images', label: 'Bilder', icon: '▧' },
+  { id: 'tasks', label: 'Aufgaben', icon: '✓' },
+]
 
 function loadEvents() {
   try {
@@ -128,6 +137,24 @@ function getDayEntry(value) {
   }
 }
 
+function hasDiaryEntry(value) {
+  const entry = getDayEntry(value)
+  return entry.text.trim().length > 0 || entry.images.length > 0
+}
+
+function hasDiaryNote(value) {
+  return getDayEntry(value).text.trim().length > 0
+}
+
+function hasDiaryImages(value) {
+  return getDayEntry(value).images.length > 0
+}
+
+function getDateFromKey(dateKey) {
+  const [year, month, day] = dateKey.split('-').map(Number)
+  return new Date(year, month - 1, day, 12)
+}
+
 function CalendarIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -159,8 +186,12 @@ function Kalender({ notes = {}, onNotesChange }) {
   const [selectedDate, setSelectedDate] = useState(today)
   const [events, setEvents] = useState(loadEvents)
   const [showForm, setShowForm] = useState(false)
+  const [showFilterMenu, setShowFilterMenu] = useState(false)
+  const [showFilterResults, setShowFilterResults] = useState(false)
   const [showMonthOverview, setShowMonthOverview] = useState(false)
+  const [activeFilter, setActiveFilter] = useState('all')
   const [draft, setDraft] = useState(emptyDraft)
+  const currentMonthRef = useRef(null)
   const selectedKey = getLocalDateKey(selectedDate)
   const weekDays = getWeekDays(selectedDate)
   const calendarMonths = useMemo(() => getCalendarMonths(today), [today])
@@ -169,6 +200,73 @@ function Kalender({ notes = {}, onNotesChange }) {
   const selectedEntry = getDayEntry(notes[selectedKey])
   const selectedNote = selectedEntry.text
   const selectedImages = selectedEntry.images
+  const activeFilterLabel = diaryFilters.find((filter) => filter.id === activeFilter)?.label ?? 'Alle'
+
+  const filterResultDays = useMemo(() => {
+    const dayKeys = new Set()
+
+    Object.entries(notes).forEach(([dateKey, value]) => {
+      if (activeFilter === 'notes' && hasDiaryNote(value)) dayKeys.add(dateKey)
+      if (activeFilter === 'images' && hasDiaryImages(value)) dayKeys.add(dateKey)
+      if (activeFilter === 'all' && hasDiaryEntry(value)) dayKeys.add(dateKey)
+    })
+
+    events.forEach((event) => {
+      if (activeFilter === 'tasks' || activeFilter === 'all') {
+        dayKeys.add(event.date)
+      }
+    })
+
+    checkins.forEach((checkin) => {
+      if ((activeFilter === 'tasks' || activeFilter === 'all') && checkin.checked) {
+        dayKeys.add(checkin.date)
+      }
+    })
+
+    return Array.from(dayKeys)
+      .sort()
+      .map((dateKey) => {
+        const entry = getDayEntry(notes[dateKey])
+        const dayEvents = getEventsForDate(events, dateKey)
+        const dayCheckins = checkins.filter((checkin) => checkin.date === dateKey && checkin.checked)
+
+        return {
+          key: dateKey,
+          date: getDateFromKey(dateKey),
+          note: entry.text.trim(),
+          imageCount: entry.images.length,
+          taskCount: dayEvents.length + dayCheckins.length,
+        }
+      })
+  }, [activeFilter, checkins, events, notes])
+
+  function hasTaskEntry(dateKey) {
+    return events.some((event) => event.date === dateKey || (event.repeat === 'daily' && event.date <= dateKey))
+      || checkins.some((checkin) => checkin.date === dateKey && checkin.checked)
+  }
+
+  function hasFilteredEntry(dateKey) {
+    if (activeFilter === 'notes') return hasDiaryNote(notes[dateKey])
+    if (activeFilter === 'images') return hasDiaryImages(notes[dateKey])
+    if (activeFilter === 'tasks') return hasTaskEntry(dateKey)
+
+    return hasDiaryEntry(notes[dateKey]) || hasTaskEntry(dateKey)
+  }
+
+  function selectFilter(filterId) {
+    if (filterId === 'today') {
+      setSelectedDate(today)
+      setShowFilterMenu(false)
+      setShowFilterResults(false)
+      setShowMonthOverview(false)
+      return
+    }
+
+    setActiveFilter(filterId)
+    setShowFilterMenu(false)
+    setShowMonthOverview(false)
+    setShowFilterResults(true)
+  }
 
   function updateEvents(nextEvents) {
     setEvents(nextEvents)
@@ -251,10 +349,28 @@ function Kalender({ notes = {}, onNotesChange }) {
     setShowMonthOverview(false)
   }
 
+  function selectResultDay(date) {
+    setSelectedDate(date)
+    setShowFilterResults(false)
+  }
+
+  function openMonthOverview() {
+    setShowFilterResults(false)
+    setShowMonthOverview(true)
+  }
+
+  useEffect(() => {
+    if (!showMonthOverview) return
+
+    requestAnimationFrame(() => {
+      currentMonthRef.current?.scrollIntoView({ block: 'start' })
+    })
+  }, [showMonthOverview])
+
   return (
     <section className="screen calendar-screen">
       <header className="calendar-header">
-        <button className="calendar-icon-button" type="button" aria-label="Menü">
+        <button className="calendar-icon-button" type="button" aria-label="Filter öffnen" onClick={() => setShowFilterMenu(true)}>
           <MenuIcon />
         </button>
         <h1>Tagesbuch</h1>
@@ -262,6 +378,69 @@ function Kalender({ notes = {}, onNotesChange }) {
           <CalendarIcon />
         </button>
       </header>
+
+      {showFilterMenu && (
+        <section className="diary-filter-menu" aria-label="Tagesbuch Filter">
+          <div className="diary-filter-backdrop" onClick={() => setShowFilterMenu(false)} />
+          <div className="diary-filter-sheet">
+            <div className="calendar-section-title">
+              <span>Filter auswählen</span>
+              <small>Zeige: {activeFilterLabel}</small>
+            </div>
+            <div className="diary-filter-grid">
+              {diaryFilters.map((filter) => (
+                <button
+                  className={`${activeFilter === filter.id ? 'active' : ''}`}
+                  key={filter.id}
+                  onClick={() => selectFilter(filter.id)}
+                  type="button"
+                >
+                  <span>{filter.icon}</span>
+                  <strong>{filter.label}</strong>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {showFilterResults && (
+        <section className="diary-filter-results" aria-label={`${activeFilterLabel} im Tagesbuch`}>
+          <div className="diary-filter-results-header">
+            <div>
+              <span>Gefilterte Tage</span>
+              <h2>{activeFilterLabel}</h2>
+            </div>
+            <button type="button" onClick={() => setShowFilterResults(false)} aria-label="Filter schliessen">×</button>
+          </div>
+          <div className="diary-filter-results-list">
+            {filterResultDays.length > 0 ? (
+              filterResultDays.map((day) => (
+                <button className="diary-filter-result-card" key={day.key} type="button" onClick={() => selectResultDay(day.date)}>
+                  <time>
+                    {day.date.getDate()}. {monthNames[day.date.getMonth()]} {day.date.getFullYear()}
+                  </time>
+                  <span>
+                    {day.note || `${day.taskCount} Aufgaben / ${day.imageCount} Bilder`}
+                  </span>
+                  <small>
+                    {day.note && 'Notiz'}
+                    {day.note && (day.imageCount > 0 || day.taskCount > 0) && ' · '}
+                    {day.imageCount > 0 && `${day.imageCount} Bild${day.imageCount > 1 ? 'er' : ''}`}
+                    {day.imageCount > 0 && day.taskCount > 0 && ' · '}
+                    {day.taskCount > 0 && `${day.taskCount} Aufgabe${day.taskCount > 1 ? 'n' : ''}`}
+                  </small>
+                </button>
+              ))
+            ) : (
+              <div className="diary-filter-empty">
+                <strong>Noch nichts gefunden</strong>
+                <p>Speichere zuerst einen passenden Eintrag, dann erscheint er hier als Liste.</p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {showMonthOverview && (
         <section className="calendar-month-overview" aria-label="Monatsübersicht">
@@ -274,7 +453,11 @@ function Kalender({ notes = {}, onNotesChange }) {
           </div>
           <div className="calendar-month-list">
             {calendarMonths.map(({ year, month, id }) => (
-              <article className={`calendar-full-month ${monthTones[month % monthTones.length]}`} key={id}>
+              <article
+                className={`calendar-full-month ${monthTones[month % monthTones.length]}`}
+                key={id}
+                ref={year === today.getFullYear() && month === today.getMonth() ? currentMonthRef : null}
+              >
                 <h3>{monthNames[month]} {year}</h3>
                 <div className="calendar-full-month-weekdays" aria-hidden="true">
                   {weekdays.map((weekday) => <span key={weekday}>{weekday}</span>)}
@@ -287,8 +470,7 @@ function Kalender({ notes = {}, onNotesChange }) {
 
                     const isSelected = day.key === selectedKey
                     const isToday = day.key === getLocalDateKey(today)
-                    const hasEvents = events.some((event) => event.date === day.key || (event.repeat === 'daily' && event.date <= day.key))
-                      || checkins.some((checkin) => checkin.date === day.key && checkin.checked)
+                    const hasEvents = hasFilteredEntry(day.key)
 
                     return (
                       <button
@@ -323,8 +505,7 @@ function Kalender({ notes = {}, onNotesChange }) {
         {weekDays.map((day) => {
           const isToday = day.key === getLocalDateKey(today)
           const isSelected = day.key === selectedKey
-          const hasEvents = events.some((event) => event.date === day.key || (event.repeat === 'daily' && event.date <= day.key))
-            || checkins.some((checkin) => checkin.date === day.key && checkin.checked)
+          const hasEvents = hasFilteredEntry(day.key)
 
           return (
             <button
@@ -445,7 +626,8 @@ function Kalender({ notes = {}, onNotesChange }) {
                   event.target.value = ''
                 }}
               />
-              <img src={uploadIcon} alt="" />
+              <img className="diary-upload-light-icon" src={uploadIcon} alt="" />
+              <img className="diary-upload-dark-icon" src={uploadIconDark} alt="" />
             </label>
           )}
         </div>
