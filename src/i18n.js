@@ -199,7 +199,7 @@ export function translateHabit(habit, languageStyle) {
 
 export const translations = {
   german: {
-    nav: { dashboard: 'Home', calendar: 'Kalender', habits: 'Routinen', progress: 'Statistik', freunde: 'Freunde', profile: 'Profil' },
+    nav: { dashboard: 'Home', calendar: 'Tagesbuch', habits: 'Routinen', progress: 'Statistik', freunde: 'Freunde', profile: 'Profil' },
     common: { back: 'Zurück', close: 'Schließen', change: 'Ändern', ok: 'OK', active: 'Aktiv', off: 'Aus', save: 'Speichern' },
     start: {
       badge: 'Dein Wohlbefinden. Dein Flow.',
@@ -583,7 +583,7 @@ export function getAppTranslations(languageStyle, communicationStyle = 'casual')
 
 translations.english = {
   ...translations.german,
-  nav: { dashboard: 'Home', calendar: 'Calendar', habits: 'Routines', progress: 'Stats', freunde: 'Friends', profile: 'Profile' },
+  nav: { dashboard: 'Home', calendar: 'Diary', habits: 'Routines', progress: 'Stats', freunde: 'Friends', profile: 'Profile' },
   common: { back: 'Back', close: 'Close', change: 'Change', ok: 'OK', active: 'Active', off: 'Off', save: 'Save' },
   start: {
     badge: 'Your wellbeing. Your flow.',
@@ -779,7 +779,7 @@ translations.english = {
 
 translations.turkish = {
   ...translations.english,
-  nav: { dashboard: 'Ana sayfa', calendar: 'Takvim', habits: 'Rutinler', progress: 'Istatistik', freunde: 'Arkadaslar', profile: 'Profil' },
+  nav: { dashboard: 'Ana sayfa', calendar: 'Gunluk', habits: 'Rutinler', progress: 'Istatistik', freunde: 'Arkadaslar', profile: 'Profil' },
   common: { back: 'Geri', close: 'Kapat', change: 'Degistir', ok: 'Tamam', active: 'Aktif', off: 'Kapali', save: 'Kaydet' },
   start: {
     badge: 'Iyi halin. Akin.',
@@ -972,7 +972,7 @@ translations.turkish = {
 
 translations.arabic = {
   ...translations.english,
-  nav: { dashboard: 'الرئيسية', calendar: 'التقويم', habits: 'الروتينات', progress: 'الإحصائيات', freunde: 'الأصدقاء', profile: 'الملف الشخصي' },
+  nav: { dashboard: 'الرئيسية', calendar: 'اليوميات', habits: 'الروتينات', progress: 'الإحصائيات', freunde: 'الأصدقاء', profile: 'الملف الشخصي' },
   common: { back: 'رجوع', close: 'إغلاق', change: 'تغيير', ok: 'حسنا', active: 'نشط', off: 'إيقاف', save: 'حفظ' },
   start: {
     badge: 'رفاهيتك. تدفقك.',

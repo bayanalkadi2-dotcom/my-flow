@@ -1395,6 +1395,230 @@ input {
   background: #ff9fd2;
 }
 
+.calendar-month-overview {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 14px 112px;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(115, 207, 255, 0.22), transparent 30%),
+    linear-gradient(155deg, #fffafd 0%, #faf6ff 52%, #f6fbff 100%);
+}
+
+.calendar-month-overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendar-month-overview-header span {
+  color: #8b5cf6;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.calendar-month-overview-header h2 {
+  margin: 4px 0 0;
+  color: #17133f;
+  font-size: 26px;
+}
+
+.calendar-month-overview-header button {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #8b5cf6;
+  box-shadow: 0 14px 32px rgba(115, 84, 220, 0.12);
+}
+
+.calendar-month-list {
+  display: grid;
+  gap: 14px;
+  overflow-y: auto;
+  padding-right: 0;
+  scrollbar-width: none;
+}
+
+.calendar-month-list::-webkit-scrollbar,
+.calendar-month-overview::-webkit-scrollbar,
+.calendar-screen::-webkit-scrollbar {
+  display: none;
+}
+
+.calendar-full-month {
+  --month-accent: #8b5cf6;
+  --month-soft: rgba(139, 92, 246, 0.14);
+  position: relative;
+  overflow: hidden;
+  padding: 14px 12px 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(118, 92, 255, 0.1);
+  box-shadow: 0 18px 42px rgba(115, 84, 220, 0.1);
+}
+
+.calendar-full-month::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--month-accent);
+  box-shadow: 0 0 0 8px var(--month-soft);
+}
+
+.calendar-full-month.violet {
+  --month-accent: #8b5cf6;
+  --month-soft: rgba(139, 92, 246, 0.16);
+}
+
+.calendar-full-month.rose {
+  --month-accent: #ec4899;
+  --month-soft: rgba(236, 72, 153, 0.14);
+}
+
+.calendar-full-month.sky {
+  --month-accent: #38bdf8;
+  --month-soft: rgba(56, 189, 248, 0.16);
+}
+
+.calendar-full-month.mint {
+  --month-accent: #22c55e;
+  --month-soft: rgba(34, 197, 94, 0.14);
+}
+
+.calendar-full-month.amber {
+  --month-accent: #f59e0b;
+  --month-soft: rgba(245, 158, 11, 0.16);
+}
+
+.calendar-full-month.coral {
+  --month-accent: #fb7185;
+  --month-soft: rgba(251, 113, 133, 0.15);
+}
+
+.calendar-full-month h3 {
+  position: relative;
+  margin: 0 0 12px;
+  color: #17133f;
+  font-size: 17px;
+}
+
+.calendar-full-month-weekdays,
+.calendar-full-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.calendar-full-month-weekdays {
+  margin-bottom: 8px;
+}
+
+.calendar-full-month-weekdays span {
+  text-align: center;
+  color: #8c86a8;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.calendar-full-month-grid button,
+.calendar-month-spacer {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 14px;
+}
+
+.calendar-full-month-grid button {
+  background: #f8f5ff;
+  color: #5f5b7c;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  word-break: normal;
+  writing-mode: horizontal-tb;
+  box-shadow: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.calendar-full-month-grid button:hover {
+  transform: translateY(-2px);
+}
+
+.calendar-full-month-grid button.selected,
+.calendar-full-month-grid button.today {
+  background: linear-gradient(135deg, var(--month-accent), #a855f7);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(139, 92, 246, 0.22);
+}
+
+.calendar-full-month-grid button i {
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--month-accent);
+}
+
+.app.theme-dark .calendar-month-overview {
+  background:
+    radial-gradient(circle at 92% 8%, rgba(139, 92, 246, 0.28), transparent 30%),
+    linear-gradient(160deg, #160f2a 0%, #211739 52%, #17112b 100%);
+}
+
+.app.theme-dark .calendar-month-overview-header h2,
+.app.theme-dark .calendar-full-month h3 {
+  color: #ffffff;
+}
+
+.app.theme-dark .calendar-month-overview-header button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #c4b5fd;
+  border: 1px solid rgba(196, 181, 253, 0.16);
+}
+
+.app.theme-dark .calendar-full-month {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(196, 181, 253, 0.14);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+}
+
+.app.theme-dark .calendar-full-month-weekdays span {
+  color: #b9add7;
+}
+
+.app.theme-dark .calendar-full-month-grid button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f3ff;
+}
+
+.app.theme-dark .calendar-full-month-grid button.selected,
+.app.theme-dark .calendar-full-month-grid button.today {
+  background: linear-gradient(135deg, var(--month-accent), #a855f7);
+  color: #ffffff;
+}
+
 .calendar-add-card {
   display: grid;
   gap: 12px;
@@ -1403,7 +1627,7 @@ input {
 
 .calendar-note-card {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   padding: 18px;
 }
 
@@ -1426,8 +1650,126 @@ input {
 }
 
 .calendar-note-card textarea {
-  min-height: 92px;
+  min-height: 82px;
   resize: vertical;
+}
+
+.diary-task-strip {
+  display: grid;
+  gap: 10px;
+}
+
+.diary-task-pill,
+.diary-task-empty {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(115, 207, 255, 0.12));
+  color: #17133f;
+  box-shadow: none;
+  text-align: left;
+}
+
+.diary-task-pill span,
+.diary-task-empty span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #8b5cf6;
+  font-size: 18px;
+}
+
+.diary-task-pill strong,
+.diary-task-empty strong {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diary-task-pill.done {
+  opacity: 0.58;
+}
+
+.diary-images-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #6f6891;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.diary-images-header span {
+  color: #8b5cf6;
+  text-transform: uppercase;
+}
+
+.diary-image-grid {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.diary-image-card,
+.diary-image-add {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 68px;
+  width: 68px;
+  height: 68px;
+  min-height: 68px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #f8f5ff;
+  border: 1px solid rgba(139, 92, 246, 0.12);
+}
+
+.diary-image-card {
+  margin: 0;
+}
+
+.diary-image-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.diary-image-card button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(23, 19, 63, 0.72);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.diary-image-add {
+  cursor: pointer;
+  color: #8b5cf6;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.diary-image-add input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
 .calendar-repeat-toggle {
@@ -1644,8 +1986,21 @@ input {
 .app.theme-dark .calendar-add-card label,
 .app.theme-dark .calendar-repeat-toggle span,
 .app.theme-dark .calendar-event-card small,
-.app.theme-dark .calendar-empty-state p {
+.app.theme-dark .calendar-empty-state p,
+.app.theme-dark .diary-task-pill,
+.app.theme-dark .diary-task-empty {
   color: #d5cde8;
+}
+
+.app.theme-dark .diary-task-pill,
+.app.theme-dark .diary-task-empty {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(56, 189, 248, 0.1));
+}
+
+.app.theme-dark .diary-task-pill span,
+.app.theme-dark .diary-task-empty span {
+  background: rgba(255, 255, 255, 0.1);
+  color: #c4b5fd;
 }
 
 .app.theme-dark .calendar-add-card input,
@@ -1653,7 +2008,9 @@ input {
 .app.theme-dark .calendar-note-card textarea,
 .app.theme-dark .calendar-repeat-toggle,
 .app.theme-dark .calendar-empty-state,
-.app.theme-dark .calendar-check-button {
+.app.theme-dark .calendar-check-button,
+.app.theme-dark .diary-image-card,
+.app.theme-dark .diary-image-add {
   background: rgba(36, 29, 58, 0.92);
   color: #f8f6ff;
   border-color: rgba(255, 255, 255, 0.12);
@@ -6562,6 +6919,206 @@ input {
   .register-profile-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.calendar-month-overview .calendar-full-month {
+  display: block;
+  height: auto;
+  min-height: 332px;
+  overflow: visible;
+}
+
+.calendar-month-overview .calendar-full-month-weekdays,
+.calendar-month-overview .calendar-full-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-month-overview .calendar-full-month-grid {
+  grid-auto-rows: 40px;
+}
+
+.calendar-month-overview .calendar-full-month-grid button,
+.calendar-month-overview .calendar-month-spacer {
+  height: 40px;
+  min-height: 40px;
+}
+
+.calendar-screen {
+  --diary-primary: #8b5cf6;
+  --diary-active: #9b6cfb;
+  --diary-light: #a78bfa;
+  --diary-pastel: #c4b5fd;
+  --diary-hover: #e9d5ff;
+  --diary-lavender: #f3e8ff;
+  --diary-white: #fcfaff;
+  --diary-card: #ffffff;
+  --diary-border: #eee3ff;
+  --diary-title: #3f2a7d;
+  --diary-text: #55506b;
+  --diary-muted: #8e8aa7;
+  position: relative;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    linear-gradient(rgba(252, 250, 255, 0.2), rgba(252, 250, 255, 0.34)),
+    url("./assets/diary-bg-light.jpeg") center / cover no-repeat;
+}
+
+.calendar-screen::before {
+  content: "✦";
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  color: var(--diary-primary);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.calendar-header h1,
+.calendar-month-card strong,
+.calendar-full-month h3,
+.calendar-event-card strong,
+.calendar-event-card time {
+  color: var(--diary-title);
+}
+
+.calendar-icon-button,
+.calendar-month-card button,
+.calendar-month-overview-header button {
+  background: var(--diary-card);
+  color: var(--diary-primary);
+  border-color: var(--diary-border);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.12);
+}
+
+.calendar-month-card,
+.calendar-week-card,
+.calendar-add-card,
+.calendar-note-card,
+.calendar-timeline-card,
+.calendar-full-month {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--diary-border);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.12);
+}
+
+.calendar-month-overview {
+  background:
+    radial-gradient(circle at 92% 8%, rgba(233, 213, 255, 0.46), transparent 30%),
+    linear-gradient(135deg, #f8f4ff 0%, #f3e8ff 42%, #eef4ff 100%);
+}
+
+.calendar-month-overview-header span,
+.calendar-section-title span,
+.diary-images-header span {
+  color: var(--diary-primary);
+}
+
+.calendar-month-overview-header h2 {
+  color: var(--diary-title);
+}
+
+.calendar-week-card button,
+.calendar-full-month-grid button,
+.calendar-event-card small,
+.calendar-section-title small,
+.diary-images-header {
+  color: var(--diary-muted);
+}
+
+.calendar-week-card button.today strong,
+.calendar-full-month-grid button.selected,
+.calendar-full-month-grid button.today {
+  background: linear-gradient(90deg, #8b5cf6 0%, #d946ef 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.18);
+}
+
+.calendar-week-card button.selected:not(.today) strong,
+.calendar-full-month-grid button:hover {
+  background: var(--diary-hover);
+  color: var(--diary-title);
+}
+
+.calendar-full-month-weekdays span {
+  color: var(--diary-muted);
+}
+
+.calendar-full-month-grid button {
+  background: var(--diary-card);
+  color: var(--diary-text);
+}
+
+.calendar-add-card input,
+.calendar-add-card select,
+.calendar-note-card textarea {
+  background: var(--diary-card);
+  border-color: var(--diary-border);
+  color: var(--diary-title);
+}
+
+.diary-task-pill,
+.diary-task-empty {
+  background: linear-gradient(135deg, rgba(233, 213, 255, 0.92), rgba(248, 243, 255, 0.9));
+  color: var(--diary-title);
+  border: 1px solid var(--diary-border);
+}
+
+.diary-task-pill span,
+.diary-task-empty span,
+.calendar-event-icon {
+  background: var(--diary-card);
+  color: var(--diary-primary);
+}
+
+.diary-image-card,
+.diary-image-add {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: var(--diary-border);
+  color: var(--diary-primary);
+}
+
+.diary-image-add {
+  padding: 0;
+}
+
+.diary-image-add img {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  object-fit: contain;
+  border-radius: inherit;
+}
+
+.calendar-repeat-toggle {
+  background: rgba(233, 213, 255, 0.6);
+  border-color: var(--diary-border);
+}
+
+.calendar-repeat-toggle span,
+.calendar-add-card label {
+  color: var(--diary-title);
+}
+
+.app.theme-dark .calendar-screen {
+  --diary-card: rgba(255, 255, 255, 0.08);
+  --diary-border: rgba(196, 181, 253, 0.16);
+  --diary-title: #ffffff;
+  --diary-text: #d5cde8;
+  --diary-muted: #b9add7;
+  background:
+    linear-gradient(rgba(18, 11, 42, 0.22), rgba(18, 11, 42, 0.36)),
+    url("./assets/diary-bg-dark.jpeg") center / cover no-repeat;
+}
+
+.app.theme-dark .calendar-month-card,
+.app.theme-dark .calendar-week-card,
+.app.theme-dark .calendar-add-card,
+.app.theme-dark .calendar-note-card,
+.app.theme-dark .calendar-timeline-card,
+.app.theme-dark .calendar-full-month {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--diary-border);
 }
 
 body {

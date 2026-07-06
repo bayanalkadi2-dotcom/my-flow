@@ -160,7 +160,7 @@ function App() {
         setProfileName('Gast')
         setAppTheme('Hell')
         setRoutineItems([])
-        setCalendarNotes({})
+        setCalendarNotes(loadCalendarNotes('guest'))
         setProfile(null)
         setAccountProfile(loadAccountProfile())
         const savedGuestSetup = loadGuestSetup()
@@ -244,6 +244,8 @@ function App() {
     setCalendarNotes(nextNotes)
     if (isAuthenticated && user?.id) {
       saveCalendarNotes(user.id, nextNotes)
+    } else {
+      saveCalendarNotes('guest', nextNotes)
     }
   }
 

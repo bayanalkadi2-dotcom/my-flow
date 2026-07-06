@@ -29,8 +29,10 @@ export function toggleCalendarEventDone(events, eventId, dateKey) {
 
 export function updateCalendarNote(notes, dateKey, value) {
   const nextNotes = { ...notes, [dateKey]: value }
+  const text = typeof value === 'string' ? value : value?.text ?? ''
+  const images = Array.isArray(value?.images) ? value.images : []
 
-  if (!value.trim()) {
+  if (!text.trim() && images.length === 0) {
     delete nextNotes[dateKey]
   }
 
