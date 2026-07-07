@@ -1306,6 +1306,7 @@ input {
   stroke-linejoin: round;
 }
 
+.calendar-date-card,
 .calendar-month-card,
 .calendar-week-card,
 .calendar-add-card,
@@ -1317,12 +1318,21 @@ input {
   box-shadow: 0 18px 42px rgba(115, 84, 220, 0.12);
 }
 
+.calendar-date-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
 .calendar-month-card {
   display: grid;
   grid-template-columns: 44px 1fr 44px;
   align-items: center;
   gap: 10px;
-  padding: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .calendar-month-card strong {
@@ -1340,7 +1350,10 @@ input {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
-  padding: 12px;
+  padding: 4px 0 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .calendar-week-card button {
@@ -1531,8 +1544,14 @@ input {
 }
 
 .calendar-full-month-weekdays span {
+  display: grid;
+  place-items: center;
+  min-height: 28px;
+  border: 1px solid rgba(139, 92, 246, 0.16);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.16), rgba(168, 85, 247, 0.08));
   text-align: center;
-  color: #8c86a8;
+  color: #6f4edb;
   font-size: 11px;
   font-weight: 900;
 }
@@ -1703,6 +1722,60 @@ input {
   opacity: 0.58;
 }
 
+.diary-add-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 54px;
+  margin: 2px 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(233, 213, 255, 0.82), rgba(248, 243, 255, 0.92));
+  color: #17133f;
+  text-align: left;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.diary-add-row.images {
+  margin: 0;
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.86), rgba(243, 232, 255, 0.9));
+}
+
+.diary-add-row span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #8b5cf6;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.diary-add-row strong {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diary-add-row input {
+  display: none;
+}
+
+.diary-add-row img {
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  object-fit: contain;
+}
+
 .diary-images-header {
   display: flex;
   align-items: center;
@@ -1719,8 +1792,13 @@ input {
 
 .diary-image-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+}
+
+.diary-image-grid .diary-add-row {
+  flex: 1 0 100%;
 }
 
 .diary-image-card,
@@ -6996,6 +7074,19 @@ input {
   box-shadow: 0 10px 30px rgba(139, 92, 246, 0.12);
 }
 
+.calendar-date-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--diary-border);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.12);
+}
+
+.calendar-date-card .calendar-month-card,
+.calendar-date-card .calendar-week-card {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
 .calendar-month-card,
 .calendar-week-card,
 .calendar-add-card,
@@ -7046,7 +7137,14 @@ input {
 }
 
 .calendar-full-month-weekdays span {
-  color: var(--diary-muted);
+  display: grid;
+  place-items: center;
+  min-height: 28px;
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(216, 180, 254, 0.24));
+  color: #6f4edb;
+  box-shadow: 0 8px 18px rgba(139, 92, 246, 0.08);
 }
 
 .calendar-full-month-grid button {
@@ -7063,7 +7161,8 @@ input {
 }
 
 .diary-task-pill,
-.diary-task-empty {
+.diary-task-empty,
+.diary-add-row {
   background: linear-gradient(135deg, rgba(233, 213, 255, 0.92), rgba(248, 243, 255, 0.9));
   color: var(--diary-title);
   border: 1px solid var(--diary-border);
@@ -7071,9 +7170,14 @@ input {
 
 .diary-task-pill span,
 .diary-task-empty span,
+.diary-add-row span,
 .calendar-event-icon {
   background: var(--diary-card);
   color: var(--diary-primary);
+}
+
+.diary-add-row.images {
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.88), rgba(233, 213, 255, 0.86));
 }
 
 .diary-image-card,
@@ -7087,7 +7191,8 @@ input {
   padding: 0;
 }
 
-.diary-image-add img {
+.diary-image-add img,
+.diary-add-row img {
   width: 100%;
   height: 100%;
   padding: 8px;
@@ -7322,6 +7427,7 @@ input {
 
 .app.theme-dark .calendar-month-card,
 .app.theme-dark .calendar-week-card,
+.app.theme-dark .calendar-date-card,
 .app.theme-dark .calendar-add-card,
 .app.theme-dark .calendar-note-card,
 .app.theme-dark .calendar-timeline-card,
@@ -7330,10 +7436,34 @@ input {
   border-color: var(--diary-border);
 }
 
+.app.theme-dark .calendar-date-card .calendar-month-card,
+.app.theme-dark .calendar-date-card .calendar-week-card {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.app.theme-dark .calendar-full-month-weekdays span {
+  border-color: rgba(196, 181, 253, 0.22);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.32), rgba(255, 255, 255, 0.08));
+  color: #e9d5ff;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+}
+
 .app.theme-dark .diary-image-add {
   background: rgba(36, 29, 58, 0.92);
   color: #c4b5fd;
   border: 1px dashed rgba(196, 181, 253, 0.56);
+}
+
+.app.theme-dark .diary-add-row {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(255, 255, 255, 0.06));
+  border-color: var(--diary-border);
+  color: var(--diary-title);
+}
+
+.app.theme-dark .diary-add-row.images {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.16), rgba(139, 92, 246, 0.2));
 }
 
 .app.theme-dark .diary-filter-backdrop {

@@ -31,6 +31,10 @@ import './App.css'
 const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter', 'quickStartSetup']
 const persistentScreens = new Set(['dashboard', 'calendar', 'habits', 'progress', 'profile', 'profileSettings', 'freunde'])
 
+function getThemeStorageKey(userId) {
+  return userId ? `myflow-theme-${userId}` : 'myflow-theme-guest'
+}
+
 function loadLastScreen(userId) {
   if (!userId) return 'dashboard'
   const savedScreen = localStorage.getItem(`myflow-last-screen-${userId}`)
@@ -164,11 +168,12 @@ function App() {
         setProfile(null)
         setAccountProfile(loadAccountProfile())
         const savedGuestSetup = loadGuestSetup()
+        const savedGuestTheme = localStorage.getItem(getThemeStorageKey(null))
         setGuestSetup(savedGuestSetup)
         setLanguageStyle(savedGuestSetup.language_style || 'german')
         setCommunicationStyle(savedGuestSetup.communication_style || 'casual')
         setProfileName(savedGuestSetup.display_name || 'Gast')
-        setAppTheme(savedGuestSetup.theme || 'Hell')
+        setAppTheme(savedGuestTheme || savedGuestSetup.theme || 'Hell')
         setScreen('start')
         setRoutinesLoaded(true)
       })
@@ -181,10 +186,13 @@ function App() {
         setCalendarNotes(loadCalendarNotes(user.id))
         // Load settings
         const settingsRes = await getUserSettings(user.id)
+        const savedTheme = localStorage.getItem(getThemeStorageKey(user.id))
         if (settingsRes.success && settingsRes.settings) {
           setLanguageStyle(settingsRes.settings.language_style || 'german')
           setCommunicationStyle(settingsRes.settings.communication_style || 'casual')
-          setAppTheme(settingsRes.settings.theme || 'Hell')
+          setAppTheme(savedTheme || settingsRes.settings.theme || 'Hell')
+        } else {
+          setAppTheme(savedTheme || 'Hell')
         }
 
         // Load routines
@@ -471,16 +479,32 @@ function App() {
 
   function handleAppThemeChange(theme) {
     setAppTheme(theme)
+    localStorage.setItem(getThemeStorageKey(user?.id), theme)
+
+    if (!isAuthenticated || !user) {
+      setGuestSetup((currentSetup) => {
+        const nextSetup = { ...currentSetup, theme }
+        localStorage.setItem('myflow-guest-setup', JSON.stringify(nextSetup))
+        return nextSetup
+      })
+      return
+    }
 
     // If authenticated, save to Supabase
-    if (isAuthenticated && user) {
-      (async () => {
-        const { updateUserSettings } = await import('./services/authService')
-        updateUserSettings(user.id, { theme }).catch((err) => {
-          console.error('Fehler beim Aktualisieren der Einstellungen:', err)
+    ;(async () => {
+      const { createUserSettings, updateUserSettings } = await import('./services/authService')
+      const result = await updateUserSettings(user.id, { theme })
+      if (!result.success || !result.settings) {
+        const createResult = await createUserSettings(user.id, {
+          language_style: languageStyle,
+          communication_style: communicationStyle,
+          theme,
         })
-      })()
-    }
+        if (!createResult.success) {
+          console.error('Fehler beim Aktualisieren der Einstellungen:', createResult.error || result.error)
+        }
+      }
+    })()
   }
 
   function handleProfileNameChange(name) {
