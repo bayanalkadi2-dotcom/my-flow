@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { evaluateGroundingAnswer } from '../data/groundingExercise.js'
 import { buildDailyCheckInPayload } from './checkInPayload.js'
-import { recommendTasks } from './recommendationService.js'
+import { getDailyActivityGuidance, recommendTasks } from './recommendationService.js'
 
 const baseAnswers = {
   general_mood: 'neutral',
@@ -40,7 +40,7 @@ test('high stress and low mental energy recommends a short calming task', () => 
   })
 
   assert.equal(result[0].task.id, 'two-minute-breathing')
-  assert.ok(result.length <= 2)
+  assert.equal(result.length, 4)
 })
 
 test('exhausted users do not receive intensive movement', () => {
@@ -163,7 +163,7 @@ test('school exam stress can refine recommendations with a small learning step',
     context_stressor: 'exams',
   }, undefined, { studentStatus: 'school' })
 
-  assert.ok(ids(result).includes('choose-mini-task'))
+  assert.ok(ids(result).some((id) => ['choose-mini-task', 'exam-easy-entry', 'exam-three-parts'].includes(id)))
 })
 
 test('university assignment stress favors a concrete next step', () => {
@@ -173,7 +173,7 @@ test('university assignment stress favors a concrete next step', () => {
     support_goal: 'focus',
   }, undefined, { studentStatus: 'university' })
 
-  assert.equal(result[0].task.id, 'choose-mini-task')
+  assert.ok(['choose-mini-task', 'organize-top-three'].includes(result[0].task.id))
 })
 
 test('training with low energy keeps recovery ahead of contextual productivity', () => {
@@ -187,6 +187,35 @@ test('training with low energy keeps recovery ahead of contextual productivity',
 
   assert.equal(result[0].task.id, 'short-recovery-break')
   assert.ok(!ids(result).includes('active-task'))
+})
+
+test('very high stress, exhaustion and two minutes avoid sport and learning', () => {
+  const answers = {
+    ...baseAnswers,
+    stress_level: 'very_high', tiredness_level: 'exhausted', physical_energy: 'very_low',
+    mental_energy: 'low', available_time: '2', support_goal: 'relaxation', mood_tags: ['overwhelmed'],
+  }
+  const result = recommendTasks(answers)
+  const guidance = getDailyActivityGuidance(answers)
+
+  assert.ok(result.every(({ task }) => task.durationMinutes <= 3))
+  assert.ok(result.every(({ task }) => !['movement', 'learning', 'exam_stress'].includes(task.category)))
+  assert.equal(guidance.movement.level, 'pause')
+  assert.equal(guidance.learning.level, 'pause')
+})
+
+test('normal energy and twenty minutes allow a focused learning task', () => {
+  const result = recommendTasks({
+    ...baseAnswers, stress_level: 'medium', tiredness_level: 'low', mental_energy: 'medium',
+    physical_energy: 'medium', concentration_level: 'medium', available_time: '20', support_goal: 'focus',
+  })
+  assert.ok(ids(result).some((id) => ['learning-ten-minute-block', 'five-minute-focus', 'start-most-important-task'].includes(id)))
+})
+
+test('recent recommendations are deprioritized', () => {
+  const first = recommendTasks(baseAnswers)
+  const second = recommendTasks(baseAnswers, undefined, { excludeTaskIds: ids(first) })
+  assert.notEqual(second[0].task.id, first[0].task.id)
 })
 
 test('user without login is rejected before saving', () => {

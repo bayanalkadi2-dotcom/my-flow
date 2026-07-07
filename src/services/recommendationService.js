@@ -48,8 +48,17 @@ function firstAnswerValue(value) {
   return Array.isArray(value) ? value[0] : value
 }
 
+function answerValues(value) {
+  if (Array.isArray(value)) return value
+  return value ? String(value).split(',').filter(Boolean) : []
+}
+
 function getMood(answers) {
   return firstAnswerValue(answers.mood_tags)
+}
+
+function getMoods(answers) {
+  return answerValues(answers.mood_tags ?? answers.mood)
 }
 
 function addScore(scoreMap, taskId, points) {
@@ -169,54 +178,48 @@ function isTaskSafeForAnswers(task, answers) {
   if (highStressValues.has(answers.stress_level) && getMood(answers) === 'irritated' && task.category === 'productivity') {
     return false
   }
+  const learningTask = ['learning', 'exam_stress', 'productivity', 'self_organization'].includes(task.category)
+  const movementTask = task.category === 'movement'
+  if (learningTask && (answers.tiredness_level === 'exhausted' || energyRank(answers.mental_energy) === 0)) return false
+  if (learningTask && answers.stress_level === 'very_high' && task.durationMinutes > 5) return false
+  if (movementTask && (answers.tiredness_level === 'exhausted' || energyRank(answers.physical_energy) <= 1)) return false
+  if (movementTask && answers.stress_level === 'very_high' && task.requiredPhysicalEnergy !== 'low') return false
   return true
 }
 
-export function getRecommendationExplanation(answers, task) {
-  const reasons = []
-  const mood = getMood(answers)
+export function getRecommendationExplanation() {
+  return 'Passend zu deinem heutigen Check-in.'
+}
 
-  if (highStressValues.has(answers.stress_level)) {
-    reasons.push('du heute viel Stress angegeben hast')
-  }
+export function getDailyActivityGuidance(answers) {
+  const exhausted = answers.tiredness_level === 'exhausted'
+  const veryStressed = answers.stress_level === 'very_high'
+  const lowPhysical = energyRank(answers.physical_energy) <= 1
+  const lowMental = energyRank(answers.mental_energy) <= 1
+  const lowConcentration = ['none', 'low'].includes(answers.concentration_level)
 
-  if (highTirednessValues.has(answers.tiredness_level)) {
-    reasons.push('du müde oder erschöpft bist')
-  }
+  const movement = exhausted || lowPhysical
+    ? { level: 'pause', text: 'Sport heute nicht priorisieren. Erholung oder sehr sanfte Bewegung passt besser.' }
+    : veryStressed
+      ? { level: 'light', text: 'Wenn Bewegung guttut, heute nur kurz und ohne Leistungsdruck.' }
+      : { level: 'go', text: 'Leichte bis normale Bewegung passt zu deiner heutigen Energie.' }
 
-  if (lowValues.has(answers.mental_energy)) {
-    reasons.push('deine mentale Energie niedrig ist')
-  }
+  const learning = exhausted || lowMental
+    ? { level: 'pause', text: 'Keinen längeren Lernblock priorisieren. Wenn nötig, nur einen sehr kleinen Schritt.' }
+    : veryStressed || lowConcentration
+      ? { level: 'light', text: 'Lernen heute kurz halten: ein Thema, ein Timer und ein klares Mini-Ziel.' }
+      : { level: 'go', text: 'Ein klar begrenzter Lernblock passt zu deiner heutigen mentalen Energie.' }
 
-  if (mood && task.suitableMoods?.includes(mood)) {
-    reasons.push(`deine Stimmung "${mood}" dazu passt`)
-  }
-
-  const supportGoal = firstAnswerValue(answers.support_goal)
-
-  if (supportGoal && task.supportGoals.includes(supportGoal)) {
-    reasons.push('sie zu deiner gewünschten Unterstützung passt')
-  }
-
-  if (answers.available_time) {
-    reasons.push(`sie in dein Zeitfenster von ${allowedMinutes(answers.available_time)} Minuten passt`)
-  }
-
-  if (answers.context_stressor) {
-    reasons.push('sie zu deiner heutigen Situation passt')
-  }
-
-  const baseReason = reasons.length
-    ? `Diese Aufgabe wurde gewählt, weil ${reasons.join(', ')}.`
-    : 'Diese Aufgabe passt am besten zu deinen heutigen Angaben.'
-
-  return `${baseReason} ${task.reasonTemplate}`
+  return { movement, learning }
 }
 
 export function recommendTasks(answers, tasks = wellbeingTasks, options = {}) {
-  const maxResults = options.maxResults ?? 2
+  const maxResults = options.maxResults ?? 4
   const availableMinutes = allowedMinutes(answers.available_time)
-  const mood = getMood(answers)
+  const moods = getMoods(answers)
+  const supportGoals = answerValues(answers.support_goal)
+  const contextStressors = answerValues(answers.context_stressor)
+  const excludedTaskIds = new Set(options.excludeTaskIds ?? [])
   const priorityMap = buildPriorityMap(answers, options)
 
   const eligibleTasks = tasks.filter((task) => isTaskSafeForAnswers(task, answers))
@@ -226,10 +229,12 @@ export function recommendTasks(answers, tasks = wellbeingTasks, options = {}) {
       let score = 0
 
       score += priorityMap.get(task.id) || 0
-      if (task.supportGoals.includes(firstAnswerValue(answers.support_goal))) score += 4
+      if (supportGoals.some((goal) => task.supportGoals.includes(goal))) score += 5
       if (task.suitableStressLevels.includes(answers.stress_level)) score += 3
       if (task.suitableTirednessLevels.includes(answers.tiredness_level)) score += 3
-      if (mood && task.suitableMoods?.includes(mood)) score += 4
+      if (moods.some((mood) => task.suitableMoods?.includes(mood))) score += 4
+      if (contextStressors.some((context) => task.contextTags?.includes(context))) score += 8
+      if (excludedTaskIds.has(task.id)) score -= 20
       if (task.durationMinutes <= availableMinutes) score += 2
       if (task.durationMinutes <= 5) score += 1
       if (highStressValues.has(answers.stress_level) && task.category.includes('relaxation')) score += 2

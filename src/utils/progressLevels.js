@@ -19,9 +19,23 @@ export function calculateChallengePoints(routines = []) {
 export function calculateGrowthPoints({ routines = [], checkIns = [] } = {}) {
   const routinePoints = routines.reduce((sum, routine) => sum + getRoutineCredits(routine), 0)
   const checkInPoints = checkIns.length * 5
+  const recommendationPoints = checkIns.reduce((sum, checkIn) => {
+    const state = checkIn.recommendation_state ?? {}
+    const completedIds = Array.isArray(state.completedTaskIds) ? state.completedTaskIds : []
+    let points = completedIds.length * 5
+
+    if (state.startedTaskId && !completedIds.includes(state.startedTaskId)) {
+      const task = getTaskById(state.startedTaskId)
+      const totalSteps = task?.instructions?.length ?? 0
+      const completedSteps = Math.min(Math.max(Number(state.guidedStepIndex) || 0, 0), totalSteps)
+      if (totalSteps > 0) points += Math.round((completedSteps / totalSteps) * 5)
+    }
+
+    return sum + points
+  }, 0)
   const allDoneBonus = routines.length > 0 && routines.every(isRoutineCompleted) ? 10 : 0
 
-  return routinePoints + checkInPoints + allDoneBonus
+  return routinePoints + checkInPoints + recommendationPoints + allDoneBonus
 }
 
 export function getFlowTree(score, treeType = 'oak') {
@@ -68,3 +82,4 @@ export function getLevel(score) {
   }
 }
 import { getRoutineCredits, isRoutineCompleted } from './routineProgress'
+import { getTaskById } from '../data/wellbeingTasks'

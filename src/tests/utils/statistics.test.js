@@ -21,6 +21,19 @@ describe('statistics helpers', () => {
     expect(getFlowTree(850, 'oak')).toMatchObject({ stage: 'Eiche', count: 1 })
   })
 
+  it('derives recommendation points without adding them again on reload', () => {
+    const checkIn = {
+      recommendation_state: {
+        startedTaskId: 'two-minute-breathing',
+        completedTaskIds: ['two-minute-breathing'],
+        guidedStepIndex: 4,
+      },
+    }
+
+    expect(calculateGrowthPoints({ checkIns: [checkIn] })).toBe(10)
+    expect(calculateGrowthPoints({ checkIns: [{ ...checkIn }] })).toBe(10)
+  })
+
   it('summarizes flowtree stats for the current week', () => {
     vi.setSystemTime(new Date('2026-07-02T12:00:00.000Z'))
 

@@ -2,15 +2,18 @@ import { useState } from 'react'
 import flowCharacter from '../../assets/flow-character-wall-final.jpg'
 import { groundingExercise } from '../../data/groundingExercise'
 import VoiceExercise from '../exercises/VoiceExercise'
+import { updateDailyCheckInRecommendationState } from '../../services/checkInService'
 
 const labelMap = {
   balanced: 'Ausgeglichen',
   calm: 'Ruhig',
   easy: 'Leicht',
   emotional_relief: 'Emotionale Entlastung',
+  exam_stress: 'Prüfungsstress',
   energy: 'Energie',
   exhausted: 'Erschöpft',
   focus: 'Fokus',
+  fatigue: 'Müdigkeit bewältigen',
   grounding_focus: 'Erdung und Fokus',
   high: 'Hoch',
   low: 'Niedrig',
@@ -18,6 +21,15 @@ const labelMap = {
   motivation: 'Motivation',
   movement: 'Bewegung',
   movement_relaxation: 'Bewegung und Entspannung',
+  learning: 'Lernen',
+  concentration: 'Konzentration',
+  break: 'Pause',
+  self_organization: 'Selbstorganisation',
+  social_support: 'Soziale Unterstützung',
+  small_success: 'Kleines Erfolgserlebnis',
+  stress_reduction: 'Stress reduzieren',
+  thought_organization: 'Gedanken ordnen',
+  overwhelm_reduction: 'Überforderung reduzieren',
   neutral: 'Neutral',
   none: 'Keine',
   productivity: 'Produktivität',
@@ -35,14 +47,25 @@ function readable(value) {
   return labelMap[value] || String(value)
 }
 
-function CheckInResult({ answers, isSaving, recommendations, saveError, onBackToDashboard, onRestart }) {
+function CheckInResult({ activityGuidance, answers, isSaving, recommendations, savedCheckIn, saveError, onBackToDashboard, onRestart }) {
+  const savedState = savedCheckIn?.recommendation_state ?? {}
   const [activeIndex, setActiveIndex] = useState(0)
-  const [startedTaskId, setStartedTaskId] = useState('')
-  const [completedTaskIds, setCompletedTaskIds] = useState([])
-  const [guidedStepIndex, setGuidedStepIndex] = useState(0)
+  const [startedTaskId, setStartedTaskId] = useState(savedState.startedTaskId ?? '')
+  const [completedTaskIds, setCompletedTaskIds] = useState(savedState.completedTaskIds ?? [])
+  const [guidedStepIndex, setGuidedStepIndex] = useState(savedState.guidedStepIndex ?? 0)
   const activeRecommendation = recommendations[activeIndex]
   const isVoiceExerciseActive = activeRecommendation?.task.id === groundingExercise.id
     && startedTaskId === activeRecommendation.task.id
+
+  function persistRecommendationState(updates) {
+    if (!savedCheckIn?.id) return
+    updateDailyCheckInRecommendationState(savedCheckIn.id, {
+      startedTaskId,
+      completedTaskIds,
+      guidedStepIndex,
+      ...updates,
+    })
+  }
 
   function showNextRecommendation() {
     setActiveIndex((index) => (index + 1) % recommendations.length)
@@ -51,23 +74,36 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
   }
 
   function completeTask(taskId) {
-    setCompletedTaskIds((taskIds) => (taskIds.includes(taskId) ? taskIds : [...taskIds, taskId]))
+    setCompletedTaskIds((taskIds) => {
+      const nextIds = taskIds.includes(taskId) ? taskIds : [...taskIds, taskId]
+      persistRecommendationState({ completedTaskIds: nextIds, startedTaskId: taskId })
+      return nextIds
+    })
   }
 
   function restartTask(taskId) {
-    setCompletedTaskIds((taskIds) => taskIds.filter((currentTaskId) => currentTaskId !== taskId))
+    setCompletedTaskIds((taskIds) => {
+      const nextIds = taskIds.filter((currentTaskId) => currentTaskId !== taskId)
+      persistRecommendationState({ completedTaskIds: nextIds, guidedStepIndex: 0 })
+      return nextIds
+    })
   }
 
   function startTask(taskId) {
     setStartedTaskId(taskId)
     setGuidedStepIndex(0)
+    persistRecommendationState({ startedTaskId: taskId, guidedStepIndex: 0 })
   }
 
   function completeGuidedStep() {
     const instructions = activeRecommendation?.task.instructions ?? []
 
     if (guidedStepIndex < instructions.length - 1) {
-      setGuidedStepIndex((index) => index + 1)
+      setGuidedStepIndex((index) => {
+        const nextIndex = index + 1
+        persistRecommendationState({ guidedStepIndex: nextIndex })
+        return nextIndex
+      })
       return
     }
 
@@ -79,8 +115,7 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
       <p className="eyebrow">Meine Empfehlung</p>
       <h1>Dein Tages-Check-in ist fertig</h1>
       <p className="checkin-disclaimer">
-        Diese Funktion ersetzt keine medizinische Beratung und stellt keine Diagnose. Die Empfehlungen sind einfache,
-        regelbasierte Unterstützung für deinen Alltag.
+        Die Empfehlungen dienen nur zur Orientierung und ersetzen keine medizinische Beratung oder Diagnose.
       </p>
 
       <div className="checkin-summary-grid">
@@ -101,6 +136,19 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
           <strong>{readable(answers.support_goal)}</strong>
         </article>
       </div>
+
+      {activityGuidance && (
+        <div className="checkin-activity-guidance">
+          <article data-level={activityGuidance.learning.level}>
+            <strong>Lernen</strong>
+            <p>{activityGuidance.learning.text}</p>
+          </article>
+          <article data-level={activityGuidance.movement.level}>
+            <strong>Bewegung und Sport</strong>
+            <p>{activityGuidance.movement.text}</p>
+          </article>
+        </div>
+      )}
 
       {isSaving && <p className="checkin-status">Check-in wird gespeichert...</p>}
       {saveError && <p className="checkin-error">{saveError}</p>}
@@ -197,6 +245,23 @@ function CheckInResult({ answers, isSaving, recommendations, saveError, onBackTo
               prüfe danach, was sich realistisch anfühlt.
             </p>
           </article>
+        )}
+        {recommendations.length > 1 && (
+          <div className="checkin-alternatives" aria-label="Weitere passende Empfehlungen">
+            <span>Weitere passende Aufgaben</span>
+            {recommendations.map((recommendation, index) => (
+              index !== activeIndex && (
+                <button key={recommendation.task.id} onClick={() => {
+                  setActiveIndex(index)
+                  setStartedTaskId('')
+                  setGuidedStepIndex(0)
+                }} type="button">
+                  <strong>{recommendation.task.title}</strong>
+                  <small>{recommendation.task.durationLabel}</small>
+                </button>
+              )
+            ))}
+          </div>
         )}
       </div>
 
