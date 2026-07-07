@@ -8155,11 +8155,13 @@ h3,
 }
 
 .checkin-disclaimer {
-  margin: 14px 0 18px;
-  padding: 14px;
-  border-left: 4px solid #7b61ff;
-  border-radius: 12px;
-  background: rgba(123, 97, 255, 0.08);
+  margin: 10px 0 14px;
+  padding: 8px 10px;
+  border-left: 3px solid rgba(123, 97, 255, 0.58);
+  border-radius: 10px;
+  background: rgba(123, 97, 255, 0.055);
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .checkin-progress {
@@ -8322,6 +8324,77 @@ h3,
 .checkin-recommendations {
   display: grid;
   gap: 14px;
+}
+
+.checkin-activity-guidance {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.checkin-activity-guidance article {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(123, 97, 255, 0.14);
+  border-radius: 15px;
+  background: rgba(247, 243, 255, 0.72);
+}
+
+.checkin-activity-guidance strong {
+  color: #342b75;
+  font-size: 14px;
+}
+
+.checkin-activity-guidance p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.checkin-activity-guidance article[data-level='pause'] {
+  background: rgba(255, 241, 232, 0.74);
+}
+
+.checkin-alternatives {
+  display: grid;
+  gap: 8px;
+}
+
+.checkin-alternatives > span {
+  color: #625b81;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.checkin-alternatives button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(123, 97, 255, 0.16);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #342b75;
+  text-align: left;
+}
+
+.checkin-alternatives button strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.checkin-alternatives button small {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 520px) {
+  .checkin-activity-guidance {
+    grid-template-columns: 1fr;
+  }
 }
 
 .checkin-recommendation {
@@ -9283,7 +9356,7 @@ h3,
   }
 
   .checkin-disclaimer {
-    padding: 10px;
+    padding: 7px 9px;
   }
 
   .checkin-recommendation {

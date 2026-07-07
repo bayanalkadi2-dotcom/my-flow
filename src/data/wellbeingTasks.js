@@ -443,6 +443,9 @@
   },
 ]
 
+import { additionalWellbeingTasks } from './additionalWellbeingTasks.js'
+wellbeingTasks.push(...additionalWellbeingTasks)
+
 export function getTaskById(taskId) {
   return wellbeingTasks.find((task) => task.id === taskId)
 }

@@ -136,6 +136,29 @@ export async function getDailyCheckIns(userId) {
   }
 }
 
+export async function updateDailyCheckInRecommendationState(checkInId, recommendationState) {
+  if (!checkInId) return { success: false, error: 'Check-in fehlt.' }
+
+  try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    if (userError || !user) throw userError || new Error('Du bist nicht angemeldet.')
+
+    const { data, error } = await supabase
+      .from('daily_checkins')
+      .update({ recommendation_state: recommendationState, updated_at: new Date().toISOString() })
+      .eq('id', checkInId)
+      .eq('user_id', user.id)
+      .select()
+      .single()
+
+    if (error) throw error
+    return { success: true, checkIn: data }
+  } catch (error) {
+    console.error('Empfehlungsstatus konnte nicht gespeichert werden:', error)
+    return { success: false, error: error.message }
+  }
+}
+
 export async function getUserCheckIns() {
   const {
     data: { user },
