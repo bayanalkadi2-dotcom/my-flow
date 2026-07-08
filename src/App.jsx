@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from './context/authContextValue'
 import { useProfile } from './context/profileContextValue'
 import { useCheckins } from './context/checkinContextValue'
@@ -133,7 +133,7 @@ function LoadingScreen() {
 }
 
 function App() {
-  const { user, isLoading: authLoading, isAuthenticated } = useAuth()
+  const { user, isLoading: authLoading, isAuthenticated, signout } = useAuth()
   const { profile, setProfile, isLoading: profileLoading } = useProfile()
   const { addCheckin } = useCheckins()
   const [screen, setScreen] = useState('dashboard')
@@ -149,6 +149,8 @@ function App() {
   const [calendarNotes, setCalendarNotes] = useState({})
   const [isSavingOnboarding, setIsSavingOnboarding] = useState(false)
   const [guestSetup, setGuestSetup] = useState(loadGuestSetup)
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const accountMenuRef = useRef(null)
   const needsStudentOnboarding = isAuthenticated
     && !profileLoading
     && profile?.onboarding_completed !== true
@@ -218,8 +220,24 @@ function App() {
     }
   }, [isAuthenticated, screen, user?.id])
 
+  useEffect(() => {
+    function closeAccountMenu(event) {
+      if (!accountMenuRef.current?.contains(event.target)) {
+        setIsAccountMenuOpen(false)
+      }
+    }
+
+    if (isAccountMenuOpen) {
+      document.addEventListener('pointerdown', closeAccountMenu)
+    }
+
+    return () => document.removeEventListener('pointerdown', closeAccountMenu)
+  }, [isAccountMenuOpen])
+
   const tone = languageStyles[languageStyle]
   const t = getAppTranslations(languageStyle, communicationStyle)
+  const profileInitial = (resolvedProfileName || 'Gast').trim().charAt(0).toUpperCase() || 'G'
+  const profileImage = localStorage.getItem('myflow-profile-image') || ''
   const preparedHabits = useMemo(
     () => routineItems.map((habit) => translateHabit(prepareRoutineData(habit), languageStyle)),
     [languageStyle, routineItems],
@@ -516,6 +534,20 @@ function App() {
   function handleAccountProfileChange(nextAccountProfile) {
     setAccountProfile(nextAccountProfile)
     localStorage.setItem('myflow-account-profile', JSON.stringify(nextAccountProfile))
+  }
+
+  function openAccountScreen(nextScreen) {
+    setScreen(nextScreen)
+    setIsAccountMenuOpen(false)
+  }
+
+  async function handleAccountLogout() {
+    setIsAccountMenuOpen(false)
+    try {
+      await signout?.()
+    } finally {
+      setScreen('start')
+    }
   }
 
   async function handleStudentOnboardingComplete(answers) {
@@ -823,8 +855,43 @@ function App() {
   }
 
   return (
-    <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
-      {renderScreen()}
+    <main className={`app app-has-global-profile ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
+      <div className="global-account" ref={accountMenuRef}>
+        <button
+          className={`global-profile-button ${isAccountMenuOpen ? 'active' : ''}`}
+          onClick={() => setIsAccountMenuOpen((open) => !open)}
+          type="button"
+          aria-expanded={isAccountMenuOpen}
+          aria-label="Konto-Menü öffnen"
+        >
+          <span className="global-profile-avatar">
+            {profileImage ? <img src={profileImage} alt="" /> : <img src={flowCharacter} alt="" />}
+          </span>
+          <span className="global-profile-initial" aria-hidden="true">{profileInitial}</span>
+        </button>
+
+        {isAccountMenuOpen && (
+          <section className="account-menu" aria-label="Konto-Menü">
+            <div className="account-menu-header">
+              <span>{profileInitial}</span>
+              <div>
+                <strong>{resolvedProfileName || 'Gast'}</strong>
+                <small>MyFlow Konto</small>
+              </div>
+            </div>
+            <button type="button" onClick={() => openAccountScreen('profile')}>Profil ansehen</button>
+            <button type="button" onClick={() => openAccountScreen('profileSettings')}>Einstellungen</button>
+            <button type="button" onClick={() => openAccountScreen('profileSettings')}>Sprache</button>
+            <button type="button" onClick={() => handleAppThemeChange(appTheme === 'Dunkel' ? 'Hell' : 'Dunkel')}>
+              {appTheme === 'Dunkel' ? 'Light Mode' : 'Dark Mode'}
+            </button>
+            <button className="account-menu-logout" type="button" onClick={handleAccountLogout}>Abmelden</button>
+          </section>
+        )}
+      </div>
+      <div className="app-screen-transition" key={screen}>
+        {renderScreen()}
+      </div>
       {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'privacy' && screen !== 'checkin' && screen !== 'calendar' && (
         <button
           className="floating-checkin-button"
@@ -839,7 +906,7 @@ function App() {
       {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'privacy' && (
         <Navbar
           activeScreen={screen}
-          items={['dashboard', 'calendar', 'habits', 'progress', 'freunde', 'profile'].map((id) => ({ id, label: t.nav[id] }))}
+          items={['dashboard', 'calendar', 'habits', 'progress', 'freunde'].map((id) => ({ id, label: t.nav[id] }))}
           onNavigate={setScreen}
         />
       )}

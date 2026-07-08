@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/authContextValue'
 import { useProfile } from '../context/profileContextValue'
 import logo from '../assets/Icon Gruppe H.png'
@@ -234,6 +234,25 @@ function Profil({
     design: appTheme,
   })
 
+  useEffect(() => {
+    const savedWeight = Number(profile?.weight_kg)
+    const savedHeight = Number(profile?.height_cm)
+
+    if (savedWeight > 0) {
+      setWeight(savedWeight)
+    }
+
+    if (savedHeight > 0) {
+      setHeight(savedHeight)
+    }
+
+    setDraftSettings((current) => ({
+      ...current,
+      weight: savedWeight > 0 ? savedWeight : current.weight,
+      height: savedHeight > 0 ? savedHeight : current.height,
+    }))
+  }, [profile?.height_cm, profile?.weight_kg])
+
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
   const selectedPlanPrice = billingCycle === 'Jährlich'
@@ -378,8 +397,14 @@ function Profil({
           &larr;
         </button>
       )}
-      {!settingsPage && <img src={logo} alt="MyFlow Logo" className="small-logo" />}
-      <h1>{settingsPage ? t.profile.settings.replace('Profil-', '') : t.profile.title}</h1>
+      {!settingsPage ? (
+        <div className="profile-title-row">
+          <img src={logo} alt="MyFlow Logo" className="small-logo" />
+          <h1>{t.profile.title}</h1>
+        </div>
+      ) : (
+        <h1>{t.profile.settings.replace('Profil-', '')}</h1>
+      )}
       <button
         className="settings-gear-button"
         style={{ display: settingsPage ? 'none' : undefined }}

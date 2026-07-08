@@ -34,6 +34,7 @@ body {
 }
 
 .app {
+  position: relative;
   min-height: 100vh;
   max-width: 430px;
   margin: 0 auto;
@@ -1099,6 +1100,272 @@ input {
   color: #514b73;
   font-size: 15px;
   line-height: 1.55;
+}
+
+.global-account {
+  position: absolute;
+  top: max(18px, calc(env(safe-area-inset-top, 0px) + 12px));
+  right: 24px;
+  z-index: 120;
+  isolation: isolate;
+}
+
+.global-profile-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.72), transparent 26%),
+    linear-gradient(135deg, rgba(255, 159, 210, 0.96), rgba(139, 99, 255, 0.98) 58%, rgba(115, 207, 255, 0.96));
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 16px 34px rgba(130, 90, 255, 0.28),
+    0 0 0 7px rgba(141, 99, 255, 0.08);
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  overflow: hidden;
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    filter 220ms ease;
+}
+
+.global-profile-button:hover,
+.global-profile-button:focus-visible,
+.global-profile-button.active {
+  transform: translateY(-2px) scale(1.04);
+  filter: saturate(1.08);
+  box-shadow:
+    0 20px 42px rgba(130, 90, 255, 0.34),
+    0 0 0 9px rgba(115, 207, 255, 0.12);
+}
+
+.global-profile-avatar {
+  position: absolute;
+  inset: 3px;
+  overflow: hidden;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.global-profile-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.global-profile-initial {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7547f5, #4aaeea);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(60, 42, 145, 0.28);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(31, 19, 83, 0.28);
+}
+
+.app.theme-dark .global-profile-initial {
+  border-color: #241d3a;
+}
+
+.account-menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: min(250px, calc(100vw - 34px));
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 159, 210, 0.2), transparent 32%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(246, 241, 255, 0.94));
+  border: 1px solid rgba(141, 99, 255, 0.18);
+  box-shadow: 0 22px 52px rgba(76, 57, 150, 0.22);
+  animation: accountMenuIn 220ms ease both;
+}
+
+.account-menu-header {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 4px 4px 10px;
+}
+
+.account-menu-header > span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9fd2, #8b63ff, #73cfff);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.account-menu-header strong,
+.account-menu-header small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-menu-header strong {
+  color: #18143f;
+  font-size: 14px;
+}
+
+.account-menu-header small {
+  color: #70698e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.account-menu button {
+  width: 100%;
+  min-height: 42px;
+  padding: 11px 13px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #302c5a;
+  border: 1px solid rgba(141, 99, 255, 0.13);
+  box-shadow: none;
+  text-align: left;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.account-menu button:hover,
+.account-menu button:focus-visible {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(255, 159, 210, 0.18), rgba(141, 99, 255, 0.16), rgba(115, 207, 255, 0.16));
+  color: #765cff;
+}
+
+.account-menu .account-menu-logout {
+  color: #e34872;
+}
+
+.app.theme-dark .global-profile-button {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 14px 30px rgba(10, 8, 28, 0.34),
+    0 0 0 7px rgba(141, 99, 255, 0.12);
+}
+
+.app.theme-dark .account-menu {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(141, 99, 255, 0.26), transparent 34%),
+    linear-gradient(145deg, rgba(39, 30, 61, 0.98), rgba(25, 20, 42, 0.98));
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 22px 52px rgba(7, 5, 18, 0.36);
+}
+
+.app.theme-dark .account-menu-header strong {
+  color: #ffffff;
+}
+
+.app.theme-dark .account-menu-header small {
+  color: #c8c1e4;
+}
+
+.app.theme-dark .account-menu button {
+  background: rgba(255, 255, 255, 0.07);
+  color: #f8f6ff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.app-has-global-profile .screen:not(.home-screen) {
+  padding-top: 76px;
+}
+
+.app-has-global-profile .profile-screen:not(.profile-settings-screen) {
+  padding-top: 24px;
+}
+
+.profile-screen:not(.profile-settings-screen) .small-logo {
+  margin: 0;
+}
+
+.profile-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 62px;
+  padding-right: 62px;
+}
+
+.profile-title-row h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.profile-screen:not(.profile-settings-screen) .settings-gear-button {
+  display: none;
+}
+
+.profile-screen:not(.profile-settings-screen) .profile-picture-card {
+  margin-top: 16px;
+}
+
+.app-screen-transition {
+  animation: appScreenIn 260ms ease both;
+}
+
+@keyframes appScreenIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes accountMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 360px) {
+  .global-account {
+    right: 18px;
+  }
+
+  .global-profile-button {
+    width: 42px;
+    height: 42px;
+  }
 }
 
 .day-overview-card,
@@ -5507,7 +5774,7 @@ input {
 }
 
 .profile-settings-screen .profile-setting-row::after {
-  content: "â€º";
+  content: "\203A";
   justify-self: end;
   align-self: center;
   color: #8f8aa3;
@@ -10622,10 +10889,10 @@ h3,
   }
 }
 
-/* Kompakte Navigation mit sechs gleichmÃ¤ÃŸig verteilten Bereichen. */
+/* Kompakte Navigation mit fünf gleichmäßig verteilten Bereichen. */
 .bottom-nav {
   width: min(420px, calc(100vw - 12px));
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 2px;
   padding: 6px;
 }
@@ -10639,6 +10906,11 @@ h3,
   font-size: clamp(8px, 2.25vw, 10px);
   line-height: 1.05;
   text-align: center;
+  transition:
+    transform 220ms ease,
+    color 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease;
 }
 
 .bottom-item > span:last-child {
@@ -10652,6 +10924,7 @@ h3,
 .bottom-icon svg {
   width: 17px;
   height: 17px;
+  transition: transform 220ms ease, opacity 220ms ease;
 }
 
 @media (max-width: 350px) {
@@ -10826,14 +11099,35 @@ button,
   transform: translateX(-50%);
   z-index: 90;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: center;
   padding: 7px 6px;
 }
 
 .bottom-item {
+  display: grid;
+  place-items: center;
   min-width: 0;
   min-height: 50px;
+  width: 100%;
+  justify-self: stretch;
+}
+
+.bottom-item.active {
+  transform: translateY(-3px);
+  background: linear-gradient(125deg, #ff9fd2 0%, #8b63ff 48%, #73cfff 100%);
+  background-size: 180% 180%;
+  animation: activeTabGlow 2.8s ease infinite;
+  box-shadow: 0 12px 24px rgba(123, 97, 255, 0.24);
+}
+
+.bottom-item.active .bottom-icon,
+.bottom-item.active .bottom-icon svg {
+  transform: scale(1.08);
+}
+
+.bottom-item.active > span:last-child {
+  font-weight: 900;
 }
 
 .bottom-item > span:last-child {
@@ -10842,6 +11136,18 @@ button,
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: transform 220ms ease, color 220ms ease;
+}
+
+@keyframes activeTabGlow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .calendar-screen,
