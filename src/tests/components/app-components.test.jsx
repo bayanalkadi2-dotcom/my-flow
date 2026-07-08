@@ -202,11 +202,6 @@ describe('onboarding', () => {
 
     await user.click(screen.getByRole('button', { name: /Sch/ }))
     await user.click(screen.getByRole('button', { name: 'Weiter' }))
-    expect(screen.getByText('Altersgruppe')).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: '16-18' }))
-    await user.click(screen.getByRole('button', { name: 'Oberstufe' }))
-    await user.click(screen.getByRole('button', { name: 'Weiter' }))
     await user.click(screen.getByRole('button', { name: /Pr/ }))
     await user.click(screen.getByRole('button', { name: 'Weiter' }))
     await user.click(screen.getByRole('button', { name: /Fokus/ }))
@@ -214,8 +209,6 @@ describe('onboarding', () => {
 
     expect(onComplete).toHaveBeenCalledWith(expect.objectContaining({
       student_status: 'school',
-      age_group: '16_18',
-      education_level: 'upper_school',
       main_challenges: ['exam_stress'],
       support_goals: ['increase_focus'],
       onboarding_completed: true,

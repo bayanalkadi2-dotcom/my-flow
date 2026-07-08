@@ -1072,6 +1072,24 @@ input {
   color: #d44456;
 }
 
+.student-field-error {
+  margin: 4px 0 0;
+  color: #d44456;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.field-invalid {
+  border-color: rgba(212, 68, 86, 0.65) !important;
+  box-shadow: 0 0 0 3px rgba(212, 68, 86, 0.12) !important;
+}
+
+.profile-confirm-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .student-onboarding-label {
   gap: 10px;
   margin: 0;

@@ -26,6 +26,27 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS support_goals TEXT[] DEFAULT '{}',
   ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false;
 
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_age_range') THEN
+    ALTER TABLE public.profiles
+      ADD CONSTRAINT profiles_age_range
+      CHECK (age IS NULL OR (age BETWEEN 16 AND 120)) NOT VALID;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_height_cm_range') THEN
+    ALTER TABLE public.profiles
+      ADD CONSTRAINT profiles_height_cm_range
+      CHECK (height_cm IS NULL OR (height_cm BETWEEN 100 AND 250)) NOT VALID;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_weight_kg_range') THEN
+    ALTER TABLE public.profiles
+      ADD CONSTRAINT profiles_weight_kg_range
+      CHECK (weight_kg IS NULL OR (weight_kg BETWEEN 25 AND 350)) NOT VALID;
+  END IF;
+END $$;
+
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- Profil: Benutzer können nur ihr eigenes Profil lesen

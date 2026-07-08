@@ -13,7 +13,20 @@ import iconWeight from '../assets/settings-icons/weight.png'
 import { calculateChallengePoints } from '../utils/progressLevels'
 import { updateProfile } from '../services/authService'
 import PwaInstallOption from '../commponents/PwaInstallOption'
-import { getProfileAgeError, MAX_PROFILE_AGE, MIN_PROFILE_AGE, parseProfileAge } from '../utils/profileValidation'
+import {
+  getHeightError,
+  getProfileAgeError,
+  getWeightError,
+  MAX_HEIGHT_CM,
+  MAX_PROFILE_AGE,
+  MAX_WEIGHT_KG,
+  MIN_HEIGHT_CM,
+  MIN_PROFILE_AGE,
+  MIN_WEIGHT_KG,
+  parseHeightCm,
+  parseProfileAge,
+  parseWeightKg,
+} from '../utils/profileValidation'
 
 const languageOptions = [
   { id: 'german', label: 'Deutsch' },
@@ -215,6 +228,7 @@ function Profil({
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
   const [ageError, setAgeError] = useState('')
+  const [measurementErrors, setMeasurementErrors] = useState({ weight: '', height: '' })
   const [gender, setGender] = useState(profile?.gender || 'male')
   const [reminders, setReminders] = useState(true)
   const [age, setAge] = useState(Number(profile?.age) || 0)
@@ -330,6 +344,7 @@ function Profil({
 
   function openEditor(editor) {
     setAgeError('')
+    setMeasurementErrors({ weight: '', height: '' })
     if (activeEditor === editor) {
       setActiveEditor(null)
       return
@@ -351,6 +366,9 @@ function Profil({
 
   function updateDraft(key, value) {
     if (key === 'age') setAgeError('')
+    if (key === 'weight' || key === 'height') {
+      setMeasurementErrors((current) => ({ ...current, [key]: '' }))
+    }
     setDraftSettings((currentDraft) => ({
       ...currentDraft,
       [key]: value,
@@ -382,14 +400,31 @@ function Profil({
         savePersonalDetails({ age: nextAge })
         break
       }
-      case 'weight':
-        setWeight(Number(draftSettings.weight) || 0)
-        savePersonalDetails({ weight_kg: Number(draftSettings.weight) || null })
+      case 'weight': {
+        if (draftSettings.weight === '' || draftSettings.weight === null || draftSettings.weight === undefined) {
+          setWeight(0)
+          savePersonalDetails({ weight_kg: null })
+          break
+        }
+        const nextWeight = parseWeightKg(draftSettings.weight)
+        if (nextWeight === null) {
+          setMeasurementErrors((current) => ({ ...current, weight: getWeightError(draftSettings.weight) }))
+          return
+        }
+        setWeight(nextWeight)
+        savePersonalDetails({ weight_kg: nextWeight })
         break
-      case 'height':
-        setHeight(Number(draftSettings.height) || height)
-        savePersonalDetails({ height_cm: Number(draftSettings.height) || height })
+      }
+      case 'height': {
+        const nextHeight = parseHeightCm(draftSettings.height)
+        if (nextHeight === null) {
+          setMeasurementErrors((current) => ({ ...current, height: getHeightError(draftSettings.height) }))
+          return
+        }
+        setHeight(nextHeight)
+        savePersonalDetails({ height_cm: nextHeight })
         break
+      }
       case 'reminders':
         setReminders(draftSettings.reminders)
         break
@@ -581,14 +616,16 @@ function Profil({
                 inputMode="numeric"
                 min={MIN_PROFILE_AGE}
                 max={MAX_PROFILE_AGE}
+                className={ageError ? 'field-invalid' : ''}
                 step="1"
                 type="number"
                 value={draftSettings.age}
                 onChange={(event) => updateDraft('age', event.target.value)}
+                onBlur={() => setAgeError(getProfileAgeError(draftSettings.age))}
               />
             </label>
             {ageError && <p className="student-onboarding-error" role="alert">{ageError}</p>}
-            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor} disabled={parseProfileAge(draftSettings.age) === null}>OK</button>
           </div>
         )}
 
@@ -603,14 +640,27 @@ function Profil({
             <label>
               {t.profile.weight} in kg
               <input
-                min="30"
-                max="250"
-                type="number"
+                className={measurementErrors.weight ? 'field-invalid' : ''}
+                inputMode="decimal"
+                min={MIN_WEIGHT_KG}
+                max={MAX_WEIGHT_KG}
+                step="0.1"
+                type="text"
                 value={draftSettings.weight}
                 onChange={(event) => updateDraft('weight', event.target.value)}
+                onBlur={() => setMeasurementErrors((current) => ({
+                  ...current,
+                  weight: draftSettings.weight ? getWeightError(draftSettings.weight) : '',
+                }))}
               />
             </label>
-            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
+            {measurementErrors.weight && <p className="student-onboarding-error" role="alert">{measurementErrors.weight}</p>}
+            {!draftSettings.weight && (
+              <p className="student-onboarding-note">
+                Ohne Gewichtsangabe können manche Funktionen der App nicht genutzt werden.
+              </p>
+            )}
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor} disabled={Boolean(draftSettings.weight) && parseWeightKg(draftSettings.weight) === null}>OK</button>
           </div>
         )}
 
@@ -625,14 +675,19 @@ function Profil({
             <label>
               {t.profile.height} in cm
               <input
-                min="120"
-                max="230"
-                type="number"
+                className={measurementErrors.height ? 'field-invalid' : ''}
+                inputMode="decimal"
+                min={MIN_HEIGHT_CM}
+                max={MAX_HEIGHT_CM}
+                step="0.1"
+                type="text"
                 value={draftSettings.height}
                 onChange={(event) => updateDraft('height', event.target.value)}
+                onBlur={() => setMeasurementErrors((current) => ({ ...current, height: getHeightError(draftSettings.height) }))}
               />
             </label>
-            <button className="profile-confirm-button" type="button" onClick={confirmEditor}>OK</button>
+            {measurementErrors.height && <p className="student-onboarding-error" role="alert">{measurementErrors.height}</p>}
+            <button className="profile-confirm-button" type="button" onClick={confirmEditor} disabled={parseHeightCm(draftSettings.height) === null}>OK</button>
           </div>
         )}
 

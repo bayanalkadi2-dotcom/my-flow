@@ -1,12 +1,54 @@
 import { supabase } from '../lib/supabase'
-import { parseProfileAge } from '../utils/profileValidation'
+import {
+  getHeightError,
+  getProfileAgeError,
+  getWeightError,
+  parseHeightCm,
+  parseProfileAge,
+  parseWeightKg,
+} from '../utils/profileValidation'
+
+function normalizeOptionalMeasurement(value, parser, getError) {
+  if (value === '' || value === null || value === undefined) return null
+  const parsedValue = parser(value)
+  if (parsedValue === null) throw new Error(getError(value))
+  return parsedValue
+}
+
+function validateProfileMeasurementUpdates(updates = {}) {
+  const validatedUpdates = { ...updates }
+
+  if (Object.prototype.hasOwnProperty.call(updates, 'age')) {
+    const age = parseProfileAge(updates.age)
+    if (age === null) throw new Error(getProfileAgeError(updates.age))
+    validatedUpdates.age = age
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updates, 'height_cm')) {
+    const height = parseHeightCm(updates.height_cm)
+    if (height === null) throw new Error(getHeightError(updates.height_cm))
+    validatedUpdates.height_cm = height
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updates, 'weight_kg')) {
+    if (updates.weight_kg === '' || updates.weight_kg === null || updates.weight_kg === undefined) {
+      validatedUpdates.weight_kg = null
+      return validatedUpdates
+    }
+    const weight = parseWeightKg(updates.weight_kg)
+    if (weight === null) throw new Error(getWeightError(updates.weight_kg))
+    validatedUpdates.weight_kg = weight
+  }
+
+  return validatedUpdates
+}
 
 export function normalizeOnboardingProfile(onboardingData = {}) {
   return {
     gender: onboardingData.gender || null,
-    age: parseProfileAge(onboardingData.age),
-    height_cm: onboardingData.height_cm ? Number(onboardingData.height_cm) : null,
-    weight_kg: onboardingData.weight_kg ? Number(onboardingData.weight_kg) : null,
+    age: normalizeOptionalMeasurement(onboardingData.age, parseProfileAge, getProfileAgeError),
+    height_cm: normalizeOptionalMeasurement(onboardingData.height_cm, parseHeightCm, getHeightError),
+    weight_kg: normalizeOptionalMeasurement(onboardingData.weight_kg, parseWeightKg, getWeightError),
     student_status: onboardingData.student_status ?? null,
     age_group: onboardingData.age_group ?? null,
     education_level: onboardingData.education_level ?? null,
@@ -144,9 +186,10 @@ export async function getProfile(userId) {
 
 export async function updateProfile(userId, updates) {
   try {
+    const validatedUpdates = validateProfileMeasurementUpdates(updates)
     const { data, error } = await supabase
       .from('profiles')
-      .update(updates)
+      .update(validatedUpdates)
       .eq('id', userId)
       .select()
 
@@ -155,10 +198,10 @@ export async function updateProfile(userId, updates) {
       if (authError || authData.user?.id !== userId) throw authError || error
 
       const authUpdate = await supabase.auth.updateUser({
-        data: { ...authData.user.user_metadata, ...updates },
+        data: { ...authData.user.user_metadata, ...validatedUpdates },
       })
       if (authUpdate.error) throw authUpdate.error
-      return { success: true, profile: updates }
+      return { success: true, profile: validatedUpdates }
     }
 
     if (error) throw error

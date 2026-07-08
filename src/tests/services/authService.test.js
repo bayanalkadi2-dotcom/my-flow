@@ -112,9 +112,9 @@ describe('authService Supabase access', () => {
   })
 
   it('rejects non-integer or unrealistic profile ages', () => {
-    expect(normalizeOnboardingProfile({ age: '20.5' }).age).toBeNull()
-    expect(normalizeOnboardingProfile({ age: '-1' }).age).toBeNull()
-    expect(normalizeOnboardingProfile({ age: '121' }).age).toBeNull()
+    expect(() => normalizeOnboardingProfile({ age: '20.5' })).toThrow('gültiges Alter')
+    expect(() => normalizeOnboardingProfile({ age: '-1' })).toThrow('gültiges Alter')
+    expect(() => normalizeOnboardingProfile({ age: '121' })).toThrow('gültiges Alter')
   })
 
   it('saveOnboardingProfile uses the authenticated user', async () => {

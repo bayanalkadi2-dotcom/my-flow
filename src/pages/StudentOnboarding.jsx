@@ -1,20 +1,22 @@
 import { useState } from 'react'
-import { getProfileAgeError, MAX_PROFILE_AGE, MIN_PROFILE_AGE } from '../utils/profileValidation'
+import {
+  getHeightError,
+  getPersonalMeasurementErrors,
+  getProfileAgeError,
+  getWeightError,
+  MAX_HEIGHT_CM,
+  MAX_PROFILE_AGE,
+  MAX_WEIGHT_KG,
+  MIN_HEIGHT_CM,
+  MIN_PROFILE_AGE,
+  MIN_WEIGHT_KG,
+} from '../utils/profileValidation'
 
 const statusOptions = [
   { value: 'school', label: 'Schüler:in' },
   { value: 'university', label: 'Student:in' },
   { value: 'training', label: 'Auszubildende:r' },
   { value: 'other', label: 'Sonstiges' },
-]
-
-const ageGroups = [
-  ['under_16', 'Unter 16'],
-  ['16_18', '16-18'],
-  ['19_24', '19-24'],
-  ['25_34', '25-34'],
-  ['35_plus', '35 oder älter'],
-  ['prefer_not_to_say', 'Keine Angabe'],
 ]
 
 const genderOptions = [
@@ -46,52 +48,14 @@ const designOptions = [
   ['Dunkel', 'Dunkel'],
 ]
 
-const educationOptions = {
-  school: {
-    question: 'Welche Schulstufe passt am besten?',
-    field: 'education_level',
-    options: [
-      ['lower_school', 'Unterstufe'],
-      ['middle_school', 'Mittelstufe'],
-      ['upper_school', 'Oberstufe'],
-      ['vocational_school', 'Berufsschule'],
-      ['other', 'Andere'],
-    ],
-  },
-  university: {
-    question: 'Wo studierst du aktuell?',
-    field: 'education_level',
-    options: [
-      ['university', 'Universität'],
-      ['university_of_applied_sciences', 'Fachhochschule'],
-      ['dual_university', 'Duale Hochschule'],
-      ['remote_study', 'Fernstudium'],
-      ['other', 'Andere'],
-    ],
-  },
-  training: {
-    question: 'Welche Ausbildungsform passt am besten?',
-    field: 'education_level',
-    options: [
-      ['company_training', 'Betriebliche Ausbildung'],
-      ['school_training', 'Schulische Ausbildung'],
-      ['dual_study', 'Duales Studium'],
-      ['other', 'Andere'],
-    ],
-  },
-  other: {
-    question: 'Wie sieht dein Alltag hauptsächlich aus?',
-    field: 'daily_context',
-    options: [
-      ['school', 'Schule'],
-      ['study', 'Studium'],
-      ['training', 'Ausbildung'],
-      ['work', 'Arbeit'],
-      ['transition', 'Übergangsphase'],
-      ['other', 'Andere'],
-    ],
-  },
-}
+const situationOptions = [
+  ['school', 'Schule'],
+  ['study', 'Studium'],
+  ['training', 'Ausbildung'],
+  ['work', 'Arbeit'],
+  ['transition', 'Übergangsphase'],
+  ['other', 'Andere'],
+]
 
 const challengeOptions = [
   ['exam_stress', 'Prüfungsstress'],
@@ -156,20 +120,35 @@ function OptionCard({ active, children, onClick, type = 'button' }) {
 function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mode = 'register', onBack, onComplete, saving = false }) {
   const [step, setStep] = useState(0)
   const [error, setError] = useState('')
+  const [touchedFields, setTouchedFields] = useState({})
+  const [triedContinue, setTriedContinue] = useState(false)
   const [answers, setAnswers] = useState({ ...emptyAnswers, ...initialAnswers })
-  const education = educationOptions[answers.student_status] ?? educationOptions.school
   const steps = mode === 'quickStart'
     ? ['name', 'personal', 'activity', 'situation', 'preferences']
     : includePreferences
-    ? ['status', 'education', 'challenges', 'goals']
-    : ['personal', 'status', 'education']
+    ? ['status', 'challenges', 'goals']
+    : ['personal', 'status']
   const currentStep = steps[step]
   const progress = Math.round(((step + 1) / steps.length) * 100)
   const secondaryAudience = false
+  const personalErrors = {
+    ...getPersonalMeasurementErrors(answers),
+    weight: answers.weight_kg ? getWeightError(answers.weight_kg) : '',
+  }
+  const personalStepIsValid = currentStep !== 'personal'
+    || (answers.gender && !personalErrors.age && !personalErrors.height && !personalErrors.weight)
 
   function update(key, value) {
     setError('')
     setAnswers((current) => ({ ...current, [key]: value }))
+  }
+
+  function markTouched(field) {
+    setTouchedFields((current) => ({ ...current, [field]: true }))
+  }
+
+  function shouldShowFieldError(field) {
+    return (touchedFields[field] || triedContinue) && personalErrors[field]
   }
 
   function validate() {
@@ -179,15 +158,19 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
     }
     if (currentStep === 'name' && !answers.display_name.trim()) return 'Bitte gib deinen Namen ein.'
     if (currentStep === 'personal' && !answers.gender) return 'Bitte wähle dein Geschlecht aus.'
-    if (currentStep === 'personal' && (!answers.height_cm || Number(answers.height_cm) <= 0)) return 'Bitte gib deine Größe an.'
-    if (currentStep === 'personal' && answers.weight_kg && Number(answers.weight_kg) <= 0) return 'Bitte gib ein gültiges Gewicht an.'
+    if (currentStep === 'personal') {
+      const heightError = getHeightError(answers.height_cm)
+      if (heightError) return heightError
+      if (answers.weight_kg) {
+        const weightError = getWeightError(answers.weight_kg)
+        if (weightError) return weightError
+      }
+    }
     if (currentStep === 'activity' && !answers.activity_level) return 'Bitte wähle deine Aktivität aus.'
     if (currentStep === 'situation' && !answers.daily_context) return 'Bitte wähle deine Situation aus.'
     if (currentStep === 'status' && !answers.student_status) return 'Bitte wähle eine Option aus.'
     if (currentStep === 'challenges' && answers.main_challenges.length === 0) return 'Bitte wähle mindestens eine Option aus.'
     if (currentStep === 'goals' && answers.support_goals.length === 0) return 'Bitte wähle mindestens ein Unterstützungsziel aus.'
-    if (currentStep === 'education' && !answers.age_group) return 'Bitte wähle deine Altersgruppe aus.'
-    if (currentStep === 'education' && !answers[education.field]) return 'Bitte wähle eine passende Bildungsangabe aus.'
     return ''
   }
 
@@ -202,6 +185,7 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
   }
 
   async function goNext() {
+    setTriedContinue(true)
     const validation = validate()
     if (validation) {
       setError(validation)
@@ -218,6 +202,7 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
     }
 
     setStep((current) => Math.min(current + 1, steps.length - 1))
+    setTriedContinue(false)
     setError('')
   }
 
@@ -295,68 +280,53 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
               inputMode="numeric"
               min={MIN_PROFILE_AGE}
               max={MAX_PROFILE_AGE}
+              className={shouldShowFieldError('age') ? 'field-invalid' : ''}
               onChange={(event) => update('age', event.target.value)}
+              onBlur={() => markTouched('age')}
               placeholder="z. B. 21"
               step="1"
               type="number"
               value={answers.age ?? ''}
             />
+            {shouldShowFieldError('age') && <p className="student-field-error" role="alert">{personalErrors.age}</p>}
           </label>
           <label className="student-onboarding-label">
             Größe in cm
             <input
-              inputMode="numeric"
-              min="1"
+              className={shouldShowFieldError('height') ? 'field-invalid' : ''}
+              inputMode="decimal"
+              min={MIN_HEIGHT_CM}
+              max={MAX_HEIGHT_CM}
               onChange={(event) => update('height_cm', event.target.value)}
+              onBlur={() => markTouched('height')}
               placeholder="z. B. 175"
-              type="number"
+              step="0.1"
+              type="text"
               value={answers.height_cm ?? ''}
             />
+            {shouldShowFieldError('height') && <p className="student-field-error" role="alert">{personalErrors.height}</p>}
           </label>
           <label className="student-onboarding-label">
             Gewicht in kg (optional)
             <input
+              className={shouldShowFieldError('weight') ? 'field-invalid' : ''}
               inputMode="decimal"
-              min="1"
+              min={MIN_WEIGHT_KG}
+              max={MAX_WEIGHT_KG}
               onChange={(event) => update('weight_kg', event.target.value)}
+              onBlur={() => markTouched('weight')}
               placeholder="z. B. 70"
               step="0.1"
-              type="number"
+              type="text"
               value={answers.weight_kg ?? ''}
             />
+            {shouldShowFieldError('weight') && <p className="student-field-error" role="alert">{personalErrors.weight}</p>}
           </label>
           {!answers.weight_kg && (
             <p className="student-onboarding-note">
-              Ohne Gewichtsangabe sind manche Funktionen der App nicht verfügbar.
+              Ohne Gewichtsangabe können manche Funktionen der App nicht genutzt werden.
             </p>
           )}
-        </div>
-      )}
-
-      {currentStep === 'education' && (
-        <div className="student-onboarding-panel">
-          <p className="eyebrow">BILDUNGSWEG</p>
-          <h1>Welche Angaben passen zu dir?</h1>
-          <label className="student-onboarding-label">
-            Altersgruppe
-            <div className="student-chip-grid">
-              {ageGroups.map(([value, label]) => (
-                <OptionCard active={answers.age_group === value} key={value} onClick={() => update('age_group', value)}>
-                  <strong>{label}</strong>
-                </OptionCard>
-              ))}
-            </div>
-          </label>
-          <label className="student-onboarding-label">
-            {education.question}
-            <div className="student-chip-grid">
-              {education.options.map(([value, label]) => (
-                <OptionCard active={answers[education.field] === value} key={value} onClick={() => update(education.field, value)}>
-                  <strong>{label}</strong>
-                </OptionCard>
-              ))}
-            </div>
-          </label>
         </div>
       )}
 
@@ -379,7 +349,7 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
           <p className="eyebrow">SITUATION</p>
           <h1>Was beschreibt deinen Alltag am besten?</h1>
           <div className="student-chip-grid">
-            {educationOptions.other.options.map(([value, label]) => (
+            {situationOptions.map(([value, label]) => (
               <OptionCard active={answers.daily_context === value} key={value} onClick={() => update('daily_context', value)}>
                 <strong>{label}</strong>
               </OptionCard>
@@ -457,7 +427,7 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
 
       <div className="student-onboarding-actions">
         <button className="secondary-button" onClick={goBack} type="button" disabled={saving}>Zurück</button>
-        <button onClick={goNext} type="button" disabled={saving}>
+        <button onClick={goNext} type="button" disabled={saving || !personalStepIsValid}>
           {saving ? 'Wird gespeichert...' : step === steps.length - 1 ? (mode === 'profile' ? 'Speichern und weiter' : 'Zur Registrierung') : 'Weiter'}
         </button>
       </div>
