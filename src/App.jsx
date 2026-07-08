@@ -586,6 +586,7 @@ function App() {
       onboarding_completed: true,
     }
     localStorage.setItem('myflow-guest-setup', JSON.stringify(nextSetup))
+    localStorage.setItem(getThemeStorageKey(null), nextSetup.theme || 'Hell')
     setGuestSetup(nextSetup)
     setProfileName(nextSetup.display_name || 'Gast')
     setLanguageStyle(nextSetup.language_style || 'german')
