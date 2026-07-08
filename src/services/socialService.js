@@ -23,22 +23,29 @@ export async function loadSocialDashboard(userId) {
     return { friends: [], friendRequests: [], challengeRequests: [], challenges: [] }
   }
 
-  const [
-    { data: friendshipRows, error: friendshipError },
-    { data: friendRequestRows, error: requestError },
-    { data: challengeRequestRows, error: challengeRequestError },
-    { data: challengeRows, error: challengeError },
-  ] = await Promise.all([
+  const results = await Promise.allSettled([
     supabase.from('friendships').select('*').or(`user_a.eq.${userId},user_b.eq.${userId}`),
     supabase.from('friend_requests').select('*').eq('addressee_id', userId).eq('status', 'pending').order('created_at', { ascending: false }),
     supabase.from('challenge_requests').select('*').eq('invitee_id', userId).eq('status', 'pending').order('created_at', { ascending: false }),
     supabase.from('challenges').select('*, challenge_progress(*)').or(`challenger_id.eq.${userId},opponent_id.eq.${userId}`).eq('status', 'active').order('created_at', { ascending: false }),
   ])
 
-  throwIfError(friendshipError)
-  throwIfError(requestError)
-  throwIfError(challengeRequestError)
-  throwIfError(challengeError)
+  const readResult = (result, label) => {
+    if (result.status === 'rejected') {
+      console.error(`${label} konnten nicht geladen werden:`, result.reason)
+      return []
+    }
+    if (result.value.error) {
+      console.error(`${label} konnten nicht geladen werden:`, result.value.error)
+      return []
+    }
+    return result.value.data ?? []
+  }
+
+  const friendshipRows = readResult(results[0], 'Freundschaften')
+  const friendRequestRows = readResult(results[1], 'Freundschaftsanfragen')
+  const challengeRequestRows = readResult(results[2], 'Challenge-Anfragen')
+  const challengeRows = readResult(results[3], 'Challenges')
 
   const profileIds = new Set()
   friendshipRows?.forEach((row) => profileIds.add(row.user_a === userId ? row.user_b : row.user_a))
@@ -49,8 +56,11 @@ export async function loadSocialDashboard(userId) {
   let profiles = []
   if (profileIds.size) {
     const { data, error } = await supabase.from('profiles').select('id, display_name').in('id', [...profileIds])
-    throwIfError(error)
-    profiles = data ?? []
+    if (error) {
+      console.error('Namen der Freunde konnten nicht geladen werden:', error)
+    } else {
+      profiles = data ?? []
+    }
   }
   const profileMap = new Map(profiles.map((profile) => [profile.id, profile]))
   const friendName = (id) => profileMap.get(id)?.display_name || 'MyFlow-Freund'
