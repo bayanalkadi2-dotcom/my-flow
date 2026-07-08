@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [session, setSession] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -19,8 +20,10 @@ export function AuthProvider({ children }) {
     }
 
     // Login, Logout und automatisch erneuerte Tokens direkt übernehmen.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
       applySession(nextSession)
+      if (event === 'PASSWORD_RECOVERY') setIsPasswordRecovery(true)
+      if (event === 'SIGNED_OUT') setIsPasswordRecovery(false)
       if (isMounted) setIsLoading(false)
     })
 
@@ -123,6 +126,7 @@ export function AuthProvider({ children }) {
     user,
     session,
     isLoading,
+    isPasswordRecovery,
     error,
     signup,
     signin,

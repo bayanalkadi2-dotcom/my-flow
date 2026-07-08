@@ -804,6 +804,48 @@ input {
   margin-top: 10px;
 }
 
+.auth-field-error {
+  display: block;
+  grid-column: 1 / -1;
+  margin: 8px 2px 0;
+  color: #c53d57;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.auth-form-message {
+  margin: 4px 0 10px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.auth-form-error {
+  color: #a92f49;
+  background: #fff0f3;
+  border: 1px solid #f5c8d2;
+}
+
+.auth-form-success {
+  color: #246b4b;
+  background: #eefaf4;
+  border: 1px solid #c5ead7;
+}
+
+.app.theme-dark .auth-form-error {
+  color: #ffb9c8;
+  background: rgba(165, 45, 73, 0.18);
+  border-color: rgba(255, 185, 200, 0.24);
+}
+
+.app.theme-dark .auth-form-success {
+  color: #a9edc9;
+  background: rgba(36, 107, 75, 0.2);
+  border-color: rgba(169, 237, 201, 0.2);
+}
+
 .style-screen {
   justify-content: flex-start;
   padding-top: 28px;

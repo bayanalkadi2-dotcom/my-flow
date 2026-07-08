@@ -14,7 +14,7 @@ import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
 import Datenschutz from './pages/Datenschutz'
 import Einloggen from './pages/Einloggen'
-import PasswortÄndern from './pages/Passwortändern'
+import PasswordReset from './pages/Passwortändern'
 import Kalender from './pages/Kalender'
 import Profil from './pages/Profil'
 import Registrieren from './pages/Registrieren'
@@ -29,7 +29,13 @@ import StudentOnboarding from './pages/StudentOnboarding'
 import flowCharacter from './assets/flow-character-wall-final.jpg'
 import './App.css'
 
-const authScreens = ['start', 'login', 'register', 'resetPassword', 'languageStyle', 'welcomeCharacter', 'quickStartSetup']
+const passwordResetPath = '/passwort-zuruecksetzen'
+const initialPasswordResetUrl = window.location.pathname.replace(/\/$/, '') === passwordResetPath
+const initialRecoveryParameters = new URLSearchParams(window.location.search).has('code')
+  || new URLSearchParams(window.location.search).has('token_hash')
+  || new URLSearchParams(window.location.search).get('type') === 'recovery'
+  || new URLSearchParams(window.location.hash.slice(1)).get('type') === 'recovery'
+const authScreens = ['start', 'login', 'register', 'resetPassword', 'passwordRecovery', 'languageStyle', 'welcomeCharacter', 'quickStartSetup']
 const persistentScreens = new Set(['dashboard', 'calendar', 'habits', 'progress', 'profile', 'profileSettings', 'freunde'])
 
 function getThemeStorageKey(userId) {
@@ -133,10 +139,10 @@ function LoadingScreen() {
 }
 
 function App() {
-  const { user, isLoading: authLoading, isAuthenticated, signout } = useAuth()
+  const { user, isLoading: authLoading, isAuthenticated, isPasswordRecovery, signout } = useAuth()
   const { profile, setProfile, isLoading: profileLoading } = useProfile()
   const { addCheckin } = useCheckins()
-  const [screen, setScreen] = useState('dashboard')
+  const [screen, setScreen] = useState(() => initialPasswordResetUrl ? 'passwordRecovery' : 'dashboard')
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(() => localStorage.getItem('hasSeenOnboarding') === 'true')
   const [languageStyle, setLanguageStyle] = useState('german')
   const [communicationStyle, setCommunicationStyle] = useState('casual')
@@ -201,10 +207,10 @@ function App() {
         if (routinesRes.success) {
           setRoutineItems(routinesRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
         }
-        setScreen(loadLastScreen(user.id))
+        if (!initialPasswordResetUrl) setScreen(loadLastScreen(user.id))
       } catch (err) {
         console.error('Fehler beim Laden der Benutzerdaten:', err)
-        setScreen(loadLastScreen(user.id))
+        if (!initialPasswordResetUrl) setScreen(loadLastScreen(user.id))
       } finally {
         setIsLoadingData(false)
         setRoutinesLoaded(true)
@@ -608,6 +614,19 @@ function App() {
     return <LoadingScreen />
   }
 
+  if (screen === 'passwordRecovery' || isPasswordRecovery) {
+    return (
+      <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'}`}>
+        <PasswordReset
+          hasRecoveryToken={initialRecoveryParameters || isPasswordRecovery}
+          mode="recovery"
+          onNavigate={setScreen}
+          t={t}
+        />
+      </main>
+    )
+  }
+
   function setHabitPartial(selectedHabit) {
     const updates = { current: 0, progress: 50, done: false }
     setRoutineItems((current) => current.map((habit) => (
@@ -660,7 +679,7 @@ function App() {
         case 'register':
           return <Registrieren onNavigate={setScreen} t={t} />
         case 'resetPassword':
-          return <PasswortÄndern onNavigate={setScreen} t={t} />
+          return <PasswordReset onNavigate={setScreen} t={t} />
         case 'languageStyle':
           return (
             <Sprachstil
