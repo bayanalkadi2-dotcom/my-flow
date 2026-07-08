@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from './context/authContextValue'
 import { useProfile } from './context/profileContextValue'
 import { useCheckins } from './context/checkinContextValue'
-import { getRoutines, bulkCreateRoutines, updateRoutine } from './services/routineService'
+import { getRoutines, updateRoutine } from './services/routineService'
 import { getUserSettings, saveOnboardingProfile } from './services/authService'
 import Navbar from './commponents/Navbar'
-import { habits, languageStyles } from './data/appData'
+import { languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import { loadCalendarNotes, saveCalendarNotes } from './utils/calendarNotes'
 import { getLocalDateKey } from './utils/checkins'
@@ -199,29 +199,7 @@ function App() {
         // Load routines
         const routinesRes = await getRoutines(user.id)
         if (routinesRes.success) {
-          if (routinesRes.routines.length === 0) {
-            // If no routines exist, create default ones
-            const defaultRoutines = habits
-              .filter((habit) => !isRemovedRoutine(habit))
-              .map((habit) => ({
-                title: habit.title,
-                detail: habit.detail,
-                progress: habit.progress || 0,
-                category: habit.category,
-                current: 0,
-                target: 1,
-                unit: habit.unit || 'Mal',
-                done: false,
-                type: habit.type,
-              }))
-
-            const createRes = await bulkCreateRoutines(user.id, defaultRoutines)
-            if (createRes.success) {
-              setRoutineItems(createRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
-            }
-          } else {
-            setRoutineItems(routinesRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
-          }
+          setRoutineItems(routinesRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
         }
         setScreen(loadLastScreen(user.id))
       } catch (err) {
