@@ -5,6 +5,7 @@ import DailyCheckIn from '../../commponents/checkin/DailyCheckIn'
 import Navbar from '../../commponents/Navbar'
 import DashboardHome from '../../pages/DashboardHome'
 import Einloggen from '../../pages/Einloggen'
+import Kalender from '../../pages/Kalender'
 import Profil from '../../pages/Profil'
 import Registrieren from '../../pages/Registrieren'
 import Routinen from '../../pages/Routinen'
@@ -16,8 +17,10 @@ const mocks = vi.hoisted(() => ({
   signup: vi.fn(),
   signout: vi.fn(),
   useAuth: vi.fn(),
+  useCheckins: vi.fn(),
   useProfile: vi.fn(),
   saveDailyCheckIn: vi.fn(),
+  getDailyCheckIns: vi.fn(),
 }))
 
 vi.mock('../../context/authContextValue', () => ({
@@ -28,7 +31,12 @@ vi.mock('../../context/profileContextValue', () => ({
   useProfile: mocks.useProfile,
 }))
 
+vi.mock('../../context/checkinContextValue', () => ({
+  useCheckins: mocks.useCheckins,
+}))
+
 vi.mock('../../services/checkInService', () => ({
+  getDailyCheckIns: mocks.getDailyCheckIns,
   saveDailyCheckIn: mocks.saveDailyCheckIn,
 }))
 
@@ -68,6 +76,7 @@ describe('authentication pages', () => {
       error: '',
     })
     mocks.useProfile.mockReturnValue(defaultProfileMock)
+    mocks.useCheckins.mockReturnValue({ checkins: [], addCheckin: vi.fn() })
   })
 
   it('renders login texts, inputs and buttons', () => {
@@ -84,12 +93,12 @@ describe('authentication pages', () => {
 
     fireEvent.submit(container.querySelector('form'))
 
-    expect(screen.getByText(/Bitte f/)).toBeInTheDocument()
+    expect(screen.getByText('Bitte gib deine E-Mail-Adresse ein.')).toBeInTheDocument()
     expect(mocks.signin).not.toHaveBeenCalled()
   })
 
-  it('shows Supabase login errors for invalid data', async () => {
-    mocks.signin.mockRejectedValueOnce(new Error('Ungueltige Daten'))
+  it('shows friendly login errors for invalid data', async () => {
+    mocks.signin.mockRejectedValueOnce(new Error('Invalid login credentials'))
     const user = userEvent.setup()
     renderLogin()
 
@@ -97,7 +106,7 @@ describe('authentication pages', () => {
     await user.type(screen.getByLabelText(t.auth.password), 'secret123')
     await user.click(screen.getByRole('button', { name: t.start.login }))
 
-    expect(await screen.findByText('Ungueltige Daten')).toBeInTheDocument()
+    expect(await screen.findByText('E-Mail oder Passwort ist falsch.')).toBeInTheDocument()
   })
 
   it('submits successful login and toggles password visibility', async () => {
@@ -116,52 +125,48 @@ describe('authentication pages', () => {
     await user.click(screen.getByRole('button', { name: t.start.login }))
 
     await waitFor(() => expect(mocks.signin).toHaveBeenCalledWith('mira@example.com', 'secret123'))
-    expect(await screen.findByText('Anmeldung erfolgreich!')).toBeInTheDocument()
+    expect(await screen.findByText('Änderungen übernommen.')).toBeInTheDocument()
   })
 
   it('validates registration fields and submits a successful registration', async () => {
     mocks.signup.mockResolvedValueOnce({})
-    const user = userEvent.setup()
     renderWithDefaults(<Registrieren onNavigate={vi.fn()} t={t} />)
-
-    await user.click(screen.getByRole('button', { name: /Student/ }))
-    await user.click(screen.getByRole('button', { name: 'Weiter' }))
-    await user.click(screen.getByRole('button', { name: '19-24' }))
-    await user.click(screen.getByText('Universität').closest('button'))
-    await user.click(screen.getByRole('button', { name: 'Zur Registrierung' }))
 
     const form = document.querySelector('form')
     fireEvent.submit(form)
-    expect(screen.getByText(/Bitte f/)).toBeInTheDocument()
+    expect(screen.getByText('Bitte gib einen Namen ein.')).toBeInTheDocument()
 
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Mira' } })
     const emailInput = screen.getByLabelText(t.auth.email)
-    await user.type(emailInput, 'keine-email')
-    await user.type(screen.getByLabelText(t.auth.password), 'secret123')
-    await user.type(screen.getByLabelText('Passwort wiederholen'), 'secret123')
-    await user.click(screen.getByRole('button', { name: t.start.register }))
+    fireEvent.change(emailInput, { target: { value: 'keine-email' } })
+    fireEvent.change(screen.getByLabelText(t.auth.password), { target: { value: 'secret123' } })
+    fireEvent.change(screen.getByLabelText('Passwort wiederholen'), { target: { value: 'secret123' } })
+    fireEvent.click(screen.getByRole('button', { name: t.start.register }))
     expect(emailInput.validity.valid).toBe(false)
     expect(mocks.signup).not.toHaveBeenCalled()
 
-    await user.clear(emailInput)
-    await user.clear(screen.getByLabelText(t.auth.password))
-    await user.clear(screen.getByLabelText('Passwort wiederholen'))
-    await user.type(emailInput, 'mira@example.com')
-    await user.type(screen.getByLabelText(t.auth.password), '123')
-    await user.type(screen.getByLabelText('Passwort wiederholen'), '456')
+    fireEvent.change(emailInput, { target: { value: 'mira@example.com' } })
+    fireEvent.click(screen.getByText('Weiblich').closest('button'))
+    fireEvent.change(screen.getByLabelText('Alter'), { target: { value: '21' } })
+    fireEvent.change(screen.getByLabelText('Größe'), { target: { value: '170' } })
+    fireEvent.click(screen.getByText('Normal aktiv').closest('button'))
+    fireEvent.click(screen.getByText('Studium').closest('button'))
+    fireEvent.change(screen.getByLabelText(t.auth.password), { target: { value: '123' } })
+    fireEvent.change(screen.getByLabelText('Passwort wiederholen'), { target: { value: '456' } })
     fireEvent.submit(form)
     expect(screen.getByText(/stimmen nicht/)).toBeInTheDocument()
 
-    await user.clear(screen.getByLabelText(t.auth.password))
-    await user.clear(screen.getByLabelText('Passwort wiederholen'))
-    await user.type(screen.getByLabelText(t.auth.password), '123')
-    await user.type(screen.getByLabelText('Passwort wiederholen'), '123')
+    fireEvent.change(screen.getByLabelText(t.auth.password), { target: { value: '123' } })
+    fireEvent.change(screen.getByLabelText('Passwort wiederholen'), { target: { value: '123' } })
     fireEvent.submit(form)
-    expect(screen.getByText(/mindestens 6 Zeichen/)).toBeInTheDocument()
+    expect(screen.getByText(/mindestens 8 Zeichen/)).toBeInTheDocument()
 
-    await user.clear(screen.getByLabelText(t.auth.password))
-    await user.clear(screen.getByLabelText('Passwort wiederholen'))
-    await user.type(screen.getByLabelText(t.auth.password), 'secret123')
-    await user.type(screen.getByLabelText('Passwort wiederholen'), 'secret123')
+    fireEvent.change(screen.getByLabelText(t.auth.password), { target: { value: 'secret123' } })
+    fireEvent.change(screen.getByLabelText('Passwort wiederholen'), { target: { value: 'secret123' } })
+    fireEvent.submit(form)
+    expect(screen.getByText('Bitte akzeptiere die Datenschutzbestimmungen.')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByLabelText(/Ich akzeptiere/))
     fireEvent.submit(form)
 
     await waitFor(() => expect(mocks.signup).toHaveBeenCalled())
@@ -210,9 +215,10 @@ describe('dashboard, navigation and profile components', () => {
     vi.clearAllMocks()
     mocks.useAuth.mockReturnValue({ signout: mocks.signout, error: '' })
     mocks.useProfile.mockReturnValue(defaultProfileMock)
+    mocks.useCheckins.mockReturnValue({ checkins: [], addCheckin: vi.fn(), hasCheckin: vi.fn(() => false) })
   })
 
-  it('renders DashboardHome and navigates to profile settings', async () => {
+  it('renders DashboardHome and navigates to the diary from profile summary', async () => {
     const onNavigate = vi.fn()
     const user = userEvent.setup()
     renderWithDefaults(
@@ -228,7 +234,7 @@ describe('dashboard, navigation and profile components', () => {
     expect(screen.getByText(/Hey Mira/)).toBeInTheDocument()
     expect(screen.getByText('Ziele und Tagesablauf')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Bearbeiten' }))
-    expect(onNavigate).toHaveBeenCalledWith('profileSettings')
+    expect(onNavigate).toHaveBeenCalledWith('calendar')
   })
 
   it('renders Navbar and handles navigation clicks', async () => {
@@ -263,10 +269,12 @@ describe('dashboard, navigation and profile components', () => {
   })
 })
 
-describe('DailyCheckIn and routines interactions', () => {
+describe('DailyCheckIn, diary and routines interactions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.useProfile.mockReturnValue(defaultProfileMock)
+    mocks.useCheckins.mockReturnValue({ checkins: [], addCheckin: vi.fn(), hasCheckin: vi.fn(() => false) })
+    mocks.getDailyCheckIns.mockResolvedValue({ success: true, checkIns: [] })
     mocks.saveDailyCheckIn.mockResolvedValue({ id: 'checkin-1' })
   })
 
@@ -277,16 +285,36 @@ describe('DailyCheckIn and routines interactions', () => {
     await user.click(screen.getByRole('button', { name: 'Check-in starten' }))
 
     while (!screen.queryByRole('button', { name: 'Auswerten' })) {
-      const options = within(screen.getByRole('listbox')).getAllByRole('button')
+      const options = within(screen.getByRole('listbox')).getAllByRole('option')
       await user.click(options[0])
       await user.click(screen.getByRole('button', { name: 'Weiter' }))
     }
 
-    await user.click(within(screen.getByRole('listbox')).getAllByRole('button')[0])
+    await user.click(within(screen.getByRole('listbox')).getAllByRole('option')[0])
     await user.click(screen.getByRole('button', { name: 'Auswerten' }))
 
     expect(await screen.findByText('Dein Tages-Check-in ist fertig')).toBeInTheDocument()
     await waitFor(() => expect(mocks.saveDailyCheckIn).toHaveBeenCalled())
+  })
+
+  it('stores diary notes and adds calendar tasks', async () => {
+    const onNotesChange = vi.fn()
+    const user = userEvent.setup()
+    renderWithDefaults(<Kalender notes={{}} onNotesChange={onNotesChange} />)
+
+    await user.click(screen.getByRole('button', { name: /Notiz zum Tag/ }))
+    fireEvent.change(screen.getByPlaceholderText(/Heute auf genug Pausen/), {
+      target: { value: 'Heute lernen' },
+    })
+
+    const latestNotes = onNotesChange.mock.calls.at(-1)[0]
+    expect(Object.values(latestNotes)[0]).toMatchObject({ text: 'Heute lernen' })
+
+    await user.click(screen.getByRole('button', { name: /Aufgabe/ }))
+    await user.type(screen.getByPlaceholderText(/Wasser trinken/), 'Mathe lernen')
+    await user.click(screen.getByRole('button', { name: /Hinzuf/ }))
+
+    await waitFor(() => expect(screen.getAllByText('Mathe lernen').length).toBeGreaterThan(0))
   })
 
   it('adds and removes routines', async () => {
