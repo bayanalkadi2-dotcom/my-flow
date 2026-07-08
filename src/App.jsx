@@ -48,8 +48,6 @@ const removedRoutineTitles = new Set([
   'gesund essen',
   'supplement eingenommen',
   'magnesium/zink eingenommen',
-  'tagesplanung',
-  'fokuszeit',
   'freunde kontaktieren',
   'familie kontaktieren',
   'soziale aktivität',

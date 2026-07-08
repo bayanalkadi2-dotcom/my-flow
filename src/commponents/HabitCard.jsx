@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import waterGlassEmpty from '../assets/water-glass-empty.svg'
 import waterGlassFull from '../assets/water-glass-full.svg'
 import { calculateCompletedItemsProgress, getRoutineProgress } from '../utils/routineProgress'
@@ -118,6 +118,8 @@ function getProgressText(habit) {
 
 function getEntryKind(title) {
   const normalized = String(title || '').toLowerCase()
+  if (normalized === 'tagesplanung' || normalized.includes('tag vorbereiten')) return 'dailyPlanning'
+  if (normalized === 'fokuszeit' || normalized === 'lernzeit') return 'focusTime'
   if (normalized === 'lernblock' || normalized === 'lernen') return 'learning'
   if (normalized === 'wochenplanung') return 'weekly'
   if (normalized.startsWith('mini-aufgaben')) return 'miniTasks'
@@ -389,6 +391,11 @@ function RoutineVisualAction({ habit, visual, onActivate }) {
 }
 
 const entryEditorCopy = {
+  dailyPlanning: {
+    question: 'Tagesplanung',
+    help: 'Plane deinen Tag und notiere, was du heute erledigen oder berücksichtigen möchtest.',
+    placeholder: 'Tagesablauf, Ziele oder wichtige Aufgaben',
+  },
   learning: {
     question: 'Was möchtest du lernen?',
     placeholder: 'Kapitel, Karteikarten oder Übungsaufgaben',
@@ -410,13 +417,126 @@ const entryEditorCopy = {
 function RoutineDailyEditor({ dateKey, entry, habit, kind, onSave }) {
   const [text, setText] = useState(entry.text ?? '')
   const [dosage, setDosage] = useState(entry.dosage ?? '')
+  const [focusGoal, setFocusGoal] = useState(entry.focusGoal ?? '')
+  const [focusDuration, setFocusDuration] = useState(Number(entry.focusDuration ?? habit.target ?? 25) || 25)
+  const [remainingSeconds, setRemainingSeconds] = useState(Number(entry.remainingSeconds ?? 0))
+  const [timerState, setTimerState] = useState(entry.timerState ?? 'idle')
   const [newTask, setNewTask] = useState('')
   const [saved, setSaved] = useState(false)
   const tasks = Array.isArray(entry.miniTasks) ? entry.miniTasks : []
+  const focusDurations = [15, 25, 45, 60]
+
+  const saveFocusEntry = useCallback((nextEntry, nextUpdates = {}) => {
+    onSave(habit.id, dateKey, { ...entry, ...nextEntry }, nextUpdates)
+  }, [dateKey, entry, habit.id, onSave])
+
+  const completeFocusSession = useCallback(() => {
+    const completedEntry = {
+      focusGoal: focusGoal.trim(),
+      focusDuration,
+      remainingSeconds: 0,
+      timerState: 'completed',
+      completedAt: new Date().toISOString(),
+    }
+    const routineUpdates = {
+      current: Number(habit.target ?? focusDuration),
+      progress: 100,
+      done: true,
+    }
+
+    setTimerState('completed')
+    saveFocusEntry(completedEntry, routineUpdates)
+  }, [focusDuration, focusGoal, habit.target, saveFocusEntry])
+
+  useEffect(() => {
+    if (kind !== 'focusTime' || timerState !== 'running') return undefined
+
+    const intervalId = window.setInterval(() => {
+      setRemainingSeconds((current) => {
+        if (current <= 1) {
+          window.clearInterval(intervalId)
+          completeFocusSession()
+          return 0
+        }
+
+        const nextSeconds = current - 1
+        onSave(habit.id, dateKey, {
+          ...entry,
+          focusGoal: focusGoal.trim(),
+          focusDuration,
+          remainingSeconds: nextSeconds,
+          timerState: 'running',
+        })
+        return nextSeconds
+      })
+    }, 1000)
+
+    return () => window.clearInterval(intervalId)
+  }, [completeFocusSession, dateKey, entry, focusDuration, focusGoal, habit.id, kind, onSave, timerState])
 
   function saveTextEntry() {
-    onSave(habit.id, dateKey, { ...entry, text: text.trim(), dosage: dosage.trim() })
+    const isDailyPlanning = kind === 'dailyPlanning'
+    const routineUpdates = isDailyPlanning && text.trim()
+      ? { current: Number(habit.target ?? 1), progress: 100, done: true }
+      : {}
+
+    onSave(habit.id, dateKey, { ...entry, text: text.trim(), dosage: dosage.trim() }, routineUpdates)
     setSaved(true)
+  }
+
+  function startFocusTimer() {
+    const goal = focusGoal.trim()
+    if (!goal) return
+
+    const nextSeconds = Math.max(Number(focusDuration) || 25, 1) * 60
+    setRemainingSeconds(nextSeconds)
+    setTimerState('running')
+    saveFocusEntry({
+      focusGoal: goal,
+      focusDuration,
+      remainingSeconds: nextSeconds,
+      timerState: 'running',
+      completedAt: '',
+    })
+  }
+
+  function pauseFocusTimer() {
+    setTimerState('paused')
+    saveFocusEntry({
+      focusGoal: focusGoal.trim(),
+      focusDuration,
+      remainingSeconds,
+      timerState: 'paused',
+    })
+  }
+
+  function resumeFocusTimer() {
+    if (remainingSeconds <= 0) return
+    setTimerState('running')
+    saveFocusEntry({
+      focusGoal: focusGoal.trim(),
+      focusDuration,
+      remainingSeconds,
+      timerState: 'running',
+    })
+  }
+
+  function stopFocusTimer() {
+    setTimerState('idle')
+    setRemainingSeconds(0)
+    saveFocusEntry({
+      focusGoal: focusGoal.trim(),
+      focusDuration,
+      remainingSeconds: 0,
+      timerState: 'idle',
+    })
+  }
+
+  function formatSeconds(seconds) {
+    const safeSeconds = Math.max(Number(seconds) || 0, 0)
+    const minutes = Math.floor(safeSeconds / 60)
+    const restSeconds = safeSeconds % 60
+    return `${String(minutes).padStart(2, '0')}:${String(restSeconds).padStart(2, '0')}`
   }
 
   function saveTasks(nextTasks) {
@@ -481,6 +601,75 @@ function RoutineDailyEditor({ dateKey, entry, habit, kind, onSave }) {
     )
   }
 
+  if (kind === 'focusTime') {
+    const canStart = focusGoal.trim().length > 0
+    const displaySeconds = timerState === 'idle' || timerState === 'completed'
+      ? Math.max(Number(focusDuration) || 25, 1) * 60
+      : remainingSeconds
+
+    return (
+      <div className="routine-entry-panel routine-focus-panel">
+        <label>
+          <strong>Fokuszeit</strong>
+          <span>Wähle eine Aufgabe und konzentriere dich für einen festen Zeitraum nur darauf.</span>
+          <input
+            onChange={(event) => setFocusGoal(event.target.value)}
+            placeholder="z. B. Mathe lernen oder Präsentation vorbereiten"
+            type="text"
+            value={focusGoal}
+          />
+        </label>
+
+        <div className="routine-duration-options" aria-label="Dauer auswählen">
+          {focusDurations.map((duration) => (
+            <button
+              className={Number(focusDuration) === duration ? 'selected' : ''}
+              disabled={timerState === 'running'}
+              key={duration}
+              onClick={() => {
+                setFocusDuration(duration)
+                if (timerState === 'idle') setRemainingSeconds(0)
+              }}
+              type="button"
+            >
+              {duration} Min
+            </button>
+          ))}
+        </div>
+
+        <div className="routine-focus-timer" aria-live="polite">
+          <strong>{formatSeconds(displaySeconds)}</strong>
+          <span>
+            {timerState === 'completed'
+              ? 'Fokuszeit abgeschlossen.'
+              : timerState === 'paused'
+                ? 'Timer pausiert.'
+                : timerState === 'running'
+                  ? 'Fokuszeit läuft.'
+                  : 'Bereit zum Start.'}
+          </span>
+        </div>
+
+        <div className="routine-focus-actions">
+          {(timerState === 'idle' || timerState === 'completed') && (
+            <button className="routine-entry-save" disabled={!canStart} onClick={startFocusTimer} type="button">
+              Fokuszeit starten
+            </button>
+          )}
+          {timerState === 'running' && (
+            <button className="routine-entry-save" onClick={pauseFocusTimer} type="button">Pausieren</button>
+          )}
+          {timerState === 'paused' && (
+            <button className="routine-entry-save" onClick={resumeFocusTimer} type="button">Fortsetzen</button>
+          )}
+          {(timerState === 'running' || timerState === 'paused') && (
+            <button className="routine-entry-save secondary" onClick={stopFocusTimer} type="button">Vorzeitig beenden</button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   const copy = entryEditorCopy[kind]
   if (!copy) return null
 
@@ -488,13 +677,14 @@ function RoutineDailyEditor({ dateKey, entry, habit, kind, onSave }) {
     <div className="routine-entry-panel">
       <label>
         <strong>{copy.question}</strong>
+        {copy.help && <span>{copy.help}</span>}
         <textarea
           onChange={(event) => {
             setText(event.target.value)
             setSaved(false)
           }}
           placeholder={copy.placeholder}
-          rows={kind === 'weekly' ? 5 : 4}
+          rows={kind === 'weekly' || kind === 'dailyPlanning' ? 6 : 4}
           value={text}
         />
       </label>
@@ -512,7 +702,9 @@ function RoutineDailyEditor({ dateKey, entry, habit, kind, onSave }) {
           />
         </label>
       )}
-      <button className="routine-entry-save" onClick={saveTextEntry} type="button">Eintrag speichern</button>
+      <button className="routine-entry-save" onClick={saveTextEntry} type="button">
+        {kind === 'dailyPlanning' ? 'Speichern und abschließen' : 'Eintrag speichern'}
+      </button>
       {saved && <small className="routine-entry-feedback">Gespeichert.</small>}
     </div>
   )

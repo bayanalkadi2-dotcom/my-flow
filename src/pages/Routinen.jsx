@@ -49,8 +49,25 @@ const routineCategories = [
   },
 ]
 
+const categoryDesign = {
+  'Für dich': { icon: '✦', subtitle: 'Empfohlen für dich', tone: 'recommended' },
+  'Mentale Gesundheit': { icon: '♡', subtitle: 'Achtsamkeit & Wohlbefinden', tone: 'mind' },
+  'Körperliche Gesundheit': { icon: '⌁', subtitle: 'Bewegung & Ernährung', tone: 'body' },
+  'Medikamente & Vitamine': { icon: '＋', subtitle: 'Einnahmen im Blick behalten', tone: 'medicine' },
+  Produktivität: { icon: '✓', subtitle: 'Fokus & Ziele erreichen', tone: 'productivity' },
+  'Gewohnheiten reduzieren': { icon: '↘', subtitle: 'Weniger Stress, mehr Balance', tone: 'balance' },
+}
+
+function getCategoryDesign(title) {
+  return categoryDesign[title] ?? {
+    icon: '+',
+    subtitle: 'Passende Routinen hinzufügen',
+    tone: 'recommended',
+  }
+}
+
 function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onResetProgress, onSaveDailyEntry, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
-  const { personalizedTexts, routineSuggestions } = useProfile()
+  const { routineSuggestions } = useProfile()
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('4')
   const [unit, setUnit] = useState('Gläser (500 ml)')
@@ -100,8 +117,8 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
       <header className="routines-page-header">
         <div>
           <p className="eyebrow">ROUTINEN</p>
-          <h1>{personalizedTexts.routinesTitle}</h1>
-          <p>Passende Vorschläge für deinen {personalizedTexts.contextLabel.toLowerCase()} – du entscheidest, was du hinzufügst.</p>
+          <h1>Deine Routinen</h1>
+          <p>Kleine Schritte, große Wirkung.</p>
         </div>
         <button
           className="routine-add-circle"
@@ -113,71 +130,72 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
         </button>
       </header>
 
-      <div className="habit-list">
-        {habits.map((habit) => (
-          <HabitCard
-            habit={habit}
-            key={habit.id}
-            onIncrement={onIncrement}
-            onDecrement={onDecrement}
-            onResetProgress={onResetProgress}
-            onSaveDailyEntry={onSaveDailyEntry}
-            onSetMood={onSetMood}
-            onSetPartial={onSetPartial}
-            onUpdatePeriod={onUpdatePeriod}
-            onRemove={onRemove}
-            onToggleDone={onToggleDone}
-            t={t}
-          />
-        ))}
+      <div className="routine-picker" aria-label="Routine-Kategorien">
+        {availableCategories.map((category) => {
+          const isOpen = openCategory === category.title
+          const design = getCategoryDesign(category.title)
+
+          return (
+            <div className="routine-category-group" key={category.title}>
+              <button
+                className={`routine-category routine-category-${design.tone} ${isOpen ? 'active' : ''}`}
+                onClick={() => setOpenCategory(isOpen ? '' : category.title)}
+                type="button"
+              >
+                <span className="routine-category-icon" aria-hidden="true">{design.icon}</span>
+                <span className="routine-category-copy">
+                  <span>{translateCategory(category.title, languageStyle)}</span>
+                  <small>{design.subtitle}</small>
+                </span>
+                <strong aria-hidden="true">{isOpen ? '-' : '+'}</strong>
+              </button>
+
+              {isOpen && (
+                <div className="routine-suggestions">
+                  {category.routines.map((routine) => {
+                    const isAdded = existingTitles.has(routine.title.toLowerCase())
+
+                    return (
+                      <button
+                        className="routine-suggestion"
+                        disabled={isAdded}
+                        key={routine.title}
+                        onClick={() => addSuggestedRoutine(routine, category.title)}
+                        type="button"
+                      >
+                        <strong>{translateHabitTitle(routine.title, languageStyle)}</strong>
+                        <small>
+                          {isAdded
+                            ? t.routines.added
+                            : `${t.routines.target}: ${routine.target} ${translateUnit(routine.unit)}`}
+                        </small>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
+
+      <article className="custom-routine-card">
+        <div>
+          <span>Eigene Routine</span>
+          <h2>Eigene Routine</h2>
+          <p>Erstelle deine ganz persönliche Routine, die perfekt zu dir passt.</p>
+          <button type="button" onClick={() => setAddPanelOpen((open) => !open)}>
+            Eigene Routine erstellen
+          </button>
+        </div>
+        <div className="custom-routine-illustration" aria-hidden="true">
+          <span>＋</span>
+          <small>Flow</small>
+        </div>
+      </article>
 
       {addPanelOpen && (
         <div className="routine-add-panel">
-          <div className="routine-picker">
-            {availableCategories.map((category) => {
-              const isOpen = openCategory === category.title
-
-              return (
-                <div className="routine-category-group" key={category.title}>
-                  <button
-                    className={`routine-category ${isOpen ? 'active' : ''}`}
-                    onClick={() => setOpenCategory(isOpen ? '' : category.title)}
-                    type="button"
-                  >
-                    <span>{translateCategory(category.title, languageStyle)}</span>
-                    <strong aria-hidden="true">{isOpen ? '-' : '+'}</strong>
-                  </button>
-
-                  {isOpen && (
-                    <div className="routine-suggestions">
-                      {category.routines.map((routine) => {
-                        const isAdded = existingTitles.has(routine.title.toLowerCase())
-
-                        return (
-                          <button
-                            className="routine-suggestion"
-                            disabled={isAdded}
-                            key={routine.title}
-                            onClick={() => addSuggestedRoutine(routine, category.title)}
-                            type="button"
-                          >
-                            <strong>{translateHabitTitle(routine.title, languageStyle)}</strong>
-                            <small>
-                              {isAdded
-                                ? t.routines.added
-                                : `${t.routines.target}: ${routine.target} ${translateUnit(routine.unit)}`}
-                            </small>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-
           <form className="routine-form" onSubmit={handleSubmit}>
             <p className="form-title">{t.routines.custom}</p>
             <label>
@@ -211,6 +229,25 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
           </form>
         </div>
       )}
+
+      <div className="habit-list">
+        {habits.map((habit) => (
+          <HabitCard
+            habit={habit}
+            key={habit.id}
+            onIncrement={onIncrement}
+            onDecrement={onDecrement}
+            onResetProgress={onResetProgress}
+            onSaveDailyEntry={onSaveDailyEntry}
+            onSetMood={onSetMood}
+            onSetPartial={onSetPartial}
+            onUpdatePeriod={onUpdatePeriod}
+            onRemove={onRemove}
+            onToggleDone={onToggleDone}
+            t={t}
+          />
+        ))}
+      </div>
     </section>
   )
 }
