@@ -1,27 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../context/authContextValue'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
-import { getProfileAgeError, MAX_PROFILE_AGE, MIN_PROFILE_AGE } from '../utils/profileValidation'
-
-const genderOptions = [
-  ['female', 'Weiblich'],
-  ['male', 'Männlich'],
-  ['diverse', 'Divers'],
-]
-
-const activityOptions = [
-  ['low', 'Wenig aktiv'],
-  ['medium', 'Normal aktiv'],
-  ['high', 'Sehr aktiv'],
-]
-
-const situationOptions = [
-  ['study', 'Studium'],
-  ['training', 'Ausbildung'],
-  ['work', 'Arbeit'],
-  ['transition', 'Übergangsphase'],
-  ['other', 'Andere'],
-]
 
 const languageOptions = [
   ['german', 'Deutsch'],
@@ -68,15 +47,9 @@ function Registrieren({ onNavigate, t }) {
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [displayName, setDisplayName] = useState('')
-  const [gender, setGender] = useState('')
-  const [age, setAge] = useState('')
-  const [weightKg, setWeightKg] = useState('')
-  const [heightCm, setHeightCm] = useState('')
-  const [activityLevel, setActivityLevel] = useState('')
-  const [dailyContext, setDailyContext] = useState('')
-  const [languageStyle, setLanguageStyle] = useState('german')
-  const [communicationStyle, setCommunicationStyle] = useState('casual')
-  const [theme, setTheme] = useState('Hell')
+  const [languageStyle, setLanguageStyle] = useState('')
+  const [communicationStyle, setCommunicationStyle] = useState('')
+  const [theme, setTheme] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false)
@@ -98,22 +71,11 @@ function Registrieren({ onNavigate, t }) {
       return
     }
 
-
-    const ageError = getProfileAgeError(age)
-    if (ageError) {
-      setError(ageError)
+    if (!languageStyle || !communicationStyle || !theme) {
+      setError('Bitte wähle Sprache, Kommunikationsstil und Design aus.')
       return
     }
 
-    if (!gender || !heightCm || Number(heightCm) <= 0 || !activityLevel || !dailyContext) {
-      setError('Bitte fülle alle Pflichtfelder aus.')
-      return
-    }
-
-    if (weightKg && Number(weightKg) <= 0) {
-      setError('Ungültiges Gewicht.')
-      return
-    }
 
     if (password !== passwordConfirm) {
       setError('Die Passwörter stimmen nicht überein.')
@@ -133,12 +95,6 @@ function Registrieren({ onNavigate, t }) {
     setIsLoading(true)
     try {
       await signup(email, password, displayName.trim(), {
-        gender,
-        age,
-        height_cm: heightCm,
-        weight_kg: weightKg,
-        activity_level: activityLevel,
-        daily_context: dailyContext,
         language_style: languageStyle,
         communication_style: communicationStyle,
         theme,
@@ -149,15 +105,9 @@ function Registrieren({ onNavigate, t }) {
       setPassword('')
       setPasswordConfirm('')
       setDisplayName('')
-      setGender('')
-      setAge('')
-      setWeightKg('')
-      setHeightCm('')
-      setActivityLevel('')
-      setDailyContext('')
-      setLanguageStyle('german')
-      setCommunicationStyle('casual')
-      setTheme('Hell')
+      setLanguageStyle('')
+      setCommunicationStyle('')
+      setTheme('')
       setAcceptedPrivacy(false)
     } catch (err) {
       setError(getRegisterErrorMessage(err))
@@ -189,57 +139,6 @@ function Registrieren({ onNavigate, t }) {
             disabled={isLoading}
             required
           />
-        </label>
-
-        <label className="student-onboarding-label">
-          Geschlecht
-          <div className="student-chip-grid">
-            {genderOptions.map(([value, label]) => (
-              <button className={`student-onboarding-option ${gender === value ? 'selected' : ''}`} key={value} onClick={() => setGender(value)} type="button" disabled={isLoading}>
-                <strong>{label}</strong>
-                <span aria-hidden="true">{gender === value ? '✓' : ''}</span>
-              </button>
-            ))}
-          </div>
-        </label>
-
-        <div className="register-profile-grid">
-          <label className="login-field">
-            <span>Alter</span>
-            <input type="number" min={MIN_PROFILE_AGE} max={MAX_PROFILE_AGE} placeholder="z. B. 21" value={age} onChange={(e) => setAge(e.target.value)} disabled={isLoading} required />
-          </label>
-          <label className="login-field">
-            <span>Gewicht</span>
-            <input type="number" min="1" step="0.1" placeholder="kg" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} disabled={isLoading} />
-          </label>
-          <label className="login-field">
-            <span>Größe</span>
-            <input type="number" min="1" placeholder="cm" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} disabled={isLoading} required />
-          </label>
-        </div>
-
-        <label className="student-onboarding-label">
-          Aktivität
-          <div className="student-chip-grid">
-            {activityOptions.map(([value, label]) => (
-              <button className={`student-onboarding-option ${activityLevel === value ? 'selected' : ''}`} key={value} onClick={() => setActivityLevel(value)} type="button" disabled={isLoading}>
-                <strong>{label}</strong>
-                <span aria-hidden="true">{activityLevel === value ? '✓' : ''}</span>
-              </button>
-            ))}
-          </div>
-        </label>
-
-        <label className="student-onboarding-label">
-          Situation
-          <div className="student-chip-grid">
-            {situationOptions.map(([value, label]) => (
-              <button className={`student-onboarding-option ${dailyContext === value ? 'selected' : ''}`} key={value} onClick={() => setDailyContext(value)} type="button" disabled={isLoading}>
-                <strong>{label}</strong>
-                <span aria-hidden="true">{dailyContext === value ? '✓' : ''}</span>
-              </button>
-            ))}
-          </div>
         </label>
 
         <label className="student-onboarding-label">
