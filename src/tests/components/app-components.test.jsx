@@ -278,6 +278,7 @@ describe('dashboard, navigation and profile components', () => {
 describe('DailyCheckIn, diary and routines interactions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    localStorage.clear()
     mocks.useProfile.mockReturnValue(defaultProfileMock)
     mocks.useCheckins.mockReturnValue({ checkins: [], addCheckin: vi.fn(), hasCheckin: vi.fn(() => false) })
     mocks.getDailyCheckIns.mockResolvedValue({ success: true, checkIns: [] })
@@ -338,6 +339,61 @@ describe('DailyCheckIn, diary and routines interactions', () => {
         checkIn: expect.any(Object),
       }),
     }))
+  })
+
+  it('starts directly in the free AI chat and stores the chat in history', async () => {
+    mocks.sendAiChatMessage.mockResolvedValueOnce('Ich helfe dir mit einem ruhigen Plan.')
+    const user = userEvent.setup()
+    renderWithDefaults(<DailyCheckIn onNavigate={vi.fn()} user={{ id: 'user-1' }} />)
+
+    expect(screen.getByText('Freier Chat')).toBeInTheDocument()
+
+    const coachInput = screen.getByPlaceholderText('Frag deinen MyFlow Coach...')
+    await user.type(coachInput, 'Hilf mir beim Planen')
+    await user.click(screen.getByRole('button', { name: 'Senden' }))
+
+    expect(screen.getByText('Hilf mir beim Planen')).toBeInTheDocument()
+    expect(await screen.findByText('Ich helfe dir mit einem ruhigen Plan.')).toBeInTheDocument()
+
+    const storedHistory = JSON.parse(localStorage.getItem('myflow-ai-chat-history-user-1'))
+    expect(storedHistory[0].messages).toEqual([
+      { role: 'user', text: 'Hilf mir beim Planen' },
+      { role: 'assistant', text: 'Ich helfe dir mit einem ruhigen Plan.' },
+    ])
+  })
+
+  it('shows a friendly message when the AI chat is unavailable', async () => {
+    mocks.sendAiChatMessage.mockRejectedValueOnce(new Error('network failed'))
+    const user = userEvent.setup()
+    renderWithDefaults(<DailyCheckIn onNavigate={vi.fn()} user={{ id: 'user-1' }} />)
+
+    await user.type(screen.getByPlaceholderText('Frag deinen MyFlow Coach...'), 'Bist du da?')
+    await user.click(screen.getByRole('button', { name: 'Senden' }))
+
+    expect(await screen.findByText('Der Chatbot ist gerade nicht erreichbar.')).toBeInTheDocument()
+  })
+
+  it('opens saved AI chats from the history menu', async () => {
+    localStorage.setItem('myflow-ai-chat-history-user-1', JSON.stringify([{
+      id: 'chat-old',
+      title: 'KI-Chat 08.07., 10:00',
+      createdAt: '2026-07-08T08:00:00.000Z',
+      answers: {},
+      recommendationIds: [],
+      messages: [
+        { role: 'user', text: 'Plane meinen Tag' },
+        { role: 'assistant', text: 'Starte mit einer kleinen Aufgabe.' },
+      ],
+    }]))
+    const user = userEvent.setup()
+    renderWithDefaults(<DailyCheckIn onNavigate={vi.fn()} user={{ id: 'user-1' }} />)
+
+    await user.click(screen.getByRole('button', { name: /Verlauf/ }))
+    await user.click(screen.getByRole('button', { name: /KI-Chat 08.07., 10:00/ }))
+
+    expect(screen.getByLabelText('Alter MyFlow KI Chat')).toBeInTheDocument()
+    expect(screen.getByText('Plane meinen Tag')).toBeInTheDocument()
+    expect(screen.getByText('Starte mit einer kleinen Aufgabe.')).toBeInTheDocument()
   })
 
   it('stores diary notes and adds calendar tasks', async () => {
