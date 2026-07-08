@@ -675,6 +675,12 @@ function Profil({
           </div>
         )}
         <div className="profile-setting-row">
+          <SettingIcon type="privacy" />
+          <span>Datenschutz & Impressum</span>
+          <strong>Info</strong>
+          <button type="button" onClick={() => onNavigate('privacy')}>Öffnen</button>
+        </div>
+        <div className="profile-setting-row">
           <SettingIcon type="subscription" />
           <span>{t.profile.subscription}</span>
           <strong>{selectedPlan.label}</strong>

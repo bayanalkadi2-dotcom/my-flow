@@ -5513,6 +5513,119 @@ input {
   box-shadow: 0 16px 34px rgba(6, 4, 18, 0.24);
 }
 
+.privacy-screen {
+  justify-content: flex-start;
+  overflow-y: auto;
+  gap: 14px;
+  padding-bottom: 110px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 159, 210, 0.28), transparent 28%),
+    radial-gradient(circle at 90% 18%, rgba(115, 207, 255, 0.28), transparent 30%),
+    linear-gradient(155deg, #fffafd 0%, #f8f3ff 54%, #eef6ff 100%);
+}
+
+.privacy-screen h1 {
+  margin: 8px 0 4px;
+  color: #17133f;
+  font-size: 30px;
+  line-height: 1.05;
+}
+
+.privacy-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 34px rgba(115, 84, 220, 0.1);
+}
+
+.privacy-card h2 {
+  margin: 0;
+  color: #17133f;
+  font-size: 18px;
+}
+
+.privacy-card p {
+  margin: 0;
+  color: #5f587f;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.privacy-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 18px;
+  color: #5f587f;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.privacy-card.warning {
+  border-color: rgba(239, 75, 122, 0.18);
+  background: linear-gradient(135deg, rgba(255, 239, 246, 0.94), rgba(255, 255, 255, 0.9));
+}
+
+.privacy-action {
+  min-height: 46px;
+  margin-top: 4px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #765cff;
+  border: 1px solid rgba(118, 92, 255, 0.22);
+  box-shadow: none;
+}
+
+.privacy-action.danger {
+  color: #ef4b7a;
+  border-color: rgba(239, 75, 122, 0.2);
+}
+
+.app.theme-dark .privacy-screen {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(144, 89, 255, 0.24), transparent 30%),
+    radial-gradient(circle at 90% 20%, rgba(73, 178, 255, 0.12), transparent 30%),
+    linear-gradient(155deg, #171025 0%, #211735 54%, #120f21 100%);
+}
+
+.app.theme-dark .privacy-screen h1,
+.app.theme-dark .privacy-card h2 {
+  color: #ffffff;
+}
+
+.app.theme-dark .privacy-card {
+  background: rgba(35, 27, 56, 0.96);
+  border-color: rgba(196, 170, 255, 0.14);
+  box-shadow: 0 16px 34px rgba(6, 4, 18, 0.24);
+}
+
+.app.theme-dark .privacy-card p {
+  color: #c8c1df;
+}
+
+.app.theme-dark .privacy-list {
+  color: #c8c1df;
+}
+
+.app.theme-dark .privacy-card.warning {
+  background: linear-gradient(135deg, rgba(86, 44, 74, 0.88), rgba(35, 27, 56, 0.96));
+  border-color: rgba(255, 159, 190, 0.22);
+}
+
+.app.theme-dark .privacy-action {
+  background: rgba(48, 36, 78, 0.92);
+  color: #c8a8ff;
+  border-color: rgba(196, 170, 255, 0.18);
+}
+
+.app.theme-dark .privacy-action.danger {
+  color: #ff9fbe;
+  border-color: rgba(255, 159, 190, 0.22);
+}
+
 .profile-screen {
   justify-content: flex-start;
   overflow-y: auto;

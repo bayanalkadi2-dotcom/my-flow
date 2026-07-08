@@ -12,6 +12,7 @@ import { getLocalDateKey } from './utils/checkins'
 import { calculateRoutineProgress, getRoutineProgress } from './utils/routineProgress'
 import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
+import Datenschutz from './pages/Datenschutz'
 import Einloggen from './pages/Einloggen'
 import PasswortÄndern from './pages/Passwortändern'
 import Kalender from './pages/Kalender'
@@ -749,6 +750,8 @@ function App() {
         )
       case 'checkin':
         return <DailyCheckIn onNavigate={setScreen} user={user} />
+      case 'privacy':
+        return <Datenschutz onNavigate={setScreen} />
       case 'calendar':
         return <Kalender notes={calendarNotes} onNotesChange={handleCalendarNotesChange} />
       case 'progress':
@@ -836,7 +839,7 @@ function App() {
   return (
     <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
       {renderScreen()}
-      {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'checkin' && screen !== 'calendar' && (
+      {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'privacy' && screen !== 'checkin' && screen !== 'calendar' && (
         <button
           className="floating-checkin-button"
           onClick={() => setScreen('checkin')}
@@ -847,7 +850,7 @@ function App() {
           <span>Check-in</span>
         </button>
       )}
-      {!authScreens.includes(screen) && screen !== 'profileSettings' && (
+      {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'privacy' && (
         <Navbar
           activeScreen={screen}
           items={['dashboard', 'calendar', 'habits', 'progress', 'freunde', 'profile'].map((id) => ({ id, label: t.nav[id] }))}
