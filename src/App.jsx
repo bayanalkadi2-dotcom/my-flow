@@ -156,9 +156,11 @@ function App() {
   const [isSavingOnboarding, setIsSavingOnboarding] = useState(false)
   const [guestSetup, setGuestSetup] = useState(loadGuestSetup)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const [studentOnboardingDismissed, setStudentOnboardingDismissed] = useState(false)
   const accountMenuRef = useRef(null)
   const needsStudentOnboarding = isAuthenticated
     && !profileLoading
+    && !studentOnboardingDismissed
     && profile?.onboarding_completed !== true
   const resolvedProfileName = profile?.display_name || profileName
 
@@ -724,7 +726,14 @@ function App() {
           initialAnswers={profile ?? {}}
           includePreferences={screen === 'profileOnboarding'}
           mode="profile"
-          onBack={() => needsStudentOnboarding ? setScreen('dashboard') : setScreen('profileSettings')}
+          onBack={() => {
+            if (needsStudentOnboarding) {
+              setStudentOnboardingDismissed(true)
+              setScreen('dashboard')
+              return
+            }
+            setScreen('profileSettings')
+          }}
           onComplete={handleStudentOnboardingComplete}
           saving={isSavingOnboarding}
         />
