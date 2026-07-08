@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import mascotImage from '../assets/flow-character-robot-crossed-card.png'
+import mascotImage from '../assets/flowtree/mascot-cutout.webp'
 import { useProfile } from '../context/profileContextValue'
 import { flowtreeLevels } from '../data/flowtreeLevels'
 import { getDailyThought } from '../data/dailyThoughts'
@@ -16,6 +16,41 @@ function formatProfileList(value) {
     .slice(0, 4)
 }
 
+function getGrowthPresentation(treeType, level) {
+  const stages = {
+    oak: [
+      ['Eiche als Samen', '🌰'],
+      ['Eichenkeimling', '🌱'],
+      ['Junge Eiche', '🌿'],
+      ['Eiche', '🌳'],
+      ['Starke Eiche', '🌳'],
+    ],
+    pine: [
+      ['Tanne als Samen', '🌰'],
+      ['Tannenkeimling', '🌱'],
+      ['Junge Tanne', '🌿'],
+      ['Tanne', '🌲'],
+      ['Starke Tanne', '🌲'],
+    ],
+    flower: [
+      ['Blumensamen', '🌰'],
+      ['Blumenkeimling', '🌱'],
+      ['Knospe', '🌷'],
+      ['Blume', '🌸'],
+      ['Blühende FlowFlower', '🌺'],
+    ],
+  }
+  const safeType = stages[treeType] ? treeType : 'oak'
+  const stageIndex = Math.min(Math.max(Number(level) - 1, 0), 4)
+  const [name, symbol] = stages[safeType][stageIndex]
+
+  return {
+    name,
+    symbol,
+    productName: safeType === 'flower' ? 'FlowFlower' : 'FlowTree',
+  }
+}
+
 function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profileName, t, onNavigate }) {
   const { personalizedTexts } = useProfile()
   const [checkIns, setCheckIns] = useState([])
@@ -26,6 +61,8 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
   ), [habits, checkIns])
   const flowtree = flowtreeStats.flowtree
   const currentLevel = flowtree.currentLevel
+  const treeType = localStorage.getItem('myflow-tree-type') || 'oak'
+  const growthPresentation = getGrowthPresentation(treeType, currentLevel.level)
   const nextLevelTarget = flowtree.nextLevelPoints ?? flowtreeStats.growthPoints
   const completedHabits = dailyProgress.completed
   const openHabits = dailyProgress.open
@@ -80,16 +117,18 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
         </div>
       </div>
 
-      <article className="home-flowtree-card" aria-label="Flowtree-Statistik">
+      <article className="home-flowtree-card" aria-label={`${growthPresentation.productName}-Statistik`}>
         <div className="home-flowtree-copy">
-          <span>Dein Flowtree</span>
-          <h2>{currentLevel.name}</h2>
+          <span>Dein {growthPresentation.productName}</span>
+          <h2>{growthPresentation.name}</h2>
           <p>Stufe {currentLevel.level} von {flowtreeLevels.length}</p>
         </div>
 
         <div className="home-flowtree-visual">
-          <img className="home-flowtree-stage-image" src={currentLevel.image} alt={`Flowtree-Stufe ${currentLevel.name}`} />
-          <img className="home-flowtree-mascot-image" src={mascotImage} alt="MyFlow Maskottchen neben dem Flowtree" />
+          <span className="home-flowtree-stage-symbol" role="img" aria-label={growthPresentation.name}>
+            {growthPresentation.symbol}
+          </span>
+          <img className="home-flowtree-mascot-image" src={mascotImage} alt={`MyFlow Maskottchen neben dem ${growthPresentation.productName}`} />
         </div>
 
         <div className="home-flowtree-progress">

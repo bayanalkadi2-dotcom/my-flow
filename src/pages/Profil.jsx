@@ -54,26 +54,26 @@ const levelSteps = [
 const treeOptions = [
   { id: 'oak', label: 'Eiche', symbol: '🌳' },
   { id: 'pine', label: 'Tanne', symbol: '🌲' },
-  { id: 'flower', label: 'Blüte', symbol: '🌸' },
+  { id: 'flower', label: 'Blume', symbol: '🌸' },
 ]
 
 function getFlowTree(score, treeType = 'oak') {
   const selectedTree = treeOptions.find((tree) => tree.id === treeType) ?? treeOptions[0]
 
   if (score < 100) {
-    return { stage: 'Blatt', symbol: '🍃', progress: Math.round(score), next: 'Spross ab 100 Punkten', count: 1 }
+    return { stage: selectedTree.label, symbol: selectedTree.symbol, progress: Math.round(score), next: 'Nächste Wachstumsstufe ab 100 Punkten', count: 1 }
   }
 
   if (score < 250) {
-    return { stage: 'Spross', symbol: '🌱', progress: Math.round(((score - 100) / 150) * 100), next: 'Pflanze ab 250 Punkten', count: 1 }
+    return { stage: selectedTree.label, symbol: selectedTree.symbol, progress: Math.round(((score - 100) / 150) * 100), next: 'Nächste Wachstumsstufe ab 250 Punkten', count: 1 }
   }
 
   if (score < 500) {
-    return { stage: 'Pflanze', symbol: '🪴', progress: Math.round(((score - 250) / 250) * 100), next: 'Blume ab 500 Punkten', count: 1 }
+    return { stage: selectedTree.label, symbol: selectedTree.symbol, progress: Math.round(((score - 250) / 250) * 100), next: 'Nächste Wachstumsstufe ab 500 Punkten', count: 1 }
   }
 
   if (score < 800) {
-    return { stage: 'Blume', symbol: '🌸', progress: Math.round(((score - 500) / 300) * 100), next: 'Baum ab 800 Punkten', count: 1 }
+    return { stage: selectedTree.label, symbol: selectedTree.symbol, progress: Math.round(((score - 500) / 300) * 100), next: 'Nächste Wachstumsstufe ab 800 Punkten', count: 1 }
   }
 
   if (score < 1200) {
@@ -201,16 +201,25 @@ function Profil({
   onProfileNameChange,
   onSelectStyle,
 }) {
-  const { signout } = useAuth()
+  const { signout, user } = useAuth()
   const { profile, profileSituation, setProfile } = useProfile()
+  const guestDetails = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('myflow-guest-setup') || '{}')
+    } catch {
+      return {}
+    }
+  })()
+  const storedWeight = profile?.weight_kg ?? user?.user_metadata?.weight_kg ?? guestDetails.weight_kg
+  const storedHeight = profile?.height_cm ?? user?.user_metadata?.height_cm ?? guestDetails.height_cm
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [activeEditor, setActiveEditor] = useState(null)
   const [ageError, setAgeError] = useState('')
   const [gender, setGender] = useState(profile?.gender || 'male')
   const [reminders, setReminders] = useState(true)
   const [age, setAge] = useState(Number(profile?.age) || 0)
-  const [weight, setWeight] = useState(Number(profile?.weight_kg) || 0)
-  const [height, setHeight] = useState(Number(profile?.height_cm) || 175)
+  const [weight, setWeight] = useState(Number(storedWeight) || 0)
+  const [height, setHeight] = useState(Number(storedHeight) || 175)
   const [paymentPlan, setPaymentPlan] = useState('free')
   const [billingCycle, setBillingCycle] = useState('Monatlich')
   const [paymentMethod, setPaymentMethod] = useState('PayPal')
@@ -218,7 +227,7 @@ function Profil({
   const [cardNumber, setCardNumber] = useState('')
   const [iban, setIban] = useState('')
   const [paymentEmail, setPaymentEmail] = useState('')
-  const [treeType, setTreeType] = useState('oak')
+  const [treeType, setTreeType] = useState(() => localStorage.getItem('myflow-tree-type') || 'oak')
   const [profileImage, setProfileImage] = useState(() => localStorage.getItem('myflow-profile-image') || '')
   const storedAge = parseProfileAge(profile?.age)
   const currentAge = storedAge ?? age
@@ -235,8 +244,8 @@ function Profil({
   })
 
   useEffect(() => {
-    const savedWeight = Number(profile?.weight_kg)
-    const savedHeight = Number(profile?.height_cm)
+    const savedWeight = Number(storedWeight)
+    const savedHeight = Number(storedHeight)
 
     if (savedWeight > 0) {
       setWeight(savedWeight)
@@ -251,7 +260,7 @@ function Profil({
       weight: savedWeight > 0 ? savedWeight : current.weight,
       height: savedHeight > 0 ? savedHeight : current.height,
     }))
-  }, [profile?.height_cm, profile?.weight_kg])
+  }, [storedHeight, storedWeight])
 
   const selectedGender = genderOptions.find((option) => option.id === gender)
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
@@ -270,9 +279,44 @@ function Profil({
   const recommendation = getHealthRecommendation(bmi, weight)
   const challengePoints = calculateChallengePoints(habits)
   const level = getLevel(challengePoints)
-  const flowTree = getFlowTree(challengePoints, treeType)
-  const treeChoiceUnlocked = challengePoints >= 800
+  const baseFlowTree = getFlowTree(challengePoints, treeType)
+  const flowTreeLevel = challengePoints < 100 ? 0 : challengePoints < 250 ? 1 : challengePoints < 500 ? 2 : challengePoints < 800 ? 3 : 4
+  const flowTreeStages = {
+    oak: [
+      ['Eiche als Samen', '🌰'],
+      ['Eichenkeimling', '🌱'],
+      ['Junge Eiche', '🌿'],
+      ['Eiche', '🌳'],
+      ['Starke Eiche', '🌳'],
+    ],
+    pine: [
+      ['Tanne als Samen', '🌰'],
+      ['Tannenkeimling', '🌱'],
+      ['Junge Tanne', '🌿'],
+      ['Tanne', '🌲'],
+      ['Starke Tanne', '🌲'],
+    ],
+    flower: [
+      ['Blumensamen', '🌰'],
+      ['Blumenkeimling', '🌱'],
+      ['Knospe', '🌷'],
+      ['Blume', '🌸'],
+      ['Blühende FlowFlower', '🌺'],
+    ],
+  }
+  const selectedFlowTreeStages = flowTreeStages[treeType] ?? flowTreeStages.oak
+  const flowTree = {
+    ...baseFlowTree,
+    productName: treeType === 'flower' ? 'FlowFlower' : 'FlowTree',
+    stage: selectedFlowTreeStages[flowTreeLevel][0],
+    symbol: selectedFlowTreeStages[flowTreeLevel][1],
+  }
   const showSettings = settingsPage || showProfileSettings
+
+  function selectTreeType(nextTreeType) {
+    setTreeType(nextTreeType)
+    localStorage.setItem('myflow-tree-type', nextTreeType)
+  }
 
   async function savePersonalDetails(updates) {
     if (!profile?.id) return
@@ -848,13 +892,13 @@ function Profil({
         <small>{t.profile.nextLevel.replace('{level}', level.next).replace('{points}', level.nextMin)}</small>
       </div>
       <div className="flow-tree-card">
-        <div className="flow-tree-visual" aria-label={`FlowTree Stufe ${flowTree.stage}`}>
+        <div className="flow-tree-visual" aria-label={`${flowTree.productName} Stufe ${flowTree.stage}`}>
           {Array.from({ length: flowTree.count }).map((_, index) => (
             <span key={index}>{flowTree.symbol}</span>
           ))}
         </div>
         <div className="flow-tree-info">
-          <span>FlowTree</span>
+          <span>{flowTree.productName}</span>
           <h2>{flowTree.stage}</h2>
           <p>{flowTree.next}</p>
         </div>
@@ -866,9 +910,8 @@ function Profil({
           {treeOptions.map((tree) => (
             <button
               className={treeType === tree.id ? 'selected' : ''}
-              disabled={!treeChoiceUnlocked}
               key={tree.id}
-              onClick={() => setTreeType(tree.id)}
+              onClick={() => selectTreeType(tree.id)}
               type="button"
             >
               <span>{tree.symbol}</span>

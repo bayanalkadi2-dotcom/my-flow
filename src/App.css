@@ -1509,15 +1509,26 @@ input {
   object-fit: contain;
 }
 
+.home-flowtree-stage-symbol {
+  display: grid;
+  place-items: center;
+  width: 94px;
+  height: 94px;
+  font-size: 40px;
+  line-height: 1;
+  transform: translateX(-30px);
+  filter: drop-shadow(0 10px 15px rgba(70, 52, 130, 0.16));
+}
+
 .home-flowtree-mascot-image {
   position: absolute;
-  right: -6px;
-  bottom: -7px;
-  width: 52px;
-  height: 52px;
-  border-radius: 17px;
-  object-fit: cover;
-  box-shadow: 0 8px 18px rgba(87, 70, 145, 0.18);
+  right: 4px;
+  bottom: 0;
+  width: 58px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 16px rgba(90, 52, 180, 0.2));
+  pointer-events: none;
 }
 
 .home-flowtree-progress {
@@ -6183,30 +6194,36 @@ input {
 
 .profile-situation-list {
   display: grid;
-  gap: 10px;
+  gap: 0;
   margin: 0;
 }
 
 .profile-situation-list > div {
   display: grid;
-  grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.6fr);
-  gap: 12px;
-  padding-top: 10px;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 7px 0;
   border-top: 1px solid rgba(118, 92, 255, 0.1);
 }
 
 .profile-situation-list dt {
+  min-width: 0;
   color: #6f6a8b;
   font-size: 13px;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .profile-situation-list dd {
+  min-width: 0;
   margin: 0;
   color: #18143f;
   font-size: 13px;
   font-weight: 800;
   line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .app.theme-dark .profile-situation-card {
@@ -6221,13 +6238,12 @@ input {
 
 @media (max-width: 520px) {
   .profile-situation-header {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: flex-start;
   }
 
   .profile-situation-list > div {
-    grid-template-columns: 1fr;
-    gap: 4px;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 6px;
   }
 }
 
