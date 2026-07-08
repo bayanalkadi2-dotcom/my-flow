@@ -1225,6 +1225,7 @@ input {
 }
 
 .home-flowtree-visual {
+  position: relative;
   display: grid;
   place-items: center;
   width: 86px;
@@ -1234,10 +1235,21 @@ input {
   border: 1px solid rgba(141, 99, 255, 0.16);
 }
 
-.home-flowtree-visual img {
+.home-flowtree-stage-image {
   width: 70px;
   height: 70px;
   object-fit: contain;
+}
+
+.home-flowtree-mascot-image {
+  position: absolute;
+  right: -4px;
+  bottom: -5px;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 8px 18px rgba(87, 70, 145, 0.18);
 }
 
 .home-flowtree-progress {

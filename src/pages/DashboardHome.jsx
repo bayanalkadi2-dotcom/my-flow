@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import mascotImage from '../assets/flow-character-robot-crossed-card.png'
 import { useProfile } from '../context/profileContextValue'
 import { flowtreeLevels } from '../data/flowtreeLevels'
 import { getDailyThought } from '../data/dailyThoughts'
@@ -27,7 +28,6 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
   const currentLevel = flowtree.currentLevel
   const nextLevelTarget = flowtree.nextLevelPoints ?? flowtreeStats.growthPoints
   const completedHabits = dailyProgress.completed
-  const dayProgress = dailyProgress.percent
   const openHabits = dailyProgress.open
   const topFocus = habits
     .filter((habit) => !habit.done && habit.progress < 100)
@@ -80,20 +80,6 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
         </div>
       </div>
 
-      <article className="day-overview-card">
-        <div>
-          <span>{personalizedTexts.contextLabel}</span>
-          <h2>{dayProgress >= 70 ? t.dashboard.goodFlow : t.dashboard.moreRoom}</h2>
-          <p>{personalizedTexts.dashboardSubtitle}</p>
-          <div className="day-progress-track" aria-label={`${dayProgress}% Tagesfortschritt`}>
-            <span style={{ width: `${dayProgress}%` }} />
-          </div>
-        </div>
-        <strong>
-          <span>{dayProgress}%</span>
-        </strong>
-      </article>
-
       <article className="home-flowtree-card" aria-label="Flowtree-Statistik">
         <div className="home-flowtree-copy">
           <span>Dein Flowtree</span>
@@ -102,7 +88,8 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
         </div>
 
         <div className="home-flowtree-visual">
-          <img src={currentLevel.image} alt={`Flowtree-Stufe ${currentLevel.name}`} />
+          <img className="home-flowtree-stage-image" src={currentLevel.image} alt={`Flowtree-Stufe ${currentLevel.name}`} />
+          <img className="home-flowtree-mascot-image" src={mascotImage} alt="MyFlow Maskottchen neben dem Flowtree" />
         </div>
 
         <div className="home-flowtree-progress">
