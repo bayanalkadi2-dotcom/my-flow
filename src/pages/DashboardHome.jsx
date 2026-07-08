@@ -1,5 +1,10 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useProfile } from '../context/profileContextValue'
+import { flowtreeLevels } from '../data/flowtreeLevels'
+import { getDailyThought } from '../data/dailyThoughts'
+import { getUserCheckIns } from '../services/checkInService'
 import { calculateDailyRoutineProgress } from '../utils/dailyRoutineProgress'
+import { calculateFlowtreeStats } from '../utils/flowtreeStats'
 import { getLocalDateKey } from '../utils/checkins'
 
 function formatProfileList(value) {
@@ -12,7 +17,15 @@ function formatProfileList(value) {
 
 function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profileName, t, onNavigate }) {
   const { personalizedTexts } = useProfile()
+  const [checkIns, setCheckIns] = useState([])
+  const [checkInsLoading, setCheckInsLoading] = useState(true)
   const dailyProgress = calculateDailyRoutineProgress(habits)
+  const flowtreeStats = useMemo(() => (
+    calculateFlowtreeStats({ routines: habits, checkIns })
+  ), [habits, checkIns])
+  const flowtree = flowtreeStats.flowtree
+  const currentLevel = flowtree.currentLevel
+  const nextLevelTarget = flowtree.nextLevelPoints ?? flowtreeStats.growthPoints
   const completedHabits = dailyProgress.completed
   const dayProgress = dailyProgress.percent
   const openHabits = dailyProgress.open
@@ -25,6 +38,38 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
   const visibleDailyRoutine = formatProfileList(accountProfile.dailyRoutine)
   const todayNote = String(calendarNotes[getLocalDateKey()] || '').trim()
   const hasProfileDetails = visibleGoals.length > 0 || visibleDailyRoutine.length > 0
+  const todayThought = getDailyThought()
+  const loadCheckIns = useCallback(async () => {
+    setCheckInsLoading(true)
+
+    try {
+      const data = await getUserCheckIns()
+      setCheckIns(data)
+    } catch (error) {
+      console.error('Flowtree-Check-ins konnten auf der Startseite nicht geladen werden:', error)
+      setCheckIns([])
+    } finally {
+      setCheckInsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+
+    Promise.resolve().then(async () => {
+      if (cancelled) return
+      await loadCheckIns()
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [loadCheckIns])
+
+  useEffect(() => {
+    window.addEventListener('focus', loadCheckIns)
+    return () => window.removeEventListener('focus', loadCheckIns)
+  }, [loadCheckIns])
 
   return (
     <section className="screen home-screen">
@@ -47,6 +92,37 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
         <strong>
           <span>{dayProgress}%</span>
         </strong>
+      </article>
+
+      <article className="home-flowtree-card" aria-label="Flowtree-Statistik">
+        <div className="home-flowtree-copy">
+          <span>Dein Flowtree</span>
+          <h2>{currentLevel.name}</h2>
+          <p>Stufe {currentLevel.level} von {flowtreeLevels.length}</p>
+        </div>
+
+        <div className="home-flowtree-visual">
+          <img src={currentLevel.image} alt={`Flowtree-Stufe ${currentLevel.name}`} />
+        </div>
+
+        <div className="home-flowtree-progress">
+          <div>
+            <span>Wachstumspunkte</span>
+            <strong>
+              {flowtreeStats.growthPoints} / {nextLevelTarget}
+            </strong>
+          </div>
+          <div className="home-flowtree-track" aria-label={`${flowtree.progressPercent}% bis zur nächsten Flowtree-Stufe`}>
+            <span style={{ width: `${flowtree.progressPercent}%` }} />
+          </div>
+          <small>
+            {checkInsLoading
+              ? 'Flowtree wird aktualisiert …'
+              : flowtree.nextLevel
+                ? `Noch ${flowtree.pointsToNextLevel} Punkte bis ${flowtree.nextLevel.name}.`
+                : 'Maximale Stufe erreicht.'}
+          </small>
+        </div>
       </article>
 
       <section className="home-goals-card">
@@ -130,25 +206,9 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
         )}
       </section>
 
-      <section className="day-plan-card">
-        <span>{t.dashboard.dayPlan}</span>
-        <div>
-          <strong>{t.dashboard.morning}</strong>
-          <p>{t.dashboard.morningText}</p>
-        </div>
-        <div>
-          <strong>{t.dashboard.noon}</strong>
-          <p>{t.dashboard.noonText}</p>
-        </div>
-        <div>
-          <strong>{t.dashboard.evening}</strong>
-          <p>{t.dashboard.eveningText}</p>
-        </div>
-      </section>
-
       <article className="home-motivation-card">
         <span>{t.dashboard.thought}</span>
-        <p>{t.dashboard.thoughtText}</p>
+        <p>{todayThought}</p>
       </article>
     </section>
   )

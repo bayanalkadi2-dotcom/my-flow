@@ -126,6 +126,7 @@ body {
 .app.theme-dark .profile-level-card,
 .app.theme-dark .flow-tree-card,
 .app.theme-dark .day-overview-card,
+.app.theme-dark .home-flowtree-card,
 .app.theme-dark .home-goals-card,
 .app.theme-dark .daily-focus-card,
 .app.theme-dark .day-plan-card,
@@ -1101,6 +1102,7 @@ input {
 }
 
 .day-overview-card,
+.home-flowtree-card,
 .home-goals-card,
 .daily-focus-card,
 .day-plan-card,
@@ -1185,6 +1187,90 @@ input {
   height: 100%;
   border-radius: inherit;
   background: white;
+}
+
+.home-flowtree-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.home-flowtree-copy {
+  min-width: 0;
+}
+
+.home-flowtree-copy span,
+.home-flowtree-progress span {
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.home-flowtree-copy h2 {
+  margin: 6px 0 3px;
+  color: #18143f;
+  font-size: 24px;
+  line-height: 1.12;
+}
+
+.home-flowtree-copy p,
+.home-flowtree-progress small {
+  margin: 0;
+  color: #65607f;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.home-flowtree-visual {
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(246, 239, 255, 0.96), rgba(235, 249, 255, 0.9));
+  border: 1px solid rgba(141, 99, 255, 0.16);
+}
+
+.home-flowtree-visual img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.home-flowtree-progress {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 8px;
+  min-width: 0;
+}
+
+.home-flowtree-progress > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.home-flowtree-progress strong {
+  color: #18143f;
+  font-size: 18px;
+}
+
+.home-flowtree-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.14);
+}
+
+.home-flowtree-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff8bd1, #765cff, #73cfff);
 }
 
 .home-status-grid {
@@ -2391,6 +2477,7 @@ input {
 .app.theme-dark .home-status-grid article,
 .app.theme-dark .daily-focus-card,
 .app.theme-dark .day-plan-card,
+.app.theme-dark .home-flowtree-card,
 .app.theme-dark .home-motivation-card,
 .app.theme-dark .flow-coach-card {
   background: rgba(31, 25, 52, 0.9);
@@ -2464,6 +2551,21 @@ input {
 
 .home-motivation-card {
   background: linear-gradient(135deg, #fff7fb, #eef8ff);
+}
+
+.app.theme-dark .home-flowtree-copy h2,
+.app.theme-dark .home-flowtree-progress strong {
+  color: #faf7ff;
+}
+
+.app.theme-dark .home-flowtree-copy p,
+.app.theme-dark .home-flowtree-progress small {
+  color: #d5cde8;
+}
+
+.app.theme-dark .home-flowtree-visual {
+  background: rgba(39, 30, 61, 0.96);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .habit-list {
@@ -7739,6 +7841,7 @@ h3,
 .profile-level-card,
 .flow-tree-card,
 .day-overview-card,
+.home-flowtree-card,
 .daily-focus-card,
 .day-plan-card,
 .home-motivation-card,
@@ -7821,6 +7924,7 @@ h3,
 .app.theme-dark .profile-level-card,
 .app.theme-dark .flow-tree-card,
 .app.theme-dark .day-overview-card,
+.app.theme-dark .home-flowtree-card,
 .app.theme-dark .home-goals-card,
 .app.theme-dark .daily-focus-card,
 .app.theme-dark .day-plan-card,
