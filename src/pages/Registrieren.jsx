@@ -40,8 +40,30 @@ const designOptions = [
   ['Dunkel', 'Dunkel'],
 ]
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+function getRegisterErrorMessage(error) {
+  const message = String(error?.message || error || '').toLowerCase()
+
+  if (message.includes('already registered') || message.includes('already exists') || message.includes('user already')) {
+    return 'Diese E-Mail-Adresse wird bereits verwendet.'
+  }
+
+  if (message.includes('network') || message.includes('fetch')) {
+    return 'Keine Internetverbindung.'
+  }
+
+  if (message.includes('timeout')) {
+    return 'Zeitüberschreitung. Bitte versuche es erneut.'
+  }
+
+  return 'Registrierung fehlgeschlagen. Bitte versuche es später erneut.'
+}
+
 function Registrieren({ onNavigate, t }) {
-  const { signup, error: authError } = useAuth()
+  const { signup } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -57,6 +79,7 @@ function Registrieren({ onNavigate, t }) {
   const [theme, setTheme] = useState('Hell')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
@@ -65,10 +88,16 @@ function Registrieren({ onNavigate, t }) {
     setError('')
     setSuccess('')
 
-    if (!email || !password || !passwordConfirm || !displayName.trim()) {
-      setError('Bitte füllen Sie alle Pflichtfelder aus.')
+    if (!displayName.trim()) {
+      setError('Bitte gib einen Namen ein.')
       return
     }
+
+    if (!email.trim() || !isValidEmail(email)) {
+      setError('Bitte gib eine gültige E-Mail-Adresse ein.')
+      return
+    }
+
 
     const ageError = getProfileAgeError(age)
     if (ageError) {
@@ -77,12 +106,12 @@ function Registrieren({ onNavigate, t }) {
     }
 
     if (!gender || !heightCm || Number(heightCm) <= 0 || !activityLevel || !dailyContext) {
-      setError('Bitte fülle Profil, Aktivität und Situation aus.')
+      setError('Bitte fülle alle Pflichtfelder aus.')
       return
     }
 
     if (weightKg && Number(weightKg) <= 0) {
-      setError('Bitte gib ein gültiges Gewicht an.')
+      setError('Ungültiges Gewicht.')
       return
     }
 
@@ -91,8 +120,13 @@ function Registrieren({ onNavigate, t }) {
       return
     }
 
-    if (password.length < 6) {
-      setError('Das Passwort muss mindestens 6 Zeichen lang sein.')
+    if (password.length < 8) {
+      setError('Das Passwort muss mindestens 8 Zeichen lang sein.')
+      return
+    }
+
+    if (!acceptedPrivacy) {
+      setError('Bitte akzeptiere die Datenschutzbestimmungen.')
       return
     }
 
@@ -124,8 +158,9 @@ function Registrieren({ onNavigate, t }) {
       setLanguageStyle('german')
       setCommunicationStyle('casual')
       setTheme('Hell')
+      setAcceptedPrivacy(false)
     } catch (err) {
-      setError(err.message || 'Registrierung fehlgeschlagen')
+      setError(getRegisterErrorMessage(err))
     } finally {
       setIsLoading(false)
     }
@@ -267,7 +302,7 @@ function Registrieren({ onNavigate, t }) {
           <span>{t.auth.password}</span>
           <input
             type={showPassword ? 'text' : 'password'}
-            placeholder="Mindestens 6 Zeichen"
+            placeholder="Mindestens 8 Zeichen"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
@@ -299,10 +334,23 @@ function Registrieren({ onNavigate, t }) {
           />
         </label>
 
+        <label className="auth-privacy-check">
+          <input
+            checked={acceptedPrivacy}
+            disabled={isLoading}
+            onChange={(event) => setAcceptedPrivacy(event.target.checked)}
+            type="checkbox"
+          />
+          <span>
+            Ich akzeptiere die Datenschutzbestimmungen.
+            <button type="button" onClick={() => onNavigate('privacy')} disabled={isLoading}>
+              Anzeigen
+            </button>
+          </span>
+        </label>
+
         {error && <div style={{ color: '#e74c3c', fontSize: '14px', marginBottom: '10px' }}>{error}</div>}
         {success && <div style={{ color: '#27ae60', fontSize: '14px', marginBottom: '10px' }}>{success}</div>}
-        {authError && <div style={{ color: '#e74c3c', fontSize: '14px', marginBottom: '10px' }}>Auth Error: {authError}</div>}
-
         <button className="login-submit" type="submit" disabled={isLoading}>
           {isLoading ? 'Wird registriert...' : t.start.register}
         </button>

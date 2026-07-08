@@ -2,8 +2,30 @@ import { useState } from 'react'
 import { useAuth } from '../context/authContextValue'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
 
+function getLoginErrorMessage(error) {
+  const message = String(error?.message || error || '').toLowerCase()
+
+  if (message.includes('invalid login') || message.includes('invalid credentials')) {
+    return 'E-Mail oder Passwort ist falsch.'
+  }
+
+  if (message.includes('not found') || message.includes('user not found')) {
+    return 'Dieses Konto wurde nicht gefunden.'
+  }
+
+  if (message.includes('network') || message.includes('fetch')) {
+    return 'Keine Internetverbindung.'
+  }
+
+  if (message.includes('timeout')) {
+    return 'Zeitüberschreitung. Bitte versuche es erneut.'
+  }
+
+  return 'Anmeldung fehlgeschlagen. Bitte versuche es erneut.'
+}
+
 function Einloggen({ onNavigate, t }) {
-  const { signin, error: authError } = useAuth()
+  const { signin } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -16,18 +38,23 @@ function Einloggen({ onNavigate, t }) {
     setError('')
     setSuccess('')
 
-    if (!email || !password) {
-      setError('Bitte füllen Sie alle Felder aus.')
+    if (!email.trim()) {
+      setError('Bitte gib deine E-Mail-Adresse ein.')
+      return
+    }
+
+    if (!password) {
+      setError('Bitte gib dein Passwort ein.')
       return
     }
 
     setIsLoading(true)
     try {
       await signin(email, password)
-      setSuccess('Anmeldung erfolgreich!')
+      setSuccess('Änderungen übernommen.')
       // Navigation happens automatically via App.jsx after auth state changes
     } catch (err) {
-      setError(err.message || 'Anmeldung fehlgeschlagen')
+      setError(getLoginErrorMessage(err))
     } finally {
       setIsLoading(false)
     }
@@ -80,8 +107,6 @@ function Einloggen({ onNavigate, t }) {
 
         {error && <div style={{ color: '#e74c3c', fontSize: '14px', marginBottom: '10px' }}>{error}</div>}
         {success && <div style={{ color: '#27ae60', fontSize: '14px', marginBottom: '10px' }}>{success}</div>}
-        {authError && <div style={{ color: '#e74c3c', fontSize: '14px', marginBottom: '10px' }}>Auth Error: {authError}</div>}
-
         <button className="forgot-password" type="button" onClick={() => onNavigate('resetPassword')} disabled={isLoading}>
           {t.auth.forgot}
         </button>

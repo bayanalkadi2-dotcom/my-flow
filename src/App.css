@@ -725,6 +725,49 @@ input {
   box-shadow: none;
 }
 
+.auth-privacy-check {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 12px 14px;
+  border: 1px solid rgba(118, 92, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #5f587f;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.auth-privacy-check input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #8b5cf6;
+}
+
+.auth-privacy-check button {
+  display: inline;
+  margin-left: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #765cff;
+  box-shadow: none;
+  font: inherit;
+  font-weight: 800;
+}
+
+.app.theme-dark .auth-privacy-check {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #c8c1e4;
+}
+
+.app.theme-dark .auth-privacy-check button {
+  color: #c9b6ff;
+}
+
 .login-submit {
   min-height: 59px;
   border-radius: 20px;
