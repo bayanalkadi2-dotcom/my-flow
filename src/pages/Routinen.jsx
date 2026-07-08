@@ -69,7 +69,8 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('4')
   const [unit, setUnit] = useState('Gläser (500 ml)')
-  const [addPanelOpen, setAddPanelOpen] = useState(false)
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [customFormOpen, setCustomFormOpen] = useState(false)
   const [openCategory, setOpenCategory] = useState('')
   const existingTitles = new Set(habits.map((habit) => habit.title.toLowerCase()))
   const availableCategories = [
@@ -80,7 +81,7 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!title.trim()) {
+    if (!title.trim() || existingTitles.has(title.trim().toLowerCase())) {
       return
     }
 
@@ -93,7 +94,8 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
     setTitle('')
     setTarget('4')
     setUnit('Gläser (500 ml)')
-    setAddPanelOpen(false)
+    setCustomFormOpen(false)
+    setPickerOpen(false)
   }
 
   function addSuggestedRoutine(routine, categoryTitle) {
@@ -106,7 +108,8 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
       category: categoryTitle,
     })
 
-    setAddPanelOpen(false)
+    setPickerOpen(false)
+    setCustomFormOpen(false)
     setOpenCategory('')
   }
 
@@ -120,15 +123,22 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
         </div>
         <button
           className="routine-add-circle"
-          onClick={() => setAddPanelOpen((open) => !open)}
+          onClick={() => {
+            setPickerOpen((open) => !open)
+            setCustomFormOpen(false)
+            setOpenCategory('')
+          }}
           type="button"
-          aria-label={addPanelOpen ? t.routines.closeAdd : t.routines.add}
+          aria-expanded={pickerOpen}
+          aria-label={pickerOpen ? t.routines.closeAdd : t.routines.add}
         >
-          {addPanelOpen ? '×' : '+'}
+          {pickerOpen ? '×' : '+'}
         </button>
       </header>
 
-      <div className="routine-picker" aria-label="Routine-Kategorien">
+      {pickerOpen && (
+        <div className="routine-selection-panel">
+          <div className="routine-picker" aria-label="Routine-Kategorien">
         {availableCategories.map((category) => {
           const isOpen = openCategory === category.title
           const design = getCategoryDesign(category.title)
@@ -175,14 +185,14 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
             </div>
           )
         })}
-      </div>
+          </div>
 
-      <article className="custom-routine-card">
+          <article className="custom-routine-card">
         <div>
           <span>Eigene Routine</span>
           <h2>Eigene Routine</h2>
           <p>Erstelle deine ganz persönliche Routine, die perfekt zu dir passt.</p>
-          <button type="button" onClick={() => setAddPanelOpen((open) => !open)}>
+          <button type="button" onClick={() => setCustomFormOpen((open) => !open)}>
             Eigene Routine erstellen
           </button>
         </div>
@@ -190,11 +200,11 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
           <span>＋</span>
           <small>Flow</small>
         </div>
-      </article>
+          </article>
 
-      {addPanelOpen && (
-        <div className="routine-add-panel">
-          <form className="routine-form" onSubmit={handleSubmit}>
+          {customFormOpen && (
+            <div className="routine-add-panel">
+              <form className="routine-form" onSubmit={handleSubmit}>
             <p className="form-title">{t.routines.custom}</p>
             <label>
               {t.routines.routine}
@@ -224,11 +234,19 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
               </label>
             </div>
             <button className="wide-button" type="submit">{t.routines.addRoutine}</button>
-          </form>
+              </form>
+            </div>
+          )}
         </div>
       )}
 
       <div className="habit-list">
+        {habits.length === 0 && (
+          <div className="routines-empty-state">
+            <strong>Du hast noch keine Routinen hinzugefügt.</strong>
+            <p>Tippe auf das Plus, um eine neue Routine auszuwählen.</p>
+          </div>
+        )}
         {habits.map((habit) => (
           <HabitCard
             habit={habit}
