@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap");
 
 :root {
   --logo-pink: #ff9fd2;
@@ -5507,7 +5507,7 @@ input {
 }
 
 .profile-settings-screen .profile-setting-row::after {
-  content: "›";
+  content: "â€º";
   justify-self: end;
   align-self: center;
   color: #8f8aa3;
@@ -7319,7 +7319,7 @@ input {
 }
 
 .calendar-screen::before {
-  content: "✦";
+  content: "âœ¦";
   position: absolute;
   top: 18px;
   left: 20px;
@@ -8035,7 +8035,7 @@ h3,
   stroke-linejoin: round;
 }
 
-/* Einheitlicher Auswahlzustand für alle Optionen der Einstellungsseite. */
+/* Einheitlicher Auswahlzustand fÃ¼r alle Optionen der Einstellungsseite. */
 .profile-settings-screen .profile-choice.selected,
 .profile-settings-screen .payment-option.selected,
 .profile-settings-screen .payment-method.selected {
@@ -8350,7 +8350,7 @@ h3,
   display: grid;
   justify-items: center;
   gap: 4px;
-  width: 76px;
+  width: 82px;
   padding: 8px 8px 9px;
   border: 1px solid rgba(123, 97, 255, 0.2);
   border-radius: 22px;
@@ -8359,6 +8359,23 @@ h3,
   box-shadow: 0 16px 32px rgba(85, 62, 150, 0.18);
   font-size: 11px;
   font-weight: 900;
+}
+
+.floating-checkin-button::before {
+  content: "KI";
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  display: grid;
+  width: 23px;
+  height: 23px;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 900;
+  box-shadow: 0 8px 18px rgba(141, 99, 255, 0.32);
 }
 
 .floating-checkin-button img {
@@ -8378,6 +8395,8 @@ h3,
 
 .floating-checkin-button span {
   line-height: 1;
+  max-width: 100%;
+  text-align: center;
 }
 
 .checkin-screen {
@@ -8437,6 +8456,102 @@ h3,
   line-height: 1.4;
 }
 
+.ai-start-card {
+  position: relative;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(255, 159, 210, 0.22), transparent 34%),
+    radial-gradient(circle at 100% 8%, rgba(111, 189, 255, 0.2), transparent 34%),
+    rgba(255, 255, 255, 0.92);
+}
+
+.ai-start-card h1 {
+  max-width: 330px;
+  margin-bottom: 10px;
+  font-size: clamp(28px, 7vw, 34px);
+}
+
+.ai-start-card > p:not(.eyebrow):not(.checkin-disclaimer) {
+  max-width: 340px;
+  margin-bottom: 14px;
+  font-size: 16px;
+}
+
+.ai-start-options {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.ai-start-option {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 76px;
+  padding: 14px;
+  border: 1px solid rgba(139, 92, 246, 0.16);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #17133f;
+  text-align: left;
+  box-shadow: 0 12px 28px rgba(110, 90, 170, 0.1);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ai-start-option:hover,
+.ai-start-option:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(139, 92, 246, 0.46);
+  box-shadow: 0 16px 34px rgba(110, 90, 170, 0.16);
+  outline: none;
+}
+
+.ai-start-option.primary {
+  background:
+    linear-gradient(135deg, rgba(139, 92, 246, 0.96), rgba(217, 70, 239, 0.9)),
+    #8b5cf6;
+  color: #ffffff;
+}
+
+.ai-start-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(139, 92, 246, 0.12);
+  color: #8b5cf6;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.ai-start-option.primary .ai-start-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.ai-start-option strong,
+.ai-start-option small {
+  display: block;
+}
+
+.ai-start-option strong {
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.ai-start-option small {
+  margin-top: 4px;
+  color: #70698c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ai-start-option.primary small {
+  color: rgba(255, 255, 255, 0.82);
+}
 .checkin-progress {
   display: grid;
   gap: 8px;
@@ -10507,7 +10622,7 @@ h3,
   }
 }
 
-/* Kompakte Navigation mit sechs gleichmäßig verteilten Bereichen. */
+/* Kompakte Navigation mit sechs gleichmÃ¤ÃŸig verteilten Bereichen. */
 .bottom-nav {
   width: min(420px, calc(100vw - 12px));
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -10820,6 +10935,547 @@ button,
   }
 }
 
+/* KI-Tools */
+.ai-tools-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-tools-header {
+  padding: 18px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(255, 159, 210, 0.38), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(238, 232, 255, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  box-shadow: 0 18px 44px rgba(115, 84, 220, 0.14);
+}
+
+.ai-tools-header span,
+.ai-tools-note,
+.ai-tools-grid small {
+  color: #6f6790;
+}
+
+.ai-tools-header span {
+  display: inline-flex;
+  margin-bottom: 8px;
+  color: #8b5cf6;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ai-tools-header h1 {
+  margin: 0;
+  color: #17133f;
+  font-size: clamp(2.1rem, 11vw, 3.1rem);
+  line-height: 0.98;
+}
+
+.ai-tools-header p {
+  margin: 10px 0 0;
+  color: #5f5b7c;
+  line-height: 1.5;
+}
+
+.ai-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ai-tools-grid button {
+  display: flex;
+  min-height: 92px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(141, 99, 255, 0.18);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #17133f;
+  text-align: left;
+  box-shadow: 0 14px 32px rgba(115, 84, 220, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ai-tools-grid button:hover,
+.ai-tools-grid button:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(141, 99, 255, 0.42);
+  box-shadow: 0 18px 38px rgba(115, 84, 220, 0.16);
+}
+
+.ai-tools-grid span {
+  font-weight: 900;
+}
+
+.ai-tools-grid small {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.ai-chat-card {
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(141, 99, 255, 0.18);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 44px rgba(115, 84, 220, 0.12);
+}
+
+.ai-chat-list {
+  display: flex;
+  max-height: 390px;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.ai-chat-message {
+  max-width: 88%;
+  padding: 12px 14px;
+  border-radius: 22px;
+  line-height: 1.45;
+}
+
+.ai-chat-message p {
+  margin: 0;
+}
+
+.ai-chat-message.assistant {
+  align-self: flex-start;
+  background: #f3e8ff;
+  color: #3f2a7d;
+}
+
+.ai-chat-message.loading {
+  opacity: 0.74;
+  animation: aiPulse 1.2s ease-in-out infinite;
+}
+
+.ai-chat-message.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: #ffffff;
+}
+
+.ai-chat-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 22px;
+  background: rgba(243, 232, 255, 0.82);
+}
+
+.ai-chat-form input {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #17133f;
+  outline: none;
+}
+
+.ai-chat-form button {
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.ai-chat-form button:disabled,
+.ai-chat-form input:disabled,
+.ai-tools-grid button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.ai-chat-error {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(244, 63, 94, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 228, 235, 0.78);
+  color: #be123c;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ai-tools-note {
+  margin: 0;
+  padding: 0 6px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.app.theme-dark .ai-tools-header,
+.app.theme-dark .ai-chat-card,
+.app.theme-dark .ai-tools-grid button {
+  background: rgba(31, 25, 52, 0.86);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 44px rgba(7, 5, 18, 0.26);
+}
+
+.app.theme-dark .ai-tools-header h1,
+.app.theme-dark .ai-tools-grid button,
+.app.theme-dark .ai-chat-form input {
+  color: #ffffff;
+}
+
+.app.theme-dark .ai-tools-header p,
+.app.theme-dark .ai-tools-grid small,
+.app.theme-dark .ai-tools-note {
+  color: #c8c1e4;
+}
+
+.app.theme-dark .ai-chat-message.assistant {
+  background: rgba(169, 150, 255, 0.18);
+  color: #f5f1ff;
+}
+
+.app.theme-dark .ai-chat-error {
+  background: rgba(244, 63, 94, 0.14);
+  border-color: rgba(251, 113, 133, 0.2);
+  color: #fecdd3;
+}
+
+.app.theme-dark .ai-chat-form {
+  background: rgba(18, 14, 32, 0.72);
+}
+
+@media (max-width: 360px) {
+  .ai-tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-chat-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes aiPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+/* KI-Check-in Chat */
+.checkin-chat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(141, 99, 255, 0.18);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 159, 210, 0.24), transparent 32%),
+    rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 44px rgba(115, 84, 220, 0.12);
+}
+
+.checkin-chat-messages {
+  display: flex;
+  max-height: 430px;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.checkin-chat-pair {
+  display: contents;
+}
+
+.checkin-chat-bubble {
+  max-width: 88%;
+  padding: 13px 15px;
+  border-radius: 24px;
+  line-height: 1.45;
+}
+
+.checkin-chat-bubble.compact {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.checkin-chat-bubble.loading {
+  opacity: 0.74;
+  animation: aiPulse 1.2s ease-in-out infinite;
+}
+
+.checkin-chat-bubble span {
+  display: block;
+  margin-bottom: 5px;
+  color: #8b5cf6;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.checkin-chat-bubble p {
+  margin: 0;
+}
+
+.checkin-chat-bubble .checkin-chat-line + .checkin-chat-line {
+  margin-top: 9px;
+}
+
+.ai-chat-history {
+  position: sticky;
+  top: 8px;
+  z-index: 20;
+  width: fit-content;
+  margin-bottom: 12px;
+}
+
+.ai-chat-history-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #4c1d95;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(139, 92, 246, 0.12);
+}
+
+.ai-chat-history-toggle span {
+  display: grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: #ffffff;
+  font-size: 11px;
+}
+
+.ai-chat-history-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(300px, calc(100vw - 34px));
+  max-height: 310px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 22px 46px rgba(63, 42, 125, 0.18);
+}
+
+.ai-chat-history-menu p {
+  margin: 6px 8px;
+  color: #6b6388;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ai-chat-history-menu button {
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  margin: 0;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: #1e1748;
+  text-align: left;
+}
+
+.ai-chat-history-menu button:hover,
+.ai-chat-history-menu button:focus-visible {
+  background: #f3e8ff;
+}
+
+.ai-chat-history-menu strong {
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.ai-chat-history-menu small {
+  overflow: hidden;
+  color: #70698c;
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.checkin-chat-bubble.assistant {
+  align-self: flex-start;
+  background: #f3e8ff;
+  color: #251a55;
+}
+
+.checkin-chat-bubble.assistant.current {
+  border: 1px solid rgba(141, 99, 255, 0.28);
+  box-shadow: 0 12px 28px rgba(141, 99, 255, 0.14);
+}
+
+.checkin-chat-bubble.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: #ffffff;
+}
+
+.checkin-chat-options {
+  display: grid;
+  gap: 9px;
+}
+
+.checkin-chat-option {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid rgba(141, 99, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #17133f;
+  font-weight: 900;
+  text-align: left;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.checkin-chat-option:hover,
+.checkin-chat-option:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(141, 99, 255, 0.44);
+}
+
+.checkin-chat-option.selected {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 159, 210, 0.36), transparent 36%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 230, 255, 0.96));
+  border-color: rgba(141, 99, 255, 0.72);
+  color: #4c1d95;
+}
+
+.unified-ai-chat {
+  min-height: 0;
+}
+
+.unified-ai-recommendations {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.unified-ai-recommendations li + li {
+  margin-top: 6px;
+}
+
+.unified-ai-form {
+  margin-top: 2px;
+}
+
+.direct-chat-start {
+  margin-top: 10px;
+}
+
+.app.theme-dark .checkin-chat-card {
+  background: rgba(31, 25, 52, 0.88);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 44px rgba(7, 5, 18, 0.26);
+}
+
+.app.theme-dark .ai-start-card {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(217, 70, 239, 0.18), transparent 34%),
+    radial-gradient(circle at 96% 10%, rgba(96, 165, 250, 0.16), transparent 34%),
+    rgba(31, 25, 52, 0.9);
+}
+
+.app.theme-dark .ai-start-card h1 {
+  color: #ffffff;
+}
+
+.app.theme-dark .ai-start-card > p:not(.eyebrow):not(.checkin-disclaimer) {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.app.theme-dark .ai-start-option {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(18, 14, 32, 0.72);
+  color: #ffffff;
+}
+
+.app.theme-dark .ai-start-icon {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+}
+
+.app.theme-dark .ai-start-option small {
+  color: rgba(255, 255, 255, 0.66);
+}
+.app.theme-dark .checkin-chat-bubble.assistant {
+  background: rgba(169, 150, 255, 0.18);
+  color: #f5f1ff;
+}
+
+.app.theme-dark .checkin-chat-bubble.user {
+  background: linear-gradient(135deg, #7c3aed, #c026d3);
+}
+
+.app.theme-dark .checkin-chat-option {
+  background: rgba(18, 14, 32, 0.72);
+  border-color: rgba(255, 255, 255, 0.11);
+  color: #f8f6ff;
+}
+
+.app.theme-dark .checkin-chat-option.selected {
+  background: rgba(139, 92, 246, 0.24);
+  border-color: rgba(169, 150, 255, 0.58);
+  color: #ffffff;
+}
+
+.app.theme-dark .ai-chat-history-toggle {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(35, 24, 70, 0.9);
+  color: #ffffff;
+}
+
+.app.theme-dark .ai-chat-history-menu {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(35, 24, 70, 0.97);
+  box-shadow: 0 22px 46px rgba(0, 0, 0, 0.28);
+}
+
+.app.theme-dark .ai-chat-history-menu p,
+.app.theme-dark .ai-chat-history-menu small {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.app.theme-dark .ai-chat-history-menu button {
+  color: #ffffff;
+}
+
+.app.theme-dark .ai-chat-history-menu button:hover,
+.app.theme-dark .ai-chat-history-menu button:focus-visible {
+  background: rgba(139, 92, 246, 0.22);
+}
+
 /* Routinen-Seite: freundliche Kartenansicht nach Variante 1. */
 .routines-screen {
   background:
@@ -11100,3 +11756,5 @@ button,
     display: none;
   }
 }
+
+

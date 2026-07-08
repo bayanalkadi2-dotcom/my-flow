@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   useProfile: vi.fn(),
   saveDailyCheckIn: vi.fn(),
   getDailyCheckIns: vi.fn(),
+  sendAiChatMessage: vi.fn(),
 }))
 
 vi.mock('../../context/authContextValue', () => ({
@@ -38,6 +39,11 @@ vi.mock('../../context/checkinContextValue', () => ({
 vi.mock('../../services/checkInService', () => ({
   getDailyCheckIns: mocks.getDailyCheckIns,
   saveDailyCheckIn: mocks.saveDailyCheckIn,
+}))
+
+vi.mock('../../services/aiChatService', () => ({
+  CHATBOT_UNAVAILABLE_MESSAGE: 'Der Chatbot ist gerade nicht erreichbar.',
+  sendAiChatMessage: mocks.sendAiChatMessage,
 }))
 
 function renderLogin(props = {}) {
@@ -282,19 +288,56 @@ describe('DailyCheckIn, diary and routines interactions', () => {
     const user = userEvent.setup()
     renderWithDefaults(<DailyCheckIn onNavigate={vi.fn()} user={{ id: 'user-1' }} />)
 
-    await user.click(screen.getByRole('button', { name: 'Check-in starten' }))
+    await user.click(screen.getByRole('button', { name: /Check-in starten/ }))
 
-    while (!screen.queryByRole('button', { name: 'Auswerten' })) {
+    expect(screen.getByLabelText('MyFlow KI Chat')).toBeInTheDocument()
+
+    for (let step = 0; step < 12 && !screen.queryByRole('button', { name: 'Auswerten' }); step += 1) {
       const options = within(screen.getByRole('listbox')).getAllByRole('option')
       await user.click(options[0])
-      await user.click(screen.getByRole('button', { name: 'Weiter' }))
+
+      const nextButton = screen.queryByRole('button', { name: 'Weiter' })
+      if (nextButton) {
+        await user.click(nextButton)
+      }
     }
 
     await user.click(within(screen.getByRole('listbox')).getAllByRole('option')[0])
     await user.click(screen.getByRole('button', { name: 'Auswerten' }))
 
-    expect(await screen.findByText('Dein Tages-Check-in ist fertig')).toBeInTheDocument()
+    expect(await screen.findByText('Phase 2')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Frag deinen MyFlow Coach...')).toBeInTheDocument()
     await waitFor(() => expect(mocks.saveDailyCheckIn).toHaveBeenCalled())
+  })
+
+  it('continues as a free AI chat after the daily check-in', async () => {
+    mocks.sendAiChatMessage.mockResolvedValueOnce('Plane zuerst deine wichtigste Aufgabe und mache danach eine kurze Pause.')
+    const user = userEvent.setup()
+    renderWithDefaults(<DailyCheckIn onNavigate={vi.fn()} user={{ id: 'user-1' }} />)
+
+    await user.click(screen.getByRole('button', { name: /Check-in starten/ }))
+
+    for (let step = 0; step < 12 && !screen.queryByRole('button', { name: 'Auswerten' }); step += 1) {
+      const options = within(screen.getByRole('listbox')).getAllByRole('option')
+      await user.click(options[0])
+
+      const nextButton = screen.queryByRole('button', { name: 'Weiter' })
+      if (nextButton) await user.click(nextButton)
+    }
+
+    await user.click(within(screen.getByRole('listbox')).getAllByRole('option')[0])
+    await user.click(screen.getByRole('button', { name: 'Auswerten' }))
+
+    const coachInput = await screen.findByPlaceholderText('Frag deinen MyFlow Coach...')
+    await user.type(coachInput, 'Plane meinen Tag')
+    await user.click(screen.getByRole('button', { name: 'Senden' }))
+
+    expect(await screen.findByText('Plane zuerst deine wichtigste Aufgabe und mache danach eine kurze Pause.')).toBeInTheDocument()
+    expect(mocks.sendAiChatMessage).toHaveBeenCalledWith(expect.objectContaining({
+      context: expect.objectContaining({
+        checkIn: expect.any(Object),
+      }),
+    }))
   })
 
   it('stores diary notes and adds calendar tasks', async () => {

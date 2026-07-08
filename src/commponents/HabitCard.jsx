@@ -485,8 +485,10 @@ function RoutineDailyEditor({ dateKey, entry, habit, kind, onSave }) {
   }
 
   function startFocusTimer() {
-    const goal = focusGoal.trim()
-    if (!goal) return
+    const goal = focusGoal.trim() || 'Fokuszeit'
+    if (!focusGoal.trim()) {
+      setFocusGoal(goal)
+    }
 
     const nextSeconds = Math.max(Number(focusDuration) || 25, 1) * 60
     setRemainingSeconds(nextSeconds)
@@ -602,7 +604,6 @@ function RoutineDailyEditor({ dateKey, entry, habit, kind, onSave }) {
   }
 
   if (kind === 'focusTime') {
-    const canStart = focusGoal.trim().length > 0
     const displaySeconds = timerState === 'idle' || timerState === 'completed'
       ? Math.max(Number(focusDuration) || 25, 1) * 60
       : remainingSeconds
@@ -652,7 +653,7 @@ function RoutineDailyEditor({ dateKey, entry, habit, kind, onSave }) {
 
         <div className="routine-focus-actions">
           {(timerState === 'idle' || timerState === 'completed') && (
-            <button className="routine-entry-save" disabled={!canStart} onClick={startFocusTimer} type="button">
+            <button className="routine-entry-save" onClick={startFocusTimer} type="button">
               Fokuszeit starten
             </button>
           )}

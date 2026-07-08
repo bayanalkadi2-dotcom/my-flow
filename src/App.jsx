@@ -726,7 +726,16 @@ function App() {
           />
         )
       case 'checkin':
-        return <DailyCheckIn onNavigate={setScreen} user={user} />
+        return (
+          <DailyCheckIn
+            accountProfile={accountProfile}
+            calendarNotes={calendarNotes}
+            habits={preparedHabits}
+            onNavigate={setScreen}
+            profileName={resolvedProfileName}
+            user={user}
+          />
+        )
       case 'privacy':
         return <Datenschutz onNavigate={setScreen} />
       case 'calendar':
@@ -824,7 +833,7 @@ function App() {
           aria-label="Tages-Check-in oeffnen"
         >
           <img src={flowCharacter} alt="" />
-          <span>Check-in</span>
+          <span>KI Check-in</span>
         </button>
       )}
       {!authScreens.includes(screen) && screen !== 'profileSettings' && screen !== 'privacy' && (
