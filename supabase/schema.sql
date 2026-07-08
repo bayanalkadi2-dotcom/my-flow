@@ -356,3 +356,277 @@ DROP TRIGGER IF EXISTS update_daily_checkins_updated_at ON public.daily_checkins
 CREATE TRIGGER update_daily_checkins_updated_at
   BEFORE UPDATE ON public.daily_checkins
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- ============================================
+-- Freunde und gemeinsame Challenges
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.friend_requests (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  requester_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  addressee_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'declined')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  responded_at TIMESTAMPTZ,
+  CHECK (requester_id <> addressee_id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS friend_requests_one_pending_pair
+  ON public.friend_requests (LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id))
+  WHERE status = 'pending';
+
+CREATE TABLE IF NOT EXISTS public.friendships (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_a UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  user_b UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (user_a < user_b),
+  UNIQUE (user_a, user_b)
+);
+
+CREATE TABLE IF NOT EXISTS public.challenge_requests (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  challenger_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  invitee_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  template_key TEXT NOT NULL,
+  title TEXT NOT NULL,
+  duration_days INTEGER NOT NULL CHECK (duration_days BETWEEN 1 AND 365),
+  daily_goal NUMERIC(10, 2) NOT NULL CHECK (daily_goal > 0),
+  goal_unit TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'declined')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  responded_at TIMESTAMPTZ,
+  CHECK (challenger_id <> invitee_id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS challenge_requests_one_pending_template
+  ON public.challenge_requests (LEAST(challenger_id, invitee_id), GREATEST(challenger_id, invitee_id), template_key)
+  WHERE status = 'pending';
+
+CREATE TABLE IF NOT EXISTS public.challenges (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  request_id UUID UNIQUE REFERENCES public.challenge_requests(id) ON DELETE SET NULL,
+  challenger_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  opponent_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  template_key TEXT NOT NULL,
+  title TEXT NOT NULL,
+  duration_days INTEGER NOT NULL CHECK (duration_days BETWEEN 1 AND 365),
+  daily_goal NUMERIC(10, 2) NOT NULL CHECK (daily_goal > 0),
+  goal_unit TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'cancelled')),
+  starts_on DATE NOT NULL DEFAULT CURRENT_DATE,
+  ends_on DATE NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (challenger_id <> opponent_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.challenge_progress (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  challenge_id UUID NOT NULL REFERENCES public.challenges(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  progress_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  completed BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (challenge_id, user_id, progress_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_friend_requests_addressee ON public.friend_requests(addressee_id, status);
+CREATE INDEX IF NOT EXISTS idx_friendships_user_a ON public.friendships(user_a);
+CREATE INDEX IF NOT EXISTS idx_friendships_user_b ON public.friendships(user_b);
+CREATE INDEX IF NOT EXISTS idx_challenge_requests_invitee ON public.challenge_requests(invitee_id, status);
+CREATE INDEX IF NOT EXISTS idx_challenges_users ON public.challenges(challenger_id, opponent_id);
+CREATE INDEX IF NOT EXISTS idx_challenge_progress_lookup ON public.challenge_progress(challenge_id, user_id, progress_date);
+
+ALTER TABLE public.friend_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.friendships ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.challenge_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.challenges ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.challenge_progress ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read own friend requests" ON public.friend_requests
+  FOR SELECT TO authenticated
+  USING (auth.uid() IN (requester_id, addressee_id));
+
+CREATE POLICY "Users can read own friendships" ON public.friendships
+  FOR SELECT TO authenticated
+  USING (auth.uid() IN (user_a, user_b));
+
+CREATE POLICY "Users can read own challenge requests" ON public.challenge_requests
+  FOR SELECT TO authenticated
+  USING (auth.uid() IN (challenger_id, invitee_id));
+
+CREATE POLICY "Users can create challenge requests" ON public.challenge_requests
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    auth.uid() = challenger_id
+    AND EXISTS (
+      SELECT 1 FROM public.friendships f
+      WHERE (f.user_a = challenger_id AND f.user_b = invitee_id)
+         OR (f.user_a = invitee_id AND f.user_b = challenger_id)
+    )
+  );
+
+CREATE POLICY "Participants can read challenges" ON public.challenges
+  FOR SELECT TO authenticated
+  USING (auth.uid() IN (challenger_id, opponent_id));
+
+CREATE POLICY "Participants can read challenge progress" ON public.challenge_progress
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.challenges c
+      WHERE c.id = challenge_id AND auth.uid() IN (c.challenger_id, c.opponent_id)
+    )
+  );
+
+CREATE POLICY "Users can create own challenge progress" ON public.challenge_progress
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    auth.uid() = user_id
+    AND EXISTS (
+      SELECT 1 FROM public.challenges c
+      WHERE c.id = challenge_id
+        AND auth.uid() IN (c.challenger_id, c.opponent_id)
+        AND progress_date BETWEEN c.starts_on AND c.ends_on
+    )
+  );
+
+CREATE POLICY "Users can update own challenge progress" ON public.challenge_progress
+  FOR UPDATE TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own challenge progress" ON public.challenge_progress
+  FOR DELETE TO authenticated
+  USING (auth.uid() = user_id);
+
+-- Namen sind nur für Personen sichtbar, mit denen eine Anfrage, Freundschaft oder Challenge besteht.
+CREATE POLICY "Users can read social profiles" ON public.profiles
+  FOR SELECT TO authenticated
+  USING (
+    auth.uid() = id
+    OR EXISTS (
+      SELECT 1 FROM public.friend_requests r
+      WHERE auth.uid() IN (r.requester_id, r.addressee_id)
+        AND id IN (r.requester_id, r.addressee_id)
+    )
+    OR EXISTS (
+      SELECT 1 FROM public.friendships f
+      WHERE auth.uid() IN (f.user_a, f.user_b)
+        AND id IN (f.user_a, f.user_b)
+    )
+    OR EXISTS (
+      SELECT 1 FROM public.challenge_requests r
+      WHERE auth.uid() IN (r.challenger_id, r.invitee_id)
+        AND id IN (r.challenger_id, r.invitee_id)
+    )
+  );
+
+CREATE OR REPLACE FUNCTION public.send_friend_request(target_email TEXT)
+RETURNS UUID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  target_id UUID;
+  new_request_id UUID;
+BEGIN
+  SELECT id INTO target_id FROM public.profiles WHERE lower(email) = lower(trim(target_email));
+  IF target_id IS NULL THEN
+    RAISE EXCEPTION 'Kein MyFlow-Konto mit dieser E-Mail-Adresse gefunden.';
+  END IF;
+  IF target_id = auth.uid() THEN
+    RAISE EXCEPTION 'Du kannst dich nicht selbst hinzufügen.';
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM public.friendships
+    WHERE (user_a = LEAST(auth.uid(), target_id) AND user_b = GREATEST(auth.uid(), target_id))
+  ) THEN
+    RAISE EXCEPTION 'Ihr seid bereits Freunde.';
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM public.friend_requests
+    WHERE status = 'pending'
+      AND LEAST(requester_id, addressee_id) = LEAST(auth.uid(), target_id)
+      AND GREATEST(requester_id, addressee_id) = GREATEST(auth.uid(), target_id)
+  ) THEN
+    RAISE EXCEPTION 'Für diese Person besteht bereits eine Anfrage.';
+  END IF;
+
+  INSERT INTO public.friend_requests (requester_id, addressee_id)
+  VALUES (auth.uid(), target_id)
+  RETURNING id INTO new_request_id;
+  RETURN new_request_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.respond_to_friend_request(request_id UUID, accept_request BOOLEAN)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  request_row public.friend_requests%ROWTYPE;
+BEGIN
+  SELECT * INTO request_row FROM public.friend_requests
+  WHERE id = request_id AND addressee_id = auth.uid() AND status = 'pending'
+  FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Anfrage nicht gefunden oder bereits beantwortet.'; END IF;
+
+  UPDATE public.friend_requests
+  SET status = CASE WHEN accept_request THEN 'accepted' ELSE 'declined' END,
+      responded_at = now()
+  WHERE id = request_id;
+
+  IF accept_request THEN
+    INSERT INTO public.friendships (user_a, user_b)
+    VALUES (LEAST(request_row.requester_id, request_row.addressee_id), GREATEST(request_row.requester_id, request_row.addressee_id))
+    ON CONFLICT (user_a, user_b) DO NOTHING;
+    RETURN 'accepted';
+  END IF;
+  RETURN 'declined';
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.respond_to_challenge_request(request_id UUID, accept_request BOOLEAN)
+RETURNS TEXT
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  request_row public.challenge_requests%ROWTYPE;
+BEGIN
+  SELECT * INTO request_row FROM public.challenge_requests
+  WHERE id = request_id AND invitee_id = auth.uid() AND status = 'pending'
+  FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Challenge-Anfrage nicht gefunden oder bereits beantwortet.'; END IF;
+
+  UPDATE public.challenge_requests
+  SET status = CASE WHEN accept_request THEN 'accepted' ELSE 'declined' END,
+      responded_at = now()
+  WHERE id = request_id;
+
+  IF accept_request THEN
+    INSERT INTO public.challenges (
+      request_id, challenger_id, opponent_id, template_key, title,
+      duration_days, daily_goal, goal_unit, ends_on
+    ) VALUES (
+      request_row.id, request_row.challenger_id, request_row.invitee_id,
+      request_row.template_key, request_row.title, request_row.duration_days,
+      request_row.daily_goal, request_row.goal_unit,
+      CURRENT_DATE + (request_row.duration_days - 1)
+    );
+    RETURN 'accepted';
+  END IF;
+  RETURN 'declined';
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.send_friend_request(TEXT) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.respond_to_friend_request(UUID, BOOLEAN) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.respond_to_challenge_request(UUID, BOOLEAN) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.send_friend_request(TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.respond_to_friend_request(UUID, BOOLEAN) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.respond_to_challenge_request(UUID, BOOLEAN) TO authenticated;

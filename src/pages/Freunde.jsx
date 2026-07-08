@@ -1,286 +1,350 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  challengeTemplates,
+  loadSocialDashboard,
+  respondToChallengeRequest,
+  respondToFriendRequest,
+  sendChallengeRequest,
+  sendFriendRequest,
+  subscribeToSocialChanges,
+  toggleTodayProgress,
+} from '../services/socialService'
 
-const levelSteps = [
-  { name: "Starter", min: 0 },
-  { name: "Bronze", min: 250 },
-  { name: "Silber", min: 500 },
-  { name: "Gold", min: 800 },
-  { name: "Flow Pro", min: 1200 },
-]
-
-function getFlowTree(score) {
-  if (score < 100) {
-    return { label: "Blatt", symbols: "🍃" }
-  }
-
-  if (score < 250) {
-    return { label: "Spross", symbols: "🌱" }
-  }
-
-  if (score < 500) {
-    return { label: "Pflanze", symbols: "🪴" }
-  }
-
-  if (score < 800) {
-    return { label: "Blume", symbols: "🌸" }
-  }
-
-  if (score < 1200) {
-    return { label: "Baum", symbols: "🌳" }
-  }
-
-  return { label: "Flow-Wald", symbols: "🌳🌳" }
+const emptyDashboard = {
+  friends: [],
+  friendRequests: [],
+  challengeRequests: [],
+  challenges: [],
 }
 
-function getLevel(score) {
-  const currentLevel = [...levelSteps].reverse().find((level) => score >= level.min)
-  const nextLevel = levelSteps.find((level) => level.min > score)
-  const currentMin = currentLevel?.min ?? 0
-  const nextMin = nextLevel?.min ?? currentMin
-  const progress = nextLevel
-    ? Math.round(((score - currentMin) / (nextMin - currentMin)) * 100)
-    : 100
-
-  return {
-    current: currentLevel?.name ?? "Starter",
-    next: nextLevel?.name ?? "Max Level",
-    progress,
-  }
+function initials(name = '') {
+  return name.trim().charAt(0).toUpperCase() || 'F'
 }
 
-function Freunde({ habits, profileName, t }) {
-  const firstRoutineTitle = habits[0]?.title ?? "Wasser trinken";
-  const routineLabels = new Map(habits.map((habit) => [habit.title, habit.displayTitle ?? habit.title]));
-  const getRoutineLabel = (routine) => routineLabels.get(routine) ?? routine;
-  const currentUserName = profileName && profileName !== "Gast" ? profileName : "Du";
-  const completedHabits = habits.filter((habit) => habit.done || habit.progress >= 100).length;
-  const weeklyProgress = habits.length
-    ? Math.round(habits.reduce((sum, habit) => sum + Math.min(Number(habit.progress) || 0, 100), 0) / habits.length)
-    : 0;
-  const currentUser = {
-    name: currentUserName,
-    score: completedHabits * 100 + weeklyProgress,
-    progress: weeklyProgress,
-    color: "#4f46e5",
-    details: habits.length
-      ? habits.slice(0, 3).map((habit) => `${habit.displayTitle ?? habit.title}: ${Math.min(Number(habit.progress) || 0, 100)}%`)
-      : ["Noch keine Routinen angelegt"],
-  };
-  const friends = [];
-  const inviteLink = `https://myflow.app/invite/${encodeURIComponent(currentUserName.toLowerCase().replace(/\s+/g, "-"))}`;
+function daysRemaining(endsOn) {
+  const end = new Date(`${endsOn}T23:59:59`)
+  return Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86400000))
+}
 
-  const [selectedFriend, setSelectedFriend] = useState(currentUser);
-  const [inviteOpen, setInviteOpen] = useState(false);
-  const [inviteStatus, setInviteStatus] = useState("");
-  const [challengeRoutine, setChallengeRoutine] = useState(firstRoutineTitle);
-  const [challengeDays, setChallengeDays] = useState("14");
-  const [challengeFriend, setChallengeFriend] = useState("");
-  const [challenges, setChallenges] = useState([]);
-
-  function addChallenge(event) {
-    event.preventDefault();
-
-    if (!challengeRoutine || !challengeFriend) {
-      return;
-    }
-
-    setChallenges((currentChallenges) => [
-      {
-        id: Date.now(),
-        routine: challengeRoutine,
-        days: Number(challengeDays) || 14,
-        friend: challengeFriend,
-        progress: 0,
-      },
-      ...currentChallenges,
-    ]);
-  }
-
-  function copyInviteLink() {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(inviteLink);
-    }
-
-    setInviteStatus(t.friends.copied);
-  }
-
-  const selectedLevel = getLevel(selectedFriend.score);
-  const selectedTree = getFlowTree(selectedFriend.score);
-  const inviteText = encodeURIComponent(`MyFlow: ${inviteLink}`);
-  const mailSubject = encodeURIComponent("Einladung zu MyFlow");
+function ChallengeCard({ challenge, userId, busy, onToggle }) {
+  const today = new Date().toISOString().slice(0, 10)
+  const mine = challenge.challenge_progress?.filter((item) => item.user_id === userId && item.completed) ?? []
+  const theirs = challenge.challenge_progress?.filter((item) => item.user_id !== userId && item.completed) ?? []
+  const myPercent = Math.min(100, Math.round((mine.length / challenge.duration_days) * 100))
+  const friendPercent = Math.min(100, Math.round((theirs.length / challenge.duration_days) * 100))
+  const checkedToday = mine.some((item) => item.progress_date === today)
+  const remaining = daysRemaining(challenge.ends_on)
+  const result = remaining > 0
+    ? null
+    : myPercent === friendPercent
+      ? 'Gleichstand'
+      : myPercent > friendPercent ? 'Du gewinnst!' : `${challenge.friendName} gewinnt`
 
   return (
-    <div className="friends-page">
-      <div className="friends-header">
+    <article className="social-challenge-card">
+      <div className="social-card-heading">
         <div>
-          <p className="friends-subtitle">{t.friends.subtitle}</p>
-          <h1>{t.friends.title}</h1>
+          <span className="social-kicker">{challenge.duration_days} Tage · {challenge.daily_goal} {challenge.goal_unit} täglich</span>
+          <h3>{challenge.title}</h3>
+          <p>Gemeinsam mit {challenge.friendName}</p>
+        </div>
+        <strong>{remaining} Tage</strong>
+      </div>
+
+      <div className="duel-progress">
+        <div>
+          <span><b>Du</b><b>{myPercent}%</b></span>
+          <div><i style={{ width: `${myPercent}%` }} /></div>
+        </div>
+        <div>
+          <span><b>{challenge.friendName}</b><b>{friendPercent}%</b></span>
+          <div><i style={{ width: `${friendPercent}%` }} /></div>
         </div>
       </div>
 
-      <div className="friend-detail-card">
-        <div className="friend-detail-top">
-          <div className="avatar detail-avatar">{selectedFriend.name.charAt(0)}</div>
-          <div>
-            <h2>{selectedFriend.name}</h2>
-            <p>{t.friends.weekly.replace('{progress}', selectedFriend.progress)}</p>
-          </div>
-          <strong>{selectedFriend.score}</strong>
-        </div>
-
-        <div className="friend-level-row">
-          <span>Level {selectedLevel.current}</span>
-          <small>{t.friends.nextLevel.replace('{level}', selectedLevel.next)}</small>
-        </div>
-        <div className="friend-tree-status">
-          <span>{selectedTree.symbols}</span>
-          <p>FlowTree: {selectedTree.label}</p>
-        </div>
-        <div className="friend-level-progress">
-          <span style={{ width: `${selectedLevel.progress}%` }} />
-        </div>
-
-        <div className="detail-list">
-          {selectedFriend.details.map((detail) => (
-            <span key={detail}>{detail}</span>
-          ))}
-        </div>
-      </div>
-
-      <button className="add-friend-button invite-bottom-button" onClick={() => setInviteOpen((open) => !open)} type="button">
-        {t.friends.invite}
-      </button>
-
-      {inviteOpen && (
-        <section className="invite-panel">
-          <div>
-            <span>{t.friends.inviteFriend}</span>
-            <p>{t.friends.inviteText}</p>
-          </div>
-          <div className="invite-link-box">
-            <strong>{inviteLink}</strong>
-            <button type="button" onClick={copyInviteLink}>{t.common.save}</button>
-          </div>
-          <div className="invite-actions">
-            <a href={`https://wa.me/?text=${inviteText}`} target="_blank" rel="noreferrer">WhatsApp</a>
-            <a href={`mailto:?subject=${mailSubject}&body=${inviteText}`}>E-Mail</a>
-          </div>
-          {inviteStatus && <small>{inviteStatus}</small>}
-        </section>
+      {result ? (
+        <div className="challenge-result">{result}</div>
+      ) : (
+        <button
+          className={checkedToday ? 'daily-check active' : 'daily-check'}
+          type="button"
+          disabled={busy}
+          onClick={() => onToggle(challenge.id, checkedToday)}
+        >
+          <span>{checkedToday ? '✓' : ''}</span>
+          {checkedToday ? 'Heute geschafft' : 'Heutiges Ziel abhaken'}
+        </button>
       )}
+    </article>
+  )
+}
 
-      <section className="challenge-section">
-        <div className="challenge-header">
-          <div>
-            <p className="friends-subtitle">{t.friends.goals}</p>
-            <h2>{t.friends.challenges}</h2>
-          </div>
+function EmptyState({ title, text }) {
+  return (
+    <div className="social-empty">
+      <span aria-hidden="true">✦</span>
+      <strong>{title}</strong>
+      <p>{text}</p>
+    </div>
+  )
+}
+
+function Freunde({ profileName, user }) {
+  const userId = user?.id
+  const [dashboard, setDashboard] = useState(emptyDashboard)
+  const [loading, setLoading] = useState(Boolean(user))
+  const [busy, setBusy] = useState(false)
+  const [notice, setNotice] = useState('')
+  const [friendModalOpen, setFriendModalOpen] = useState(false)
+  const [challengeModalOpen, setChallengeModalOpen] = useState(false)
+  const [email, setEmail] = useState('')
+  const [friendId, setFriendId] = useState('')
+  const [templateKey, setTemplateKey] = useState(challengeTemplates[0].id)
+  const selectedTemplate = useMemo(
+    () => challengeTemplates.find((template) => template.id === templateKey) ?? challengeTemplates[0],
+    [templateKey],
+  )
+  const [days, setDays] = useState(selectedTemplate.days)
+  const [goal, setGoal] = useState(selectedTemplate.goal)
+
+  const refresh = useCallback(async () => {
+    if (!userId) {
+      setDashboard(emptyDashboard)
+      setLoading(false)
+      return
+    }
+    try {
+      setDashboard(await loadSocialDashboard(userId))
+    } catch (error) {
+      setNotice(error.message || 'Freunde konnten nicht geladen werden.')
+    } finally {
+      setLoading(false)
+    }
+  }, [userId])
+
+  useEffect(() => {
+    if (!userId) return undefined
+    let active = true
+    loadSocialDashboard(userId)
+      .then((data) => {
+        if (active) setDashboard(data)
+      })
+      .catch((error) => {
+        if (active) setNotice(error.message || 'Freunde konnten nicht geladen werden.')
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+    const unsubscribe = subscribeToSocialChanges(userId, refresh)
+    return () => {
+      active = false
+      unsubscribe()
+    }
+  }, [refresh, userId])
+
+  async function runAction(action, successMessage) {
+    setBusy(true)
+    setNotice('')
+    try {
+      await action()
+      setNotice(successMessage)
+      await refresh()
+      return true
+    } catch (error) {
+      setNotice(error.message || 'Das hat leider nicht geklappt.')
+      return false
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function submitFriendRequest(event) {
+    event.preventDefault()
+    const succeeded = await runAction(
+      () => sendFriendRequest(email),
+      'Freundschaftsanfrage wurde gesendet.',
+    )
+    if (succeeded) {
+      setEmail('')
+      setFriendModalOpen(false)
+    }
+  }
+
+  async function submitChallenge(event) {
+    event.preventDefault()
+    const friend = dashboard.friends.find((item) => item.id === friendId)
+    if (!friend) return
+    const succeeded = await runAction(
+      () => sendChallengeRequest({
+        userId,
+        friendId,
+        templateKey,
+        title: selectedTemplate.title,
+        days: Number(days),
+        goal: Number(goal),
+        unit: selectedTemplate.unit,
+      }),
+      `Challenge-Anfrage an ${friend.name} gesendet.`,
+    )
+    if (succeeded) setChallengeModalOpen(false)
+  }
+
+  const userName = profileName && profileName !== 'Gast' ? profileName : 'Du'
+
+  return (
+    <div className="friends-page social-friends-page">
+      <header className="friends-header social-hero">
+        <div>
+          <p className="friends-subtitle">Gemeinsam motiviert bleiben</p>
+          <h1>Freunde & Challenges</h1>
+          <p>Erreicht eure täglichen Ziele zusammen.</p>
         </div>
+        <div className="social-user-badge" aria-label={`Angemeldet als ${userName}`}>
+          {initials(userName)}
+        </div>
+      </header>
 
-        <form className="challenge-form" onSubmit={addChallenge}>
-          <label>
-            {t.routines.routine}
-            <select value={challengeRoutine} onChange={(event) => setChallengeRoutine(event.target.value)}>
-              {habits.map((habit) => (
-                <option value={habit.title} key={habit.id}>
-                  {habit.displayTitle ?? habit.title}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="challenge-form-row">
-            <label>
-              {t.friends.duration}
-              <select value={challengeDays} onChange={(event) => setChallengeDays(event.target.value)}>
-                <option value="7">{t.friends.days.replace('{days}', 7)}</option>
-                <option value="14">{t.friends.days.replace('{days}', 14)}</option>
-                <option value="30">{t.friends.days.replace('{days}', 30)}</option>
-              </select>
-            </label>
-            <label>
-              {t.friends.with}
-              <select value={challengeFriend} onChange={(event) => setChallengeFriend(event.target.value)}>
-                <option value="">Noch keine Freunde</option>
-                {friends.map((friend) => (
-                  <option value={friend.name} key={friend.name}>
-                    {friend.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <button type="submit" disabled={!challengeFriend}>{t.friends.start}</button>
-        </form>
+      <div className="social-actions">
+        <button type="button" onClick={() => { setNotice(''); setFriendModalOpen(true) }}>
+          <span>＋</span> Freund hinzufügen
+        </button>
+        <button type="button" onClick={() => { setNotice(''); setChallengeModalOpen(true) }} disabled={!dashboard.friends.length}>
+          <span>⚡</span> Challenge starten
+        </button>
+      </div>
 
-        <div className="challenge-list">
-          {challenges.length ? (
-            challenges.map((challenge) => (
-              <article className="challenge-card" key={challenge.id}>
-                <div>
-                  <span>{t.friends.days.replace('{days}', challenge.days)}</span>
-                  <h3>{getRoutineLabel(challenge.routine)}</h3>
-                  <p>{t.friends.against.replace('{friend}', challenge.friend)}</p>
-                </div>
-                <strong>{challenge.progress}%</strong>
-                <div className="challenge-progress">
-                  <span style={{ width: `${challenge.progress}%` }} />
-                </div>
+      {notice && <div className="social-notice" role="status">{notice}</div>}
+
+      <section className="social-section">
+        <div className="social-section-title">
+          <div><span>DEIN KREIS</span><h2>Meine Freunde</h2></div>
+          <b>{dashboard.friends.length}</b>
+        </div>
+        {loading ? <p className="social-loading">Wird geladen …</p> : (
+          <div className="social-friend-grid">
+            {dashboard.friends.map((friend) => (
+              <article className="social-friend-card" key={friend.id}>
+                <div className="social-avatar">{initials(friend.name)}</div>
+                <div><strong>{friend.name}</strong><span>MyFlow-Freund</span></div>
+                <i aria-hidden="true">✓</i>
               </article>
-            ))
-          ) : (
-            <article className="friends-empty-state">
-              <strong>Noch keine Challenges</strong>
-              <p>Lade zuerst Freunde ein, dann kannst du gemeinsame Ziele starten.</p>
+            ))}
+            {!dashboard.friends.length && (
+              <EmptyState title="Noch keine Freunde" text="Füge Freunde per E-Mail hinzu und motiviert euch gemeinsam." />
+            )}
+          </div>
+        )}
+      </section>
+
+      <section className="social-section">
+        <div className="social-section-title">
+          <div><span>NEU</span><h2>Eingehende Freundschaftsanfragen</h2></div>
+          {!!dashboard.friendRequests.length && <b>{dashboard.friendRequests.length}</b>}
+        </div>
+        <div className="social-request-list">
+          {dashboard.friendRequests.map((request) => (
+            <article className="social-request-card" key={request.id}>
+              <div className="social-avatar">{initials(request.name)}</div>
+              <div><strong>{request.name}</strong><span>Möchte mit dir befreundet sein</span></div>
+              <div className="request-buttons">
+                <button type="button" disabled={busy} onClick={() => runAction(() => respondToFriendRequest(request.id, true), `${request.name} ist jetzt dein Freund.`)}>Annehmen</button>
+                <button type="button" disabled={busy} onClick={() => runAction(() => respondToFriendRequest(request.id, false), 'Anfrage abgelehnt.')}>Ablehnen</button>
+              </div>
             </article>
-          )}
+          ))}
+          {!dashboard.friendRequests.length && <EmptyState title="Keine neuen Anfragen" text="Neue Freundschaftsanfragen erscheinen hier." />}
         </div>
       </section>
 
-      <div className="leaderboard">
-        {[currentUser, ...friends].map((freund, index) => (
-          <button
-            className={`friend-card ${
-              selectedFriend.name === freund.name ? "active" : ""
-            }`}
-            key={freund.name}
-            onClick={() => setSelectedFriend(freund)}
-          >
-            <div className="rank">{index + 1}</div>
-            <div className="avatar">{freund.name.charAt(0)}</div>
-            <div className="friend-tree-badge" aria-label={`FlowTree ${getFlowTree(freund.score).label}`}>
-              {getFlowTree(freund.score).symbols}
-            </div>
+      <section className="social-section">
+        <div className="social-section-title">
+          <div><span>GEMEINSAME ZIELE</span><h2>Laufende Challenges</h2></div>
+          {!!dashboard.challenges.length && <b>{dashboard.challenges.length}</b>}
+        </div>
+        <div className="social-challenge-list">
+          {dashboard.challenges.map((challenge) => (
+            <ChallengeCard
+              challenge={challenge}
+              userId={userId}
+              busy={busy}
+              onToggle={(id, completed) => runAction(
+                () => toggleTodayProgress(id, userId, !completed),
+                completed ? 'Heutiger Fortschritt zurückgesetzt.' : 'Stark! Dein Fortschritt wurde gespeichert.',
+              )}
+              key={challenge.id}
+            />
+          ))}
+          {!dashboard.challenges.length && <EmptyState title="Noch keine laufende Challenge" text="Starte mit einem Freund eine gemeinsame Challenge." />}
+        </div>
+      </section>
 
-            <div className="friend-info">
-              <h2>{freund.name}</h2>
-              <p>{t.friends.weekly.replace('{progress}', freund.progress)}</p>
-
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{
-                    width: `${freund.progress}%`,
-                    backgroundColor: freund.color,
-                  }}
-                />
+      <section className="social-section">
+        <div className="social-section-title">
+          <div><span>ENTSCHEIDE DU</span><h2>Challenge-Anfragen</h2></div>
+          {!!dashboard.challengeRequests.length && <b>{dashboard.challengeRequests.length}</b>}
+        </div>
+        <div className="social-request-list">
+          {dashboard.challengeRequests.map((request) => (
+            <article className="social-request-card challenge-request" key={request.id}>
+              <div className="social-avatar">⚡</div>
+              <div>
+                <strong>{request.title}</strong>
+                <span>{request.friendName} · {request.duration_days} Tage · {request.daily_goal} {request.goal_unit}</span>
               </div>
-            </div>
+              <div className="request-buttons">
+                <button type="button" disabled={busy} onClick={() => runAction(() => respondToChallengeRequest(request.id, true), 'Challenge angenommen – los geht’s!')}>Annehmen</button>
+                <button type="button" disabled={busy} onClick={() => runAction(() => respondToChallengeRequest(request.id, false), 'Challenge abgelehnt.')}>Ablehnen</button>
+              </div>
+            </article>
+          ))}
+          {!dashboard.challengeRequests.length && <EmptyState title="Keine Challenge-Anfragen" text="Einladungen deiner Freunde erscheinen hier." />}
+        </div>
+      </section>
 
-            <div className="score">
-              <span>{freund.score}</span>
-              <small>{getLevel(freund.score).current}</small>
-            </div>
-          </button>
-        ))}
-        {!friends.length && (
-          <article className="friends-empty-state">
-            <strong>Noch keine Freunde</strong>
-            <p>Hier erscheinen echte Freunde, sobald sie deiner App beitreten.</p>
-          </article>
-        )}
-      </div>
+      {friendModalOpen && (
+        <div className="social-modal-backdrop" role="presentation" onMouseDown={() => setFriendModalOpen(false)}>
+          <section className="social-modal" role="dialog" aria-modal="true" aria-labelledby="friend-modal-title" onMouseDown={(event) => event.stopPropagation()}>
+            <button className="social-modal-close" type="button" aria-label="Schließen" onClick={() => setFriendModalOpen(false)}>×</button>
+            <span className="social-modal-icon">♡</span>
+            <h2 id="friend-modal-title">Freund hinzufügen</h2>
+            <p>Sende eine Anfrage an die E-Mail-Adresse des MyFlow-Kontos.</p>
+            {notice && <div className="social-modal-error" role="alert">{notice}</div>}
+            <form onSubmit={submitFriendRequest}>
+              <label>E-Mail-Adresse<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="freund@beispiel.de" required autoFocus /></label>
+              <button type="submit" disabled={busy}>{busy ? 'Wird gesendet …' : 'Anfrage senden'}</button>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {challengeModalOpen && (
+        <div className="social-modal-backdrop" role="presentation" onMouseDown={() => setChallengeModalOpen(false)}>
+          <section className="social-modal challenge-modal" role="dialog" aria-modal="true" aria-labelledby="challenge-modal-title" onMouseDown={(event) => event.stopPropagation()}>
+            <button className="social-modal-close" type="button" aria-label="Schließen" onClick={() => setChallengeModalOpen(false)}>×</button>
+            <span className="social-modal-icon">⚡</span>
+            <h2 id="challenge-modal-title">Challenge starten</h2>
+            <p>Wähle Freund, Vorlage und euer tägliches Ziel.</p>
+            {notice && <div className="social-modal-error" role="alert">{notice}</div>}
+            <form onSubmit={submitChallenge}>
+              <label>Freund<select value={friendId} onChange={(event) => setFriendId(event.target.value)} required><option value="">Bitte wählen</option>{dashboard.friends.map((friend) => <option value={friend.id} key={friend.id}>{friend.name}</option>)}</select></label>
+              <label>Challenge-Typ<select value={templateKey} onChange={(event) => {
+                const nextTemplate = challengeTemplates.find((template) => template.id === event.target.value) ?? challengeTemplates[0]
+                setTemplateKey(nextTemplate.id)
+                setDays(nextTemplate.days)
+                setGoal(nextTemplate.goal)
+              }}>{challengeTemplates.map((template) => <option value={template.id} key={template.id}>{template.days} Tage {template.title}</option>)}</select></label>
+              <div className="social-form-row">
+                <label>Dauer in Tagen<input type="number" min="1" max="365" value={days} onChange={(event) => setDays(event.target.value)} required /></label>
+                <label>Tägliches Ziel<input type="number" min="1" step="1" value={goal} onChange={(event) => setGoal(event.target.value)} required /></label>
+              </div>
+              <small>Einheit: {selectedTemplate.unit}</small>
+              <button type="submit" disabled={busy || !friendId}>{busy ? 'Wird gesendet …' : 'Challenge-Anfrage senden'}</button>
+            </form>
+          </section>
+        </div>
+      )}
     </div>
-  );
+  )
 }
 
-export default Freunde;
+export default Freunde

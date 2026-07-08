@@ -794,7 +794,7 @@ function App() {
       case 'progress':
         return <Statistik habits={preparedHabits} languageStyle={languageStyle} onNavigate={setScreen} t={t} />
       case 'freunde':
-        return <Freunde habits={preparedHabits} profileName={resolvedProfileName} t={t} />
+        return <Freunde profileName={resolvedProfileName} user={user} />
       case 'welcomeCharacter':
         return <Willkommen onNavigate={setScreen} profileName={resolvedProfileName} t={t} />
       case 'profile':
@@ -874,7 +874,7 @@ function App() {
   }
 
   return (
-    <main className={`app app-has-global-profile ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
+    <main className={`app app-has-global-profile ${screen === 'profileSettings' ? 'profile-settings-active' : ''} ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
       <div className="global-account" ref={accountMenuRef}>
         <button
           className={`global-profile-button ${isAccountMenuOpen ? 'active' : ''}`}

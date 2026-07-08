@@ -472,18 +472,24 @@ function Profil({
   return (
     <section className={`screen compact-screen profile-screen ${settingsPage ? 'profile-settings-screen' : ''}`}>
       {settingsPage && (
-        <button className="back-button" onClick={() => onNavigate('profile')} aria-label={t.common.back}>
-          &larr;
-        </button>
+        <header className="profile-settings-page-header">
+          <button className="back-button" onClick={() => onNavigate('profile')} aria-label={t.common.back}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m14.5 5-7 7 7 7" />
+            </svg>
+          </button>
+          <div>
+            <h1>{t.profile.settings.replace('Profil-', '')}</h1>
+            <p>{t.profile.settingsText}</p>
+          </div>
+        </header>
       )}
       {!settingsPage ? (
         <div className="profile-title-row">
           <img src={logo} alt="MyFlow Logo" className="small-logo" />
           <h1>{t.profile.title}</h1>
         </div>
-      ) : (
-        <h1>{t.profile.settings.replace('Profil-', '')}</h1>
-      )}
+      ) : null}
       <button
         className="settings-gear-button"
         style={{ display: settingsPage ? 'none' : undefined }}
