@@ -156,12 +156,7 @@ function App() {
   const [isSavingOnboarding, setIsSavingOnboarding] = useState(false)
   const [guestSetup, setGuestSetup] = useState(loadGuestSetup)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
-  const [studentOnboardingDismissed, setStudentOnboardingDismissed] = useState(false)
   const accountMenuRef = useRef(null)
-  const needsStudentOnboarding = isAuthenticated
-    && !profileLoading
-    && !studentOnboardingDismissed
-    && profile?.onboarding_completed !== true
   const resolvedProfileName = profile?.display_name || profileName
 
   // Load user settings and routines from Supabase
@@ -719,21 +714,14 @@ function App() {
     return <LoadingScreen />
   }
 
-  if (needsStudentOnboarding || screen === 'profileOnboarding') {
+  if (screen === 'profileOnboarding') {
     return (
       <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
         <StudentOnboarding
           initialAnswers={profile ?? {}}
           includePreferences={screen === 'profileOnboarding'}
           mode="profile"
-          onBack={() => {
-            if (needsStudentOnboarding) {
-              setStudentOnboardingDismissed(true)
-              setScreen('dashboard')
-              return
-            }
-            setScreen('profileSettings')
-          }}
+          onBack={() => setScreen('profileSettings')}
           onComplete={handleStudentOnboardingComplete}
           saving={isSavingOnboarding}
         />
