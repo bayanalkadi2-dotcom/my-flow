@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   challengeTemplates,
+  cancelFriendRequest,
   loadSocialDashboard,
   respondToChallengeRequest,
   respondToFriendRequest,
@@ -13,6 +14,7 @@ import {
 const emptyDashboard = {
   friends: [],
   friendRequests: [],
+  sentFriendRequests: [],
   challengeRequests: [],
   challenges: [],
 }
@@ -298,6 +300,38 @@ function Freunde({ profileName, user }) {
             </article>
           ))}
           {!dashboard.challengeRequests.length && <EmptyState title="Keine Challenge-Anfragen" text="Einladungen deiner Freunde erscheinen hier." />}
+        </div>
+      </section>
+
+      <section className="social-section sent-invitations-section">
+        <div className="social-section-title">
+          <div><span>NOCH OFFEN</span><h2>Gesendete Einladungen</h2></div>
+          {!!dashboard.sentFriendRequests.length && <b>{dashboard.sentFriendRequests.length}</b>}
+        </div>
+        <div className="social-request-list">
+          {dashboard.sentFriendRequests.map((request) => (
+            <article className="social-request-card sent-request-card" key={request.id}>
+              <div className="social-avatar">{initials(request.name)}</div>
+              <div>
+                <strong>{request.name}</strong>
+                <span>Einladung wurde noch nicht angenommen</span>
+              </div>
+              <button
+                className="cancel-friend-request"
+                type="button"
+                disabled={busy}
+                onClick={() => runAction(
+                  () => cancelFriendRequest(request.id),
+                  `Einladung an ${request.name} wurde zurückgezogen.`,
+                )}
+              >
+                Zurückziehen
+              </button>
+            </article>
+          ))}
+          {!dashboard.sentFriendRequests.length && (
+            <EmptyState title="Keine offenen Einladungen" text="Alle gesendeten Anfragen wurden beantwortet." />
+          )}
         </div>
       </section>
 

@@ -20,12 +20,13 @@ function throwIfError(error) {
 
 export async function loadSocialDashboard(userId) {
   if (!userId) {
-    return { friends: [], friendRequests: [], challengeRequests: [], challenges: [] }
+    return { friends: [], friendRequests: [], sentFriendRequests: [], challengeRequests: [], challenges: [] }
   }
 
   const results = await Promise.allSettled([
     supabase.from('friendships').select('*').or(`user_a.eq.${userId},user_b.eq.${userId}`),
     supabase.from('friend_requests').select('*').eq('addressee_id', userId).eq('status', 'pending').order('created_at', { ascending: false }),
+    supabase.from('friend_requests').select('*').eq('requester_id', userId).eq('status', 'pending').order('created_at', { ascending: false }),
     supabase.from('challenge_requests').select('*').eq('invitee_id', userId).eq('status', 'pending').order('created_at', { ascending: false }),
     supabase.from('challenges').select('*, challenge_progress(*)').or(`challenger_id.eq.${userId},opponent_id.eq.${userId}`).eq('status', 'active').order('created_at', { ascending: false }),
   ])
@@ -44,12 +45,14 @@ export async function loadSocialDashboard(userId) {
 
   const friendshipRows = readResult(results[0], 'Freundschaften')
   const friendRequestRows = readResult(results[1], 'Freundschaftsanfragen')
-  const challengeRequestRows = readResult(results[2], 'Challenge-Anfragen')
-  const challengeRows = readResult(results[3], 'Challenges')
+  const sentFriendRequestRows = readResult(results[2], 'Gesendete Freundschaftsanfragen')
+  const challengeRequestRows = readResult(results[3], 'Challenge-Anfragen')
+  const challengeRows = readResult(results[4], 'Challenges')
 
   const profileIds = new Set()
   friendshipRows?.forEach((row) => profileIds.add(row.user_a === userId ? row.user_b : row.user_a))
   friendRequestRows?.forEach((row) => profileIds.add(row.requester_id))
+  sentFriendRequestRows?.forEach((row) => profileIds.add(row.addressee_id))
   challengeRequestRows?.forEach((row) => profileIds.add(row.challenger_id))
   challengeRows?.forEach((row) => profileIds.add(row.challenger_id === userId ? row.opponent_id : row.challenger_id))
 
@@ -74,6 +77,10 @@ export async function loadSocialDashboard(userId) {
       ...row,
       name: friendName(row.requester_id),
     })),
+    sentFriendRequests: (sentFriendRequestRows ?? []).map((row) => ({
+      ...row,
+      name: friendName(row.addressee_id),
+    })),
     challengeRequests: (challengeRequestRows ?? []).map((row) => ({
       ...row,
       friendName: friendName(row.challenger_id),
@@ -84,6 +91,15 @@ export async function loadSocialDashboard(userId) {
       friendName: friendName(row.challenger_id === userId ? row.opponent_id : row.challenger_id),
     })),
   }
+}
+
+export async function cancelFriendRequest(requestId) {
+  const { error } = await supabase
+    .from('friend_requests')
+    .delete()
+    .eq('id', requestId)
+    .eq('status', 'pending')
+  throwIfError(error)
 }
 
 export async function sendFriendRequest(email) {
