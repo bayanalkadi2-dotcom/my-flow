@@ -5648,8 +5648,8 @@ input {
 
 .sleep-tracker-card {
   display: grid;
-  gap: 14px;
-  padding: 18px;
+  gap: 16px;
+  padding: 20px;
   border: 1px solid rgba(118, 92, 255, 0.12);
   border-radius: 24px;
   background:
@@ -5693,15 +5693,17 @@ input {
   line-height: 1.15;
 }
 
-.sleep-tracker-card p {
+.sleep-tracker-card .sleep-tracker-description {
   margin: 0;
   color: #302c5a;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .sleep-tracker-form {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
 }
 
@@ -5726,12 +5728,39 @@ input {
   background: rgba(255, 255, 255, 0.86);
 }
 
+.sleep-duration-result {
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid rgba(118, 92, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(247, 242, 255, 0.72);
+}
+
+.sleep-duration-result span {
+  color: #302c5a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sleep-duration-result strong {
+  color: #17133f;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
 .sleep-tracker-form button {
   width: 100%;
   min-height: 46px;
   padding: 12px 16px;
   border-radius: 16px;
   box-shadow: 0 12px 24px rgba(130, 90, 255, 0.2);
+}
+
+.sleep-tracker-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
 }
 
 .sleep-tracker-average {
@@ -5754,6 +5783,297 @@ input {
   color: #17133f;
   font-size: 15px;
   line-height: 1.35;
+}
+
+.sleep-tracker-error {
+  margin: -4px 0 0;
+  color: #a33c65;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sleep-week-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 38px;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.sleep-week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 6px;
+  border: 1px solid rgba(118, 92, 255, 0.1);
+  border-radius: 15px;
+  background: rgba(247, 242, 255, 0.58);
+}
+
+.sleep-week-strip button {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 3px 1px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.sleep-week-strip button:hover:not(:disabled) {
+  background: rgba(123, 97, 255, 0.07);
+}
+
+.sleep-week-strip button.selected {
+  border-color: rgba(118, 92, 255, 0.24);
+  background: rgba(123, 97, 255, 0.12);
+}
+
+.sleep-week-strip button:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.sleep-week-strip button span {
+  color: #765cff;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.sleep-week-strip button strong {
+  overflow: hidden;
+  max-width: 100%;
+  color: #302c5a;
+  font-size: 10px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sleep-week-strip button i {
+  position: absolute;
+  bottom: -3px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #765cff;
+}
+
+.sleep-calendar-button,
+.sleep-calendar-close,
+.sleep-calendar-navigation button,
+.sleep-calendar-grid button {
+  box-shadow: none;
+}
+
+.sleep-calendar-button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  min-height: 38px;
+  padding: 0;
+  border: 1px solid rgba(118, 92, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(247, 242, 255, 0.82);
+  color: #765cff;
+}
+
+.sleep-calendar-button svg {
+  width: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.sleep-calendar-overlay {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  align-items: end;
+  padding: 18px;
+  background: rgba(23, 19, 63, 0.28);
+  backdrop-filter: blur(6px);
+}
+
+.sleep-calendar-sheet {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 430px);
+  max-height: min(82vh, 650px);
+  margin: 0 auto;
+  padding: 18px;
+  overflow: auto;
+  border: 1px solid rgba(118, 92, 255, 0.14);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 24px 70px rgba(45, 34, 96, 0.22);
+}
+
+.sleep-calendar-sheet > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sleep-calendar-sheet > header span {
+  color: #765cff;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.sleep-calendar-sheet h3 {
+  margin: 3px 0 0;
+  color: #17133f;
+  font-size: 20px;
+  text-transform: capitalize;
+}
+
+.sleep-calendar-close,
+.sleep-calendar-navigation button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 12px;
+  background: rgba(123, 97, 255, 0.1);
+  color: #765cff;
+  font-size: 22px;
+}
+
+.sleep-calendar-navigation {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: -46px;
+  margin-right: 42px;
+}
+
+.sleep-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.sleep-calendar-weekday {
+  padding: 4px 0;
+  color: #77718f;
+  font-size: 10px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.sleep-calendar-grid button,
+.sleep-calendar-grid > span:not(.sleep-calendar-weekday) {
+  aspect-ratio: 1;
+}
+
+.sleep-calendar-grid button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: #302c5a;
+  font-size: 12px;
+}
+
+.sleep-calendar-grid button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.sleep-calendar-grid button.has-entry {
+  background: rgba(123, 97, 255, 0.08);
+  color: #302c5a;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.sleep-calendar-grid button.selected {
+  border-color: rgba(118, 92, 255, 0.35);
+  background: rgba(123, 97, 255, 0.16);
+}
+
+.sleep-calendar-grid button i {
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #765cff;
+}
+
+.sleep-calendar-detail {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(118, 92, 255, 0.12);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(247, 242, 255, 0.9), rgba(239, 250, 255, 0.92));
+  color: #17133f;
+}
+
+.sleep-calendar-detail > strong {
+  font-size: 14px;
+}
+
+.sleep-calendar-detail dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.sleep-calendar-detail dl div {
+  min-width: 0;
+}
+
+.sleep-calendar-detail dt {
+  color: #77718f;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.sleep-calendar-detail dd {
+  margin: 3px 0 0;
+  color: #302c5a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.sleep-calendar-hint {
+  margin: 0;
+  color: #77718f;
+  font-size: 12px;
+  text-align: center;
+}
+
+.sleep-calendar-select-button {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 14px;
+}
+
+@media (min-width: 700px) {
+  .sleep-calendar-overlay {
+    align-items: center;
+  }
 }
 
 .stats-view-toggle {
@@ -12743,5 +13063,3 @@ button,
     display: none;
   }
 }
-
-

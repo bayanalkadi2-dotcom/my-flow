@@ -242,6 +242,40 @@ CREATE TRIGGER update_user_settings_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================
+-- Tabelle: sleep_entries
+-- Speichert Schlafenszeit, Aufstehzeit und berechnete Dauer
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.sleep_entries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  sleep_date DATE NOT NULL,
+  bedtime TIME NOT NULL,
+  wake_time TIME NOT NULL,
+  duration_minutes INTEGER NOT NULL CHECK (duration_minutes > 0 AND duration_minutes <= 1440),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  UNIQUE (user_id, sleep_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sleep_entries_user_date ON public.sleep_entries(user_id, sleep_date);
+ALTER TABLE public.sleep_entries ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.sleep_entries TO authenticated;
+
+CREATE POLICY "Users can read own sleep entries" ON public.sleep_entries
+FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own sleep entries" ON public.sleep_entries
+FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own sleep entries" ON public.sleep_entries
+FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own sleep entries" ON public.sleep_entries
+FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+CREATE TRIGGER update_sleep_entries_updated_at
+  BEFORE UPDATE ON public.sleep_entries
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+-- ============================================
 -- Tabelle: daily_checkins
 -- Speichert den intelligenten Tages-Check-in und empfohlene Aufgaben
 -- ============================================
