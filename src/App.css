@@ -5581,6 +5581,7 @@ input {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(135deg, #ff9fd2, #7b61ff, #73cfff);
+  transition: width 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .flowtree-level-rail {
@@ -10489,6 +10490,31 @@ h3,
   font-size: clamp(28px, 7vw, 38px);
 }
 
+.flowtree-coin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  margin: 2px 0 0;
+  padding: 6px 10px;
+  border: 1px solid rgba(118, 92, 255, 0.13);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #17133f;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 10px 22px rgba(90, 72, 150, 0.08);
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.flowtree-coin-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(90, 72, 150, 0.12);
+}
+
 .flowtree-card-copy small {
   display: block;
   margin-top: 8px;
@@ -10522,7 +10548,7 @@ h3,
 
 .flowtree-points-panel {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   padding: 13px;
   border-radius: 18px;
   background: rgba(123, 97, 255, 0.07);
@@ -10588,6 +10614,10 @@ h3,
   padding: 0;
   border: 0;
   background: transparent;
+  opacity: 0.48;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
 }
 
 .flowtree-step-node {
@@ -10628,9 +10658,17 @@ h3,
   background: rgba(222, 247, 231, 0.92);
 }
 
+.flowtree-level-step.reached {
+  opacity: 1;
+}
+
 .flowtree-level-step.current .flowtree-step-node {
   border-color: rgba(123, 97, 255, 0.7);
   box-shadow: 0 0 0 5px rgba(123, 97, 255, 0.1);
+}
+
+.flowtree-level-step.level-unlocked .flowtree-step-node {
+  animation: flowtreeLevelUnlock 700ms ease both;
 }
 
 .flowtree-level-step.current small {
@@ -11683,6 +11721,315 @@ h3,
 
 .flowtree-week-days {
   grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.flowtree-sustainability-card {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid rgba(118, 92, 255, 0.1);
+  border-radius: 18px;
+  background: rgba(123, 97, 255, 0.06);
+  box-shadow: none;
+}
+
+.flowtree-sustainability-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.flowtree-sustainability-copy span {
+  color: #765cff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.flowtree-sustainability-copy strong {
+  color: #17133f;
+  font-size: clamp(19px, 4.5vw, 26px);
+  line-height: 1.1;
+}
+
+.flowtree-sustainability-copy p,
+.flowtree-sustainability-footer small,
+.flowtree-coin-message,
+.flowtree-coin-error {
+  margin: 0;
+  color: #80799a;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.flowtree-sustainability-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(123, 97, 255, 0.12);
+}
+
+.flowtree-sustainability-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #73cfff, #765cff);
+  transition: width 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.flowtree-sustainability-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flowtree-sustainability-footer button {
+  min-height: 38px;
+  border: none;
+  border-radius: 999px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, #ff9fd2, #765cff);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(123, 97, 255, 0.18);
+}
+
+.flowtree-sustainability-footer button:disabled {
+  background: rgba(123, 97, 255, 0.12);
+  color: #80799a;
+  box-shadow: none;
+}
+
+.flowtree-coin-message {
+  color: #765cff;
+}
+
+.flowtree-coin-error {
+  color: #c6476f;
+}
+
+.flowtree-coin-burst {
+  justify-self: start;
+  margin: -2px 0 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
+  color: #765cff;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(123, 97, 255, 0.12);
+  animation: flowcoinBurst 1800ms ease both;
+}
+
+.flowcoin-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(22, 15, 45, 0.28);
+  backdrop-filter: blur(12px);
+  animation: flowcoinOverlayIn 220ms ease both;
+}
+
+.flowcoin-sheet {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  width: min(372px, 100%);
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 244, 252, 0.9) 44%, rgba(244, 236, 255, 0.94));
+  box-shadow:
+    0 28px 72px rgba(45, 31, 91, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74);
+  animation: flowcoinSheetIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.flowcoin-sheet-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(123, 97, 255, 0.1);
+  color: #765cff;
+  font-size: 22px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.flowcoin-sheet-copy {
+  display: grid;
+  gap: 7px;
+  padding-right: 34px;
+}
+
+.flowcoin-sheet-copy span {
+  color: #765cff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.flowcoin-sheet-copy h3 {
+  margin: 0;
+  color: #17133f;
+  font-size: clamp(28px, 8vw, 38px);
+  line-height: 1.04;
+}
+
+.flowcoin-sheet-copy p,
+.flowcoin-sheet-tree-count {
+  margin: 0;
+  color: #80799a;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.flowcoin-redeem-button {
+  min-height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff9fd2, #765cff);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: 0 14px 30px rgba(123, 97, 255, 0.22);
+}
+
+.flowcoin-redeem-button:disabled {
+  background: rgba(123, 97, 255, 0.12);
+  color: #80799a;
+  box-shadow: none;
+}
+
+.flowcoin-success {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid rgba(34, 168, 111, 0.18);
+  border-radius: 22px;
+  background: rgba(222, 247, 231, 0.7);
+  text-align: center;
+  animation: flowcoinSuccessIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.flowcoin-success > span {
+  font-size: 34px;
+  animation: flowcoinTreePop 780ms ease both;
+}
+
+.flowcoin-success strong {
+  color: #17133f;
+  font-size: 17px;
+}
+
+.flowcoin-success p,
+.flowcoin-success small {
+  margin: 0;
+  color: #5f5b7c;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+@keyframes flowtreeLevelUnlock {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(123, 97, 255, 0.1);
+  }
+
+  45% {
+    transform: scale(1.09);
+    box-shadow: 0 0 0 8px rgba(123, 97, 255, 0.13);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(123, 97, 255, 0.1);
+  }
+}
+
+@keyframes flowcoinBurst {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+
+  18%,
+  72% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@keyframes flowcoinOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes flowcoinSheetIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes flowcoinSuccessIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flowcoinTreePop {
+  0% {
+    transform: scale(0.8) rotate(-4deg);
+  }
+
+  55% {
+    transform: scale(1.12) rotate(3deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0);
+  }
 }
 
 @media (max-width: 380px) {

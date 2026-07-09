@@ -1,9 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import FlowtreeProgress from '../commponents/progress/FlowtreeProgress'
+import { flowtreeLevels } from '../data/flowtreeLevels'
 import { useProfile } from '../context/profileContextValue'
 import { getUserCheckIns } from '../services/checkInService'
+import {
+  FLOW_COIN_REWARDS,
+  awardFlowCoinEvents,
+  getFlowCoinProfile,
+  redeemSupportedTree,
+  syncFlowtreeProgress,
+} from '../services/coinService'
 import { getSleepEntries, saveSleepEntry } from '../services/sleepService'
 import { calculateFlowtreeStats } from '../utils/flowtreeStats'
+import { isRoutineCompleted } from '../utils/routineProgress'
 
 const USAGE_STORAGE_KEY = 'myflow_app_usage_ms'
 const WEEKDAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
@@ -93,11 +102,90 @@ function formatSleepDuration(totalMinutes) {
   return `${hours} Std. ${minutes} Min.`
 }
 
+function getEventSourceId(value, fallback) {
+  return String(value?.id || value?.created_at || value?.sleep_date || fallback)
+}
+
+function getWeekKey(week = []) {
+  return week[0]?.dateKey ?? toLocalDateKey(new Date())
+}
+
+function buildFlowCoinEvents({ checkIns = [], routines = [], stats }) {
+  const routineEvents = routines
+    .filter(isRoutineCompleted)
+    .map((routine, index) => {
+      const sourceId = getEventSourceId(routine, `${routine.title || 'routine'}-${index}`)
+      return {
+        eventKey: `routine_completed:${sourceId}`,
+        sourceId,
+        type: 'routine_completed',
+        coins: FLOW_COIN_REWARDS.routineCompleted,
+      }
+    })
+
+  const checkInEvents = checkIns.map((checkIn, index) => {
+    const sourceId = getEventSourceId(checkIn, `checkin-${index}`)
+    return {
+      eventKey: `daily_checkin_completed:${sourceId}`,
+      sourceId,
+      type: 'daily_checkin_completed',
+      coins: FLOW_COIN_REWARDS.dailyCheckInCompleted,
+    }
+  })
+
+  const sevenDayStreakEvents = stats.streak >= 7
+    ? [{
+        eventKey: `seven_day_streak_reached:${getWeekKey(stats.week)}`,
+        sourceId: getWeekKey(stats.week),
+        type: 'seven_day_streak_reached',
+        coins: FLOW_COIN_REWARDS.sevenDayStreakReached,
+      }]
+    : []
+
+  const dailyGoalEvents = stats.dailyGoalTotal > 0 && stats.dailyGoalProgress >= 100
+    ? [{
+        eventKey: `daily_goal_reached:${toLocalDateKey(new Date())}`,
+        sourceId: toLocalDateKey(new Date()),
+        type: 'daily_goal_reached',
+        coins: FLOW_COIN_REWARDS.dailyGoalReached,
+      }]
+    : []
+
+  const flowtreeLevelEvents = flowtreeLevels
+    .filter((level) => level.minPoints > 0 && stats.growthPoints >= level.minPoints)
+    .map((level) => ({
+      eventKey: `flowtree_level_reached:${level.id}`,
+      sourceId: level.id,
+      type: 'flowtree_level_reached',
+      coins: FLOW_COIN_REWARDS.flowtreeLevelReached,
+    }))
+
+  return [
+    ...routineEvents,
+    ...checkInEvents,
+    ...dailyGoalEvents,
+    ...sevenDayStreakEvents,
+    ...flowtreeLevelEvents,
+  ]
+}
+
 function Statistik({ habits = [], t }) {
   const { personalizedTexts } = useProfile()
+  const lastCoinSyncKeyRef = useRef('')
+  const lastGrowthSyncKeyRef = useRef('')
   const [checkIns, setCheckIns] = useState([])
   const [checkInsLoading, setCheckInsLoading] = useState(true)
   const [checkInsError, setCheckInsError] = useState('')
+  const [, setCoinError] = useState('')
+  const [coinMessage, setCoinMessage] = useState('')
+  const [coinProfile, setCoinProfile] = useState({
+    growth_points: 0,
+    flowcoins: 0,
+    current_level: 'seed',
+    planted_trees: 0,
+    total_redeemed_flowcoins: 0,
+  })
+  const [redeemingTree, setRedeemingTree] = useState(false)
   const [usageTimeMs, setUsageTimeMs] = useState(readStoredUsageTime)
   const [todayDateKey] = useState(() => toLocalDateKey(new Date()))
   const [sleepDate, setSleepDate] = useState(() => toLocalDateKey(new Date()))
@@ -126,6 +214,11 @@ function Statistik({ habits = [], t }) {
     ...calculateFlowtreeStats({ routines: habits, checkIns }),
     usageTime: formatUsageTime(usageTimeMs),
   }), [habits, checkIns, usageTimeMs])
+  const flowCoinEvents = useMemo(() => buildFlowCoinEvents({
+    checkIns,
+    routines: habits,
+    stats,
+  }), [checkIns, habits, stats])
   const hasProgress = stats.growthPoints > 0 || stats.checkIns > 0 || stats.completedRoutines > 0
   const headerMessage = hasProgress
     ? personalizedTexts.statisticsIntro
@@ -193,6 +286,83 @@ function Statistik({ habits = [], t }) {
   }, [loadSleepEntries])
 
   useEffect(() => {
+    let cancelled = false
+
+    async function loadCoinProfile() {
+      try {
+        const profile = await getFlowCoinProfile()
+        if (!cancelled) setCoinProfile(profile)
+      } catch (error) {
+        console.error('FlowCoins konnten nicht geladen werden:', error)
+      }
+    }
+
+    loadCoinProfile()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (checkInsLoading || sleepLoading) return
+
+    const syncKey = flowCoinEvents.map((event) => event.eventKey).sort().join('|')
+    if (lastCoinSyncKeyRef.current === syncKey) return
+    lastCoinSyncKeyRef.current = syncKey
+
+    let cancelled = false
+
+    async function syncFlowCoins() {
+      try {
+        const result = await awardFlowCoinEvents(flowCoinEvents)
+        if (cancelled) return
+        setCoinProfile(result.profile)
+        setCoinError('')
+        if (result.awardedCoins > 0) {
+          setCoinMessage(`+${result.awardedCoins} FlowCoins gesammelt.`)
+        }
+      } catch (error) {
+        console.error('FlowCoins konnten nicht synchronisiert werden:', error)
+      }
+    }
+
+    syncFlowCoins()
+    return () => {
+      cancelled = true
+    }
+  }, [checkInsLoading, flowCoinEvents, sleepLoading])
+
+  useEffect(() => {
+    if (checkInsLoading) return
+
+    const syncKey = `${stats.growthPoints}:${stats.flowtree.currentLevel.id}`
+    if (lastGrowthSyncKeyRef.current === syncKey) return
+    lastGrowthSyncKeyRef.current = syncKey
+
+    let cancelled = false
+
+    async function syncGrowthProgress() {
+      try {
+        const profile = await syncFlowtreeProgress({
+          growthPoints: stats.growthPoints,
+          currentLevel: stats.flowtree.currentLevel.id,
+        })
+        if (!cancelled) {
+          setCoinProfile(profile)
+          setCoinError('')
+        }
+      } catch (error) {
+        console.error('FlowTree-Fortschritt konnte nicht synchronisiert werden:', error)
+      }
+    }
+
+    syncGrowthProgress()
+    return () => {
+      cancelled = true
+    }
+  }, [checkInsLoading, stats.flowtree.currentLevel.id, stats.growthPoints])
+
+  useEffect(() => {
     function handleFocus() {
       loadCheckIns()
     }
@@ -255,6 +425,7 @@ function Statistik({ habits = [], t }) {
         ...entries.filter((entry) => entry.sleep_date !== savedEntry.sleep_date),
         savedEntry,
       ].sort((first, second) => first.sleep_date.localeCompare(second.sleep_date)))
+      setCoinMessage('')
     } catch (error) {
       console.error('Schlafeintrag konnte nicht gespeichert werden:', error)
       setSleepError('Schlaf konnte nicht gespeichert werden.')
@@ -281,6 +452,27 @@ function Statistik({ habits = [], t }) {
     const [year, month] = sleepDate.split('-').map(Number)
     setCalendarMonth(new Date(year, month - 1, 1))
     setIsSleepCalendarOpen(true)
+  }
+
+  async function handleRedeemTree() {
+    setRedeemingTree(true)
+    setCoinError('')
+    setCoinMessage('')
+
+    try {
+      const result = await redeemSupportedTree()
+      setCoinProfile(result.profile)
+      setCoinMessage(result.success
+        ? result.message
+        : 'Noch nicht genug FlowCoins.')
+      return result
+    } catch (error) {
+      console.error('FlowCoins konnten nicht für einen Baum eingelöst werden:', error)
+      setCoinError('Baum konnte nicht unterstützt werden.')
+      return { success: false }
+    } finally {
+      setRedeemingTree(false)
+    }
   }
 
   return (
@@ -310,7 +502,14 @@ function Statistik({ habits = [], t }) {
         </section>
       ) : (
         <>
-          <FlowtreeProgress stats={stats} />
+          <FlowtreeProgress
+            coinMessage={coinMessage}
+            flowCoins={coinProfile.flowcoins}
+            onRedeemTree={handleRedeemTree}
+            plantedTrees={coinProfile.planted_trees}
+            redeemingTree={redeemingTree}
+            stats={stats}
+          />
           <section className="sleep-tracker-card" aria-labelledby="sleep-tracker-title">
             <div className="sleep-tracker-header">
               <span className="sleep-tracker-icon" aria-hidden="true">Zz</span>
