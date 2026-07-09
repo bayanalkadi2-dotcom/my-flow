@@ -144,6 +144,12 @@ function Freunde({ profileName, user }) {
     }
   }, [refresh, userId])
 
+  useEffect(() => {
+    if (!notice || friendModalOpen || challengeModalOpen) return undefined
+    const timeout = window.setTimeout(() => setNotice(''), 5000)
+    return () => window.clearTimeout(timeout)
+  }, [notice, friendModalOpen, challengeModalOpen])
+
   async function runAction(action, successMessage) {
     setBusy(true)
     setNotice('')
@@ -215,7 +221,12 @@ function Freunde({ profileName, user }) {
         </button>
       </div>
 
-      {notice && <div className="social-notice" role="status">{notice}</div>}
+      {notice && !friendModalOpen && !challengeModalOpen && (
+        <div className="social-notice social-toast" role="status">
+          <span aria-hidden="true">✓</span>
+          {notice}
+        </div>
+      )}
 
       <section className="social-section">
         <div className="social-section-title">
