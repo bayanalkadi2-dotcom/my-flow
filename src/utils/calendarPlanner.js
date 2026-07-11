@@ -1,11 +1,26 @@
 export function getEventsForDate(events, dateKey) {
   return events
-    .filter((event) => event.date === dateKey || (event.repeat === 'daily' && event.date <= dateKey))
+    .filter((event) => doesEventOccurOnDate(event, dateKey))
     .sort((firstEvent, secondEvent) => firstEvent.time.localeCompare(secondEvent.time))
 }
 
+export function doesEventOccurOnDate(event, dateKey) {
+  if (event.date === dateKey) return true
+  if (!event.repeat || event.repeat === 'once' || event.date > dateKey) return false
+
+  const startDate = new Date(`${event.date}T12:00:00`)
+  const currentDate = new Date(`${dateKey}T12:00:00`)
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(currentDate.getTime())) return false
+
+  if (event.repeat === 'daily') return true
+  if (event.repeat === 'weekly') return startDate.getDay() === currentDate.getDay()
+  if (event.repeat === 'monthly') return startDate.getDate() === currentDate.getDate()
+
+  return false
+}
+
 export function isCalendarEventDone(event, dateKey) {
-  return event.repeat === 'daily' ? event.doneDates?.includes(dateKey) === true : event.done === true
+  return event.repeat && event.repeat !== 'once' ? event.doneDates?.includes(dateKey) === true : event.done === true
 }
 
 export function toggleCalendarEventDone(events, eventId, dateKey) {
@@ -14,7 +29,7 @@ export function toggleCalendarEventDone(events, eventId, dateKey) {
       return event
     }
 
-    if (event.repeat !== 'daily') {
+    if (!event.repeat || event.repeat === 'once') {
       return { ...event, done: !event.done }
     }
 

@@ -199,7 +199,7 @@ export function translateHabit(habit, languageStyle) {
 
 export const translations = {
   german: {
-    nav: { dashboard: 'Home', calendar: 'Tagesbuch', habits: 'Routinen', progress: 'Statistik', freunde: 'Freunde', profile: 'Profil' },
+    nav: { dashboard: 'Home', calendar: 'Tagebuch', habits: 'Routinen', progress: 'Statistik', freunde: 'Freunde', profile: 'Profil' },
     common: { back: 'Zurück', close: 'Schließen', change: 'Ändern', ok: 'OK', active: 'Aktiv', off: 'Aus', save: 'Speichern' },
     start: {
       badge: 'Dein Wohlbefinden. Dein Flow.',

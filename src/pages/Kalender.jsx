@@ -4,6 +4,7 @@ import { getLocalDateKey } from '../utils/checkins'
 import uploadIcon from '../assets/diary-upload-icon.jpeg'
 import uploadIconDark from '../assets/diary-upload-icon-dark.jpg'
 import {
+  doesEventOccurOnDate,
   getEventsForDate,
   isCalendarEventDone,
   toggleCalendarEventDone,
@@ -35,6 +36,13 @@ const eventTypes = [
   { id: 'gratitude', label: 'Dankbarkeit', icon: '\u2661', tone: 'pink' },
 ]
 
+const repeatOptions = [
+  { id: 'once', label: 'Einmalig' },
+  { id: 'daily', label: 'Täglich' },
+  { id: 'weekly', label: 'Wöchentlich' },
+  { id: 'monthly', label: 'Monatlich' },
+]
+
 const monthTones = ['violet', 'rose', 'sky', 'mint', 'amber', 'coral']
 
 const emptyDraft = {
@@ -49,7 +57,7 @@ const diaryFilters = [
   { id: 'today', label: 'Heute', icon: 'o' },
   { id: 'notes', label: 'Notizen', icon: 'N' },
   { id: 'images', label: 'Bilder', icon: 'B' },
-  { id: 'tasks', label: 'Aufgaben', icon: '\u2713' },
+  { id: 'tasks', label: 'Termine', icon: '\u2713' },
 ]
 
 function loadEvents() {
@@ -246,7 +254,7 @@ function Kalender({ notes = {}, onNotesChange }) {
   }, [activeFilter, checkins, events, notes])
 
   function hasTaskEntry(dateKey) {
-    return events.some((event) => event.date === dateKey || (event.repeat === 'daily' && event.date <= dateKey))
+    return events.some((event) => doesEventOccurOnDate(event, dateKey))
       || checkins.some((checkin) => checkin.date === dateKey && checkin.checked)
   }
 
@@ -388,14 +396,14 @@ function Kalender({ notes = {}, onNotesChange }) {
         <button className="calendar-icon-button" type="button" aria-label="Filter ?ffnen" onClick={() => setShowFilterMenu(true)}>
           <MenuIcon />
         </button>
-        <h1>Tagesbuch</h1>
+        <h1>Tagebuch</h1>
         <button className="calendar-icon-button" type="button" aria-label="Monatsuebersicht oeffnen" onClick={() => setShowMonthOverview(true)}>
           <CalendarIcon />
         </button>
       </header>
 
       {showFilterMenu && (
-        <section className="diary-filter-menu" aria-label="Tagesbuch Filter">
+        <section className="diary-filter-menu" aria-label="Tagebuch Filter">
           <div className="diary-filter-backdrop" onClick={() => setShowFilterMenu(false)} />
           <div className="diary-filter-sheet">
             <div className="calendar-section-title">
@@ -420,7 +428,7 @@ function Kalender({ notes = {}, onNotesChange }) {
       )}
 
       {showFilterResults && (
-        <section className="diary-filter-results" aria-label={`${activeFilterLabel} im Tagesbuch`}>
+        <section className="diary-filter-results" aria-label={`${activeFilterLabel} im Tagebuch`}>
           <div className="diary-filter-results-header">
             <div>
               <span>Gefilterte Tage</span>
@@ -570,31 +578,34 @@ function Kalender({ notes = {}, onNotesChange }) {
             </label>
           </div>
           <label>
-            Erinnerung oder Gewohnheit
+            Termin
             <input
               value={draft.title}
               onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
-              placeholder="z. B. Wasser trinken"
+              placeholder="z. B. Arzttermin, Lernen, Wasser trinken"
             />
           </label>
-          <label className="calendar-repeat-toggle">
-            <input
-              checked={draft.repeat === 'daily'}
-              type="checkbox"
-              onChange={(event) => setDraft((current) => ({ ...current, repeat: event.target.checked ? 'daily' : 'once' }))}
-            />
-            <span>T?glich wiederholen</span>
+          <label>
+            Wiederholung
+            <select
+              value={draft.repeat}
+              onChange={(event) => setDraft((current) => ({ ...current, repeat: event.target.value }))}
+            >
+              {repeatOptions.map((option) => (
+                <option key={option.id} value={option.id}>{option.label}</option>
+              ))}
+            </select>
           </label>
           <div className="calendar-form-actions">
             <button className="secondary-button" type="button" onClick={() => setShowForm(false)}>Abbrechen</button>
-            <button type="submit">Hinzuf?gen</button>
+            <button type="submit">Termin hinzufügen</button>
           </div>
         </form>
       )}
 
       <section className="calendar-note-card">
         <div className="calendar-section-title">
-          <span>T?gliche Aufgaben</span>
+          <span>Tägliche Termine</span>
           <small>{selectedEvents.length + selectedCheckins.length} offen</small>
         </div>
         <div className="diary-task-strip">
@@ -607,7 +618,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           {selectedEvents.length === 0 && selectedCheckins.length === 0 && (
             <button className="diary-task-empty" type="button" onClick={() => setShowForm(true)}>
               <span>+</span>
-              <strong>Aufgabe hinzuf?gen</strong>
+              <strong>Termin hinzufügen</strong>
             </button>
           )}
         </div>

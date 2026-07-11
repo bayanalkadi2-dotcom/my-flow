@@ -119,15 +119,17 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
 
       <article className="home-flowtree-card" aria-label={`${growthPresentation.productName}-Statistik`}>
         <div className="home-flowtree-copy">
-          <span>Dein {growthPresentation.productName}</span>
+          <span className="home-flowtree-badge">✦ Dein {growthPresentation.productName}</span>
           <h2>{growthPresentation.name}</h2>
-          <p>Stufe {currentLevel.level} von {flowtreeLevels.length}</p>
+          <p className="home-flowtree-level">✦ Stufe {currentLevel.level} von {flowtreeLevels.length}</p>
+          <div className="home-flowtree-message">
+            <strong>Du bist auf einem großartigen Weg!</strong>
+            <small>✦</small>
+          </div>
         </div>
 
         <div className="home-flowtree-visual">
-          <span className="home-flowtree-stage-symbol" role="img" aria-label={growthPresentation.name}>
-            {growthPresentation.symbol}
-          </span>
+          <img className="home-flowtree-stage-symbol" src={currentLevel.image} alt={growthPresentation.name} />
           <img className="home-flowtree-mascot-image" src={mascotImage} alt={`MyFlow Maskottchen neben dem ${growthPresentation.productName}`} />
         </div>
 
@@ -140,12 +142,13 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
           </div>
           <div className="home-flowtree-track" aria-label={`${flowtree.progressPercent}% bis zur nächsten Flowtree-Stufe`}>
             <span style={{ width: `${flowtree.progressPercent}%` }} />
+            <b style={{ left: `${flowtree.progressPercent}%` }}>{flowtree.progressPercent}%</b>
           </div>
-          <small>
+          <small className="home-flowtree-status">
             {checkInsLoading
               ? 'Flowtree wird aktualisiert …'
               : flowtree.nextLevel
-                ? `Noch ${flowtree.pointsToNextLevel} Punkte bis ${flowtree.nextLevel.name}.`
+                ? `Noch ${flowtree.pointsToNextLevel} Punkte bis zur nächsten Stufe (${flowtree.nextLevel.name}).`
                 : 'Maximale Stufe erreicht.'}
           </small>
         </div>
