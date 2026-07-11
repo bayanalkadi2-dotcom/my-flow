@@ -34,7 +34,7 @@ function getActivityDates(routines, checkIns) {
   const dates = new Set()
 
   checkIns.forEach((checkIn) => {
-    const dateKey = toDateKey(checkIn.created_at)
+    const dateKey = checkIn.date || toDateKey(checkIn.created_at || checkIn.createdAt)
     if (dateKey) dates.add(dateKey)
   })
 

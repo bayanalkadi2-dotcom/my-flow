@@ -9,7 +9,7 @@ import { languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import { loadCalendarNotes, saveCalendarNotes } from './utils/calendarNotes'
 import { getLocalDateKey } from './utils/checkins'
-import { calculateRoutineProgress, getRoutineProgress } from './utils/routineProgress'
+import { calculateRoutineProgress, getRoutineCredits, getRoutineProgress } from './utils/routineProgress'
 import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
 import Datenschutz from './pages/Datenschutz'
@@ -115,6 +115,40 @@ function prepareRoutineData(routine) {
   }
 }
 
+function getRoutineActivityDateKey(routine) {
+  const value = routine?.progress_date ?? routine?.completed_at ?? routine?.updated_at
+  if (!value) return ''
+
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value
+  }
+
+  const date = value instanceof Date ? value : new Date(value)
+  return Number.isNaN(date.getTime()) ? '' : getLocalDateKey(date)
+}
+
+function shouldResetRoutineForToday(routine, todayKey = getLocalDateKey()) {
+  const hasProgress = routine?.done === true
+    || Number(routine?.current ?? 0) > 0
+    || Number(routine?.progress ?? 0) > 0
+
+  if (!hasProgress) return false
+
+  const activityDateKey = getRoutineActivityDateKey(routine)
+  return !activityDateKey || activityDateKey < todayKey
+}
+
+function resetRoutineForNewDay(routine) {
+  return {
+    ...routine,
+    current: 0,
+    progress: 0,
+    done: false,
+    status: 'Offen',
+    detail: `0 / ${routine.target ?? 1} ${routine.unit || 'Mal'}`,
+  }
+}
+
 function LoadingScreen() {
   return (
     <main className="app">
@@ -141,7 +175,7 @@ function LoadingScreen() {
 function App() {
   const { user, isLoading: authLoading, isAuthenticated, isPasswordRecovery, signout } = useAuth()
   const { profile, setProfile, isLoading: profileLoading } = useProfile()
-  const { addCheckin } = useCheckins()
+  const { addCheckin, removeCheckin } = useCheckins()
   const [screen, setScreen] = useState(() => initialPasswordResetUrl ? 'passwordRecovery' : 'dashboard')
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(() => localStorage.getItem('hasSeenOnboarding') === 'true')
   const [languageStyle, setLanguageStyle] = useState('german')
@@ -157,7 +191,23 @@ function App() {
   const [guestSetup, setGuestSetup] = useState(loadGuestSetup)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const accountMenuRef = useRef(null)
+  const currentDayRef = useRef(getLocalDateKey())
   const resolvedProfileName = profile?.display_name || profileName
+
+  function saveRoutinePointsBeforeReset(routine, fallbackDateKey = currentDayRef.current) {
+    const progressPoints = getRoutineCredits(routine)
+    if (progressPoints <= 0) return
+
+    const date = getRoutineActivityDateKey(routine) || fallbackDateKey
+    const completionBonus = routine.done === true ? 5 : 0
+    addCheckin({
+      routineId: routine.id,
+      title: routine.title,
+      date,
+      points: progressPoints + completionBonus,
+      source: 'routine-history',
+    })
+  }
 
   // Load user settings and routines from Supabase
   useEffect(() => {
@@ -202,7 +252,19 @@ function App() {
         // Load routines
         const routinesRes = await getRoutines(user.id)
         if (routinesRes.success) {
-          setRoutineItems(routinesRes.routines.filter((routine) => !isRemovedRoutine(routine)).map(prepareRoutineData))
+          const todayKey = getLocalDateKey()
+          const visibleRoutines = routinesRes.routines.filter((routine) => !isRemovedRoutine(routine))
+          const resetRoutines = visibleRoutines.filter((routine) => shouldResetRoutineForToday(routine, todayKey))
+          resetRoutines.forEach((routine) => saveRoutinePointsBeforeReset(routine, getRoutineActivityDateKey(routine) || todayKey))
+          setRoutineItems(visibleRoutines.map((routine) => (
+            prepareRoutineData(shouldResetRoutineForToday(routine, todayKey) ? resetRoutineForNewDay(routine) : routine)
+          )))
+
+          resetRoutines.forEach((routine) => {
+            updateRoutine(routine.id, user.id, { current: 0, progress: 0, done: false }).catch((err) => {
+              console.error('Routine konnte nicht automatisch für den neuen Tag zurückgesetzt werden:', err)
+            })
+          })
         }
         if (!initialPasswordResetUrl) setScreen(loadLastScreen(user.id))
       } catch (err) {
@@ -222,6 +284,40 @@ function App() {
       localStorage.setItem(`myflow-last-screen-${user.id}`, screen)
     }
   }, [isAuthenticated, screen, user?.id])
+
+  useEffect(() => {
+    const resetRoutinesIfDayChanged = () => {
+      const todayKey = getLocalDateKey()
+      if (todayKey === currentDayRef.current) return
+
+      const previousDayKey = currentDayRef.current
+      currentDayRef.current = todayKey
+      setRoutineItems((current) => {
+        const routinesToReset = current.filter((routine) => shouldResetRoutineForToday(routine, todayKey))
+        if (routinesToReset.length === 0) return current
+
+        if (isAuthenticated && user) {
+          routinesToReset.forEach((routine) => {
+            saveRoutinePointsBeforeReset(routine, previousDayKey)
+            updateRoutine(routine.id, user.id, { current: 0, progress: 0, done: false }).catch((err) => {
+              console.error('Routine konnte nach Mitternacht nicht automatisch zurückgesetzt werden:', err)
+            })
+          })
+        }
+
+        return current.map((routine) => (
+          shouldResetRoutineForToday(routine, todayKey)
+            ? prepareRoutineData(resetRoutineForNewDay(routine))
+            : routine
+        ))
+      })
+    }
+
+    resetRoutinesIfDayChanged()
+    const intervalId = window.setInterval(resetRoutinesIfDayChanged, 60 * 1000)
+
+    return () => window.clearInterval(intervalId)
+  }, [isAuthenticated, user])
 
   useEffect(() => {
     function closeAccountMenu(event) {
@@ -341,6 +437,10 @@ function App() {
         const progress = calculateRoutineProgress(nextCurrent, habit.target)
         const updated = { ...habit, current: nextCurrent, progress, done: false }
 
+        if (habit.done || Number(habit.progress ?? 0) >= 100) {
+          removeCheckin(habit.id)
+        }
+
         // If authenticated, save to Supabase
         if (isAuthenticated && user) {
           (async () => {
@@ -362,6 +462,8 @@ function App() {
     const nextProgress = nextDone ? 100 : getRoutineProgress({ ...selectedHabit, done: false, current: nextCurrent })
     if (nextDone) {
       addCheckin({ routineId: selectedHabit.id, title: selectedHabit.title })
+    } else {
+      removeCheckin(selectedHabit.id)
     }
     setRoutineItems((current) =>
       current.map((habit) =>
@@ -397,6 +499,8 @@ function App() {
 
     if (routineUpdates.done === true && currentHabit.done !== true) {
       addCheckin({ routineId: currentHabit.id, title: currentHabit.title })
+    } else if (routineUpdates.done === false) {
+      removeCheckin(id)
     }
 
     setRoutineItems((current) =>
@@ -421,6 +525,9 @@ function App() {
     const date = getLocalDateKey()
     const currentEntry = currentHabit.period?.dailyEntries?.[date] ?? {}
     const selectedMoods = Array.isArray(moods) ? moods : [moods].filter(Boolean)
+    if (selectedMoods.length === 0) {
+      removeCheckin(id)
+    }
     saveHabitDailyEntry(id, date, { ...currentEntry, moods: selectedMoods }, {
       mood: selectedMoods.join(','),
       current: selectedMoods.length > 0 ? Number(currentHabit.target ?? 1) : 0,
@@ -639,6 +746,7 @@ function App() {
 
   function resetHabitProgress(selectedHabit) {
     const updates = { current: 0, progress: 0, done: false }
+    removeCheckin(selectedHabit.id)
     setRoutineItems((current) => current.map((habit) => (
       habit.id === selectedHabit.id ? { ...habit, ...updates } : habit
     )))

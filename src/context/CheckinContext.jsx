@@ -74,7 +74,18 @@ export function CheckinProvider({ children }) {
     const date = input.date || getLocalDateKey()
     const existing = findCheckin(checkins, routineId, date)
 
-    if (existing) return { created: false, checkin: existing }
+    if (existing) {
+      const nextPoints = Math.max(Number(existing.points) || 0, Number(input.points) || 0)
+      if (nextPoints > (Number(existing.points) || 0)) {
+        const updated = { ...existing, points: nextPoints }
+        setCheckins((current) => current.map((checkin) => (
+          checkinKey(checkin) === checkinKey(existing) ? updated : checkin
+        )))
+        return { created: false, checkin: updated }
+      }
+
+      return { created: false, checkin: existing }
+    }
 
     const createdAt = input.createdAt || new Date().toISOString()
     const checkin = {
@@ -86,6 +97,7 @@ export function CheckinProvider({ children }) {
       checked: true,
       time: input.time || new Date(createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
       createdAt,
+      points: Math.max(Number(input.points) || 5, 0),
       source: input.source || 'local',
     }
 
@@ -96,7 +108,13 @@ export function CheckinProvider({ children }) {
     return { created: true, checkin }
   }, [checkins])
 
-  const value = useMemo(() => ({ checkins, addCheckin, hasCheckin }), [checkins, addCheckin, hasCheckin])
+  const removeCheckin = useCallback((routineId, date = getLocalDateKey()) => {
+    setCheckins((current) => current.filter((checkin) => (
+      !(String(checkin.routineId ?? checkin.habitId) === String(routineId) && checkin.date === date)
+    )))
+  }, [])
+
+  const value = useMemo(() => ({ checkins, addCheckin, removeCheckin, hasCheckin }), [checkins, addCheckin, removeCheckin, hasCheckin])
 
   return <CheckinContext.Provider value={value}>{children}</CheckinContext.Provider>
 }

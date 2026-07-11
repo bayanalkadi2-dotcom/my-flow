@@ -18,7 +18,9 @@ export function calculateChallengePoints(routines = []) {
 
 export function calculateGrowthPoints({ routines = [], checkIns = [] } = {}) {
   const routinePoints = routines.reduce((sum, routine) => sum + getRoutineCredits(routine), 0)
-  const checkInPoints = checkIns.length * 5
+  const checkInPoints = checkIns.reduce((sum, checkIn) => (
+    sum + Math.max(Number(checkIn.points) || 5, 0)
+  ), 0)
   const recommendationPoints = checkIns.reduce((sum, checkIn) => {
     const state = checkIn.recommendation_state ?? {}
     const completedIds = Array.isArray(state.completedTaskIds) ? state.completedTaskIds : []

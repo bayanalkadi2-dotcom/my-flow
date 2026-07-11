@@ -2928,6 +2928,14 @@ input {
   background: linear-gradient(135deg, rgba(219, 234, 254, 0.86), rgba(243, 232, 255, 0.9));
 }
 
+.diary-add-row.appointment {
+  background: linear-gradient(135deg, rgba(233, 213, 255, 0.9), rgba(219, 234, 254, 0.88));
+}
+
+.calendar-note-card .diary-task-empty {
+  display: none;
+}
+
 .diary-add-row span {
   display: grid;
   place-items: center;
@@ -8862,6 +8870,10 @@ input {
 
 .diary-add-row.images {
   background: linear-gradient(135deg, rgba(219, 234, 254, 0.88), rgba(233, 213, 255, 0.86));
+}
+
+.diary-add-row.appointment {
+  background: linear-gradient(135deg, rgba(233, 213, 255, 0.92), rgba(219, 234, 254, 0.88));
 }
 
 .diary-image-card,

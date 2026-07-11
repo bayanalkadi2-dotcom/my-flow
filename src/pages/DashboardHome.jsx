@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import mascotImage from '../assets/flowtree/mascot-cutout.webp'
 import { useProfile } from '../context/profileContextValue'
+import { useCheckins } from '../context/checkinContextValue'
 import { flowtreeLevels } from '../data/flowtreeLevels'
 import { getDailyThought } from '../data/dailyThoughts'
 import { getUserCheckIns } from '../services/checkInService'
@@ -53,12 +54,21 @@ function getGrowthPresentation(treeType, level) {
 
 function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profileName, t, onNavigate }) {
   const { personalizedTexts } = useProfile()
+  const { checkins: localCheckIns } = useCheckins()
   const [checkIns, setCheckIns] = useState([])
   const [checkInsLoading, setCheckInsLoading] = useState(true)
   const dailyProgress = calculateDailyRoutineProgress(habits)
+  const mergedCheckIns = useMemo(() => {
+    const merged = new Map()
+    ;[...checkIns, ...localCheckIns].forEach((checkIn, index) => {
+      const key = `${checkIn.routineId ?? checkIn.habitId ?? checkIn.id ?? index}:${checkIn.date ?? checkIn.created_at ?? checkIn.createdAt ?? index}`
+      merged.set(key, checkIn)
+    })
+    return [...merged.values()]
+  }, [checkIns, localCheckIns])
   const flowtreeStats = useMemo(() => (
-    calculateFlowtreeStats({ routines: habits, checkIns })
-  ), [habits, checkIns])
+    calculateFlowtreeStats({ routines: habits, checkIns: mergedCheckIns })
+  ), [habits, mergedCheckIns])
   const flowtree = flowtreeStats.flowtree
   const currentLevel = flowtree.currentLevel
   const treeType = localStorage.getItem('myflow-tree-type') || 'oak'

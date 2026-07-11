@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import FlowtreeProgress from '../commponents/progress/FlowtreeProgress'
 import { flowtreeLevels } from '../data/flowtreeLevels'
 import { useProfile } from '../context/profileContextValue'
+import { useCheckins } from '../context/checkinContextValue'
 import { getUserCheckIns } from '../services/checkInService'
 import {
   FLOW_COIN_REWARDS,
@@ -171,6 +172,7 @@ function buildFlowCoinEvents({ checkIns = [], routines = [], stats }) {
 
 function Statistik({ habits = [], t }) {
   const { personalizedTexts } = useProfile()
+  const { checkins: localCheckIns } = useCheckins()
   const lastCoinSyncKeyRef = useRef('')
   const lastGrowthSyncKeyRef = useRef('')
   const [checkIns, setCheckIns] = useState([])
@@ -210,15 +212,23 @@ function Statistik({ habits = [], t }) {
   const averageSleepHours = getAverageSleepHours(weeklyEntries)
   const calendarDays = useMemo(() => getCalendarDays(calendarMonth), [calendarMonth])
   const selectedSleepEntry = entriesByDate.get(sleepDate)
+  const mergedCheckIns = useMemo(() => {
+    const merged = new Map()
+    ;[...checkIns, ...localCheckIns].forEach((checkIn, index) => {
+      const key = `${checkIn.routineId ?? checkIn.habitId ?? checkIn.id ?? index}:${checkIn.date ?? checkIn.created_at ?? checkIn.createdAt ?? index}`
+      merged.set(key, checkIn)
+    })
+    return [...merged.values()]
+  }, [checkIns, localCheckIns])
   const stats = useMemo(() => ({
-    ...calculateFlowtreeStats({ routines: habits, checkIns }),
+    ...calculateFlowtreeStats({ routines: habits, checkIns: mergedCheckIns }),
     usageTime: formatUsageTime(usageTimeMs),
-  }), [habits, checkIns, usageTimeMs])
+  }), [habits, mergedCheckIns, usageTimeMs])
   const flowCoinEvents = useMemo(() => buildFlowCoinEvents({
-    checkIns,
+    checkIns: mergedCheckIns,
     routines: habits,
     stats,
-  }), [checkIns, habits, stats])
+  }), [mergedCheckIns, habits, stats])
   const hasProgress = stats.growthPoints > 0 || stats.checkIns > 0 || stats.completedRoutines > 0
   const headerMessage = hasProgress
     ? personalizedTexts.statisticsIntro

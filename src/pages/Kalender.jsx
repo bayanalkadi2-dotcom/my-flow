@@ -606,8 +606,11 @@ function Kalender({ notes = {}, onNotesChange }) {
       <section className="calendar-note-card">
         <div className="calendar-section-title">
           <span>Tägliche Termine</span>
-          <small>{selectedEvents.length + selectedCheckins.length} offen</small>
         </div>
+        <button className="diary-add-row appointment" type="button" onClick={() => setShowForm(true)}>
+          <span>+</span>
+          <strong>Termin zum Tag hinzufügen</strong>
+        </button>
         <div className="diary-task-strip">
           {selectedEvents.slice(0, 3).map((event) => (
             <button className={`diary-task-pill ${isEventDone(event) ? 'done' : ''}`} key={event.id} type="button" onClick={() => toggleEvent(event.id)}>
@@ -616,10 +619,10 @@ function Kalender({ notes = {}, onNotesChange }) {
             </button>
           ))}
           {selectedEvents.length === 0 && selectedCheckins.length === 0 && (
-            <button className="diary-task-empty" type="button" onClick={() => setShowForm(true)}>
-              <span>+</span>
+            <div className="diary-task-empty" aria-live="polite">
+              <span>↺</span>
               <strong>Termin hinzufügen</strong>
-            </button>
+            </div>
           )}
         </div>
 
