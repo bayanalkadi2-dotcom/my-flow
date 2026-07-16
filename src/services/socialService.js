@@ -18,6 +18,13 @@ function throwIfError(error) {
   throw error
 }
 
+export function socialProfileName(profile) {
+  if (!profile) {
+    throw new Error('Das Profil dieses Freundes konnte nicht geladen werden.')
+  }
+  return profile.display_name?.trim() || 'MyFlow-Freund'
+}
+
 export async function loadSocialDashboard(userId) {
   if (!userId) {
     return { friends: [], friendRequests: [], sentFriendRequests: [], challengeRequests: [], challenges: [] }
@@ -80,7 +87,7 @@ export async function loadSocialDashboard(userId) {
     profiles = data ?? []
   }
   const profileMap = new Map(profiles.map((profile) => [profile.id, profile]))
-  const friendName = (id) => profileMap.get(id)?.display_name || 'MyFlow-Freund'
+  const friendName = (id) => socialProfileName(profileMap.get(id))
 
   return {
     friends: (friendshipRows ?? []).map((row) => {
