@@ -639,7 +639,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           }}
         >
           <span>+</span>
-          <strong>Notiz zum Tag hinzuf?gen</strong>
+          <strong>Notiz zum Tag hinzufügen</strong>
         </button>
         {shouldShowNoteEditor && (
           <textarea
@@ -663,7 +663,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           {selectedImages.length < 3 && (
             <button className="diary-add-row images" type="button" onClick={() => setShowImageUploader(true)}>
               <span>+</span>
-              <strong>Bilder zum Tag hinzuf?gen</strong>
+              <strong>Bilder zum Tag hinzufügen</strong>
             </button>
           )}
           {shouldShowImageUploader && (
