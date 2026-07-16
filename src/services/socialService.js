@@ -33,12 +33,13 @@ export async function loadSocialDashboard(userId) {
 
   const readResult = (result, label) => {
     if (result.status === 'rejected') {
-      console.error(`${label} konnten nicht geladen werden:`, result.reason)
-      return []
+      throw new Error(`${label} konnten nicht geladen werden.`, { cause: result.reason })
     }
     if (result.value.error) {
-      console.error(`${label} konnten nicht geladen werden:`, result.value.error)
-      return []
+      const error = new Error(`${label} konnten nicht geladen werden: ${result.value.error.message}`)
+      error.code = result.value.error.code
+      error.cause = result.value.error
+      throw error
     }
     return result.value.data ?? []
   }
@@ -58,12 +59,25 @@ export async function loadSocialDashboard(userId) {
 
   let profiles = []
   if (profileIds.size) {
-    const { data, error } = await supabase.from('profiles').select('id, display_name').in('id', [...profileIds])
-    if (error) {
-      console.error('Namen der Freunde konnten nicht geladen werden:', error)
-    } else {
-      profiles = data ?? []
+    let { data, error } = await supabase.rpc('get_social_profiles', {
+      requested_profile_ids: [...profileIds],
+    })
+    // Erlaubt ein sanftes Rollout, falls der Client bereits neuer als die SQL-Migration ist.
+    if (error?.code === 'PGRST202') {
+      const fallback = await supabase
+        .from('profiles')
+        .select('id, display_name')
+        .in('id', [...profileIds])
+      data = fallback.data
+      error = fallback.error
     }
+    if (error) {
+      const profileError = new Error(`Namen der Freunde konnten nicht geladen werden: ${error.message}`)
+      profileError.code = error.code
+      profileError.cause = error
+      throw profileError
+    }
+    profiles = data ?? []
   }
   const profileMap = new Map(profiles.map((profile) => [profile.id, profile]))
   const friendName = (id) => profileMap.get(id)?.display_name || 'MyFlow-Freund'
