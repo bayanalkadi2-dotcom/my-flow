@@ -11,7 +11,7 @@ import iconReminders from '../assets/settings-icons/reminders.png'
 import iconSubscription from '../assets/settings-icons/subscription.png'
 import iconWeight from '../assets/settings-icons/weight.png'
 import { calculateChallengePoints } from '../utils/progressLevels'
-import { updateProfile } from '../services/authService'
+import { updateProfile, uploadProfileAvatar } from '../services/authService'
 import PwaInstallOption from '../commponents/PwaInstallOption'
 import {
   getHeightError,
@@ -242,7 +242,8 @@ function Profil({
   const [iban, setIban] = useState('')
   const [paymentEmail, setPaymentEmail] = useState('')
   const [treeType, setTreeType] = useState(() => localStorage.getItem('myflow-tree-type') || 'oak')
-  const [profileImage, setProfileImage] = useState(() => localStorage.getItem('myflow-profile-image') || '')
+  const [profileImage, setProfileImage] = useState(() => profile?.avatar_url || localStorage.getItem('myflow-profile-image') || '')
+  const [profileImageStatus, setProfileImageStatus] = useState('')
   const storedAge = parseProfileAge(profile?.age)
   const currentAge = storedAge ?? age
   const [draftSettings, setDraftSettings] = useState({
@@ -282,6 +283,7 @@ function Profil({
     ? `${selectedPlan.yearlyPrice} pro Jahr`
     : selectedPlan.monthlyPrice
   const name = profileName || 'Gast'
+  const visibleProfileImage = profile?.avatar_url || profileImage
   const profileCardTitle = profile?.display_name?.trim()
     || (profileName && profileName !== 'Gast' ? profileName : '')
     || 'Dein Profil'
@@ -453,20 +455,21 @@ function Profil({
     setPaymentStatus(`${selectedPlan.label}: ${selectedPlanPrice} mit ${paymentMethod} aktiviert`)
   }
 
-  function handleProfileImageChange(event) {
+  async function handleProfileImageChange(event) {
     const file = event.target.files?.[0]
 
-    if (!file || !file.type.startsWith('image/')) {
+    if (!file || !user?.id) return
+    setProfileImageStatus('Profilbild wird gespeichert …')
+    const result = await uploadProfileAvatar(user.id, file)
+    event.target.value = ''
+    if (!result.success) {
+      setProfileImageStatus(result.error)
       return
     }
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      const image = String(reader.result)
-      setProfileImage(image)
-      localStorage.setItem('myflow-profile-image', image)
-    }
-    reader.readAsDataURL(file)
+    setProfileImage(result.avatarUrl)
+    setProfile((current) => ({ ...current, avatar_url: result.avatarUrl }))
+    localStorage.setItem('myflow-profile-image', result.avatarUrl)
+    setProfileImageStatus('Profilbild wurde gespeichert.')
   }
 
   return (
@@ -511,7 +514,7 @@ function Profil({
       />
       <div className="profile-picture-card">
         <label className="profile-picture" htmlFor="profile-image-input" aria-label="Profilbild ändern">
-          {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
+          {visibleProfileImage ? <img src={visibleProfileImage} alt="" /> : profileInitial}
         </label>
         <div>
           <strong>{name}</strong>
@@ -519,6 +522,7 @@ function Profil({
           <label className="profile-picture-button" htmlFor="profile-image-input">Bild ändern</label>
         </div>
       </div>
+      {profileImageStatus && <p className="profile-image-status" role="status">{profileImageStatus}</p>}
       {!settingsPage && (
         <section className="profile-situation-card" aria-labelledby="profile-situation-title">
           <div className="profile-situation-header">
@@ -561,7 +565,7 @@ function Profil({
           </div>
           <div className="profile-edit-panel">
             <label className="settings-profile-avatar" htmlFor="profile-image-input" aria-label="Profilbild ändern">
-              {profileImage ? <img src={profileImage} alt="" /> : profileInitial}
+              {visibleProfileImage ? <img src={visibleProfileImage} alt="" /> : profileInitial}
             </label>
             <strong>{profileCardTitle}</strong>
             <p>Hier kannst du dein Profil und deine persönlichen Angaben verwalten.</p>

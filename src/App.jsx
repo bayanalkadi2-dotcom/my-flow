@@ -337,7 +337,7 @@ function App() {
   const tone = languageStyles[languageStyle]
   const t = getAppTranslations(languageStyle, communicationStyle)
   const profileInitial = (resolvedProfileName || 'Gast').trim().charAt(0).toUpperCase() || 'G'
-  const profileImage = localStorage.getItem('myflow-profile-image') || ''
+  const profileImage = profile?.avatar_url || localStorage.getItem('myflow-profile-image') || ''
   const preparedHabits = useMemo(
     () => routineItems.map((habit) => translateHabit(prepareRoutineData(habit), languageStyle)),
     [languageStyle, routineItems],

@@ -226,6 +226,47 @@ export async function updateProfile(userId, updates) {
   }
 }
 
+export async function uploadProfileAvatar(userId, file) {
+  try {
+    const { data: authData, error: authError } = await supabase.auth.getUser()
+    if (authError || authData.user?.id !== userId) {
+      throw authError || new Error('Du bist nicht angemeldet.')
+    }
+    if (!file?.type?.startsWith('image/')) throw new Error('Bitte wähle eine Bilddatei aus.')
+    if (file.size > 5 * 1024 * 1024) throw new Error('Das Profilbild darf höchstens 5 MB groß sein.')
+
+    const extensionByType = {
+      'image/gif': 'gif',
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+    }
+    const extension = extensionByType[file.type]
+    if (!extension) throw new Error('Unterstützt werden JPG, PNG, WebP und GIF.')
+
+    const objectPath = `${userId}/avatar.${extension}`
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(objectPath, file, { cacheControl: '3600', contentType: file.type, upsert: true })
+    if (uploadError) throw uploadError
+
+    const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(objectPath)
+    const avatarUrl = `${publicUrlData.publicUrl}?v=${Date.now()}`
+    const { data, error: profileError } = await supabase
+      .from('profiles')
+      .update({ avatar_url: avatarUrl, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+      .select('avatar_url')
+      .single()
+    if (profileError) throw profileError
+
+    return { success: true, avatarUrl: data.avatar_url }
+  } catch (err) {
+    console.error('Profilbild konnte nicht gespeichert werden:', err)
+    return { success: false, error: err.message || 'Profilbild konnte nicht gespeichert werden.' }
+  }
+}
+
 export async function getUserSettings(userId) {
   try {
     const { data, error } = await supabase

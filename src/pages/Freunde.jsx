@@ -23,6 +23,14 @@ function initials(name = '') {
   return name.trim().charAt(0).toUpperCase() || 'F'
 }
 
+function FriendAvatar({ name, src }) {
+  return (
+    <div className="social-avatar">
+      {src ? <img src={src} alt={`Profilbild von ${name}`} /> : initials(name)}
+    </div>
+  )
+}
+
 function daysRemaining(endsOn) {
   const end = new Date(`${endsOn}T23:59:59`)
   return Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86400000))
@@ -237,7 +245,7 @@ function Freunde({ profileName, user }) {
           <div className="social-friend-grid">
             {dashboard.friends.map((friend) => (
               <article className="social-friend-card" key={friend.id}>
-                <div className="social-avatar">{initials(friend.name)}</div>
+                <FriendAvatar name={friend.name} src={friend.avatarUrl} />
                 <div><strong>{friend.name}</strong><span>MyFlow-Freund</span></div>
                 <i aria-hidden="true">✓</i>
               </article>
@@ -257,7 +265,7 @@ function Freunde({ profileName, user }) {
         <div className="social-request-list">
           {dashboard.friendRequests.map((request) => (
             <article className="social-request-card" key={request.id}>
-              <div className="social-avatar">{initials(request.name)}</div>
+              <FriendAvatar name={request.name} src={request.avatarUrl} />
               <div><strong>{request.name}</strong><span>Möchte mit dir befreundet sein</span></div>
               <div className="request-buttons">
                 <button type="button" disabled={busy} onClick={() => runAction(() => respondToFriendRequest(request.id, true), `${request.name} ist jetzt dein Freund.`)}>Annehmen</button>
@@ -322,7 +330,7 @@ function Freunde({ profileName, user }) {
         <div className="social-request-list">
           {dashboard.sentFriendRequests.map((request) => (
             <article className="social-request-card sent-request-card" key={request.id}>
-              <div className="social-avatar">{initials(request.name)}</div>
+              <FriendAvatar name={request.name} src={request.avatarUrl} />
               <div>
                 <strong>{request.name}</strong>
                 <span>Einladung wurde noch nicht angenommen</span>

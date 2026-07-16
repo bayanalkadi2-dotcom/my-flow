@@ -25,6 +25,10 @@ export function socialProfileName(profile) {
   return profile.display_name?.trim() || 'MyFlow-Freund'
 }
 
+function socialProfileAvatar(profile) {
+  return profile?.avatar_url?.trim() || ''
+}
+
 export async function loadSocialDashboard(userId) {
   if (!userId) {
     return { friends: [], friendRequests: [], sentFriendRequests: [], challengeRequests: [], challenges: [] }
@@ -73,7 +77,7 @@ export async function loadSocialDashboard(userId) {
     if (error?.code === 'PGRST202') {
       const fallback = await supabase
         .from('profiles')
-        .select('id, display_name')
+        .select('id, display_name, avatar_url')
         .in('id', [...profileIds])
       data = fallback.data
       error = fallback.error
@@ -88,28 +92,33 @@ export async function loadSocialDashboard(userId) {
   }
   const profileMap = new Map(profiles.map((profile) => [profile.id, profile]))
   const friendName = (id) => socialProfileName(profileMap.get(id))
+  const friendAvatar = (id) => socialProfileAvatar(profileMap.get(id))
 
   return {
     friends: (friendshipRows ?? []).map((row) => {
       const id = row.user_a === userId ? row.user_b : row.user_a
-      return { id, name: friendName(id), since: row.created_at }
+      return { id, name: friendName(id), avatarUrl: friendAvatar(id), since: row.created_at }
     }),
     friendRequests: (friendRequestRows ?? []).map((row) => ({
       ...row,
       name: friendName(row.requester_id),
+      avatarUrl: friendAvatar(row.requester_id),
     })),
     sentFriendRequests: (sentFriendRequestRows ?? []).map((row) => ({
       ...row,
       name: friendName(row.addressee_id),
+      avatarUrl: friendAvatar(row.addressee_id),
     })),
     challengeRequests: (challengeRequestRows ?? []).map((row) => ({
       ...row,
       friendName: friendName(row.challenger_id),
+      friendAvatarUrl: friendAvatar(row.challenger_id),
     })),
     challenges: (challengeRows ?? []).map((row) => ({
       ...row,
       friendId: row.challenger_id === userId ? row.opponent_id : row.challenger_id,
       friendName: friendName(row.challenger_id === userId ? row.opponent_id : row.challenger_id),
+      friendAvatarUrl: friendAvatar(row.challenger_id === userId ? row.opponent_id : row.challenger_id),
     })),
   }
 }

@@ -7,6 +7,7 @@ BEGIN;
 ALTER TABLE public.friend_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.friendships ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 
 GRANT SELECT, DELETE ON TABLE public.friend_requests TO authenticated;
 GRANT SELECT ON TABLE public.friendships TO authenticated;
@@ -65,15 +66,17 @@ FROM auth.users auth_user
 WHERE auth_user.id = profile.id
   AND NULLIF(TRIM(profile.display_name), '') IS NULL;
 
-CREATE OR REPLACE FUNCTION public.get_social_profiles(requested_profile_ids UUID[])
-RETURNS TABLE (id UUID, display_name TEXT)
+DROP FUNCTION IF EXISTS public.get_social_profiles(UUID[]);
+CREATE FUNCTION public.get_social_profiles(requested_profile_ids UUID[])
+RETURNS TABLE (id UUID, display_name TEXT, avatar_url TEXT)
 LANGUAGE sql
 SECURITY DEFINER
 STABLE
 SET search_path = public
 AS $$
   SELECT profile.id,
-         COALESCE(NULLIF(TRIM(profile.display_name), ''), SPLIT_PART(profile.email, '@', 1))::TEXT
+         COALESCE(NULLIF(TRIM(profile.display_name), ''), SPLIT_PART(profile.email, '@', 1))::TEXT,
+         NULLIF(TRIM(profile.avatar_url), '')::TEXT
   FROM public.profiles profile
   WHERE profile.id = ANY(requested_profile_ids)
     AND (

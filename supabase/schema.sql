@@ -24,6 +24,7 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS daily_context TEXT,
   ADD COLUMN IF NOT EXISTS main_challenges TEXT[] DEFAULT '{}',
   ADD COLUMN IF NOT EXISTS support_goals TEXT[] DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS avatar_url TEXT,
   ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false;
 
 DO $$
