@@ -128,6 +128,28 @@ export async function saveOnboardingProfile(onboardingData = {}, displayName = n
 
     if (displayName) profile.display_name = displayName
 
+    const onboardingDetails = {
+      gender: profile.gender,
+      age: profile.age,
+      height_cm: profile.height_cm,
+      weight_kg: profile.weight_kg,
+      student_status: profile.student_status,
+      age_group: profile.age_group,
+      education_level: profile.education_level,
+      daily_context: profile.daily_context,
+      main_challenges: profile.main_challenges,
+      support_goals: profile.support_goals,
+      onboarding_completed: profile.onboarding_completed,
+    }
+
+    // Keep a complete copy in auth metadata as well. This makes the values
+    // available immediately and also supports installations with an older
+    // profiles table that does not have the onboarding columns yet.
+    const metadataUpdate = await supabase.auth.updateUser({
+      data: { ...user.user_metadata, ...onboardingDetails },
+    })
+    if (metadataUpdate.error) throw metadataUpdate.error
+
     let { data, error } = await supabase
       .from('profiles')
       .upsert(profile, { onConflict: 'id' })
@@ -136,20 +158,12 @@ export async function saveOnboardingProfile(onboardingData = {}, displayName = n
 
     // Bis die neuen Spalten migriert wurden, bleibt das bestehende Onboarding nutzbar.
     if (error?.code === 'PGRST204') {
-      const personalDetails = {
-        gender: profile.gender,
-        age: profile.age,
-        height_cm: profile.height_cm,
-        weight_kg: profile.weight_kg,
+      const compatibleProfile = {
+        id: profile.id,
+        email: profile.email,
+        display_name: profile.display_name,
+        updated_at: profile.updated_at,
       }
-      await supabase.auth.updateUser({
-        data: { ...user.user_metadata, ...personalDetails },
-      })
-      const compatibleProfile = { ...profile }
-      delete compatibleProfile.gender
-      delete compatibleProfile.age
-      delete compatibleProfile.height_cm
-      delete compatibleProfile.weight_kg
       const fallback = await supabase
         .from('profiles')
         .upsert(compatibleProfile, { onConflict: 'id' })
@@ -157,11 +171,11 @@ export async function saveOnboardingProfile(onboardingData = {}, displayName = n
         .single()
       data = fallback.data
       error = fallback.error
-      if (!error) data = { ...data, ...personalDetails }
+      if (!error) data = { ...data, ...onboardingDetails }
     }
 
     if (error) throw error
-    return { success: true, profile: data }
+    return { success: true, profile: { ...profile, ...data, ...onboardingDetails } }
   } catch (err) {
     console.error('Onboarding konnte nicht gespeichert werden:', err.cause ?? err)
     return { success: false, error: err }

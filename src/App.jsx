@@ -9,6 +9,7 @@ import { languageStyles } from './data/appData'
 import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import { loadCalendarNotes, saveCalendarNotes } from './utils/calendarNotes'
 import { getLocalDateKey } from './utils/checkins'
+import { writeCachedProfile } from './utils/profileCache'
 import { calculateRoutineProgress, getRoutineCredits, getRoutineProgress } from './utils/routineProgress'
 import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
@@ -676,7 +677,9 @@ function App() {
         )
       }
 
-      setProfile(result.profile)
+      const completeProfile = { ...(result.profile ?? {}), ...answers }
+      writeCachedProfile(user?.id ?? completeProfile.id, completeProfile)
+      setProfile(completeProfile)
       setScreen(returnToProfile ? 'profile' : 'dashboard')
     } catch (err) {
       console.error('Onboarding konnte nicht gespeichert werden:', err.cause ?? err)

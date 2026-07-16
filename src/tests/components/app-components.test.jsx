@@ -201,6 +201,7 @@ describe('onboarding', () => {
     expect(screen.getByText(/Bitte w/)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /Sch/ }))
+    await user.click(screen.getByRole('button', { name: 'Oberstufe' }))
     await user.click(screen.getByRole('button', { name: 'Weiter' }))
     await user.click(screen.getByRole('button', { name: /Pr/ }))
     await user.click(screen.getByRole('button', { name: 'Weiter' }))
@@ -209,6 +210,7 @@ describe('onboarding', () => {
 
     expect(onComplete).toHaveBeenCalledWith(expect.objectContaining({
       student_status: 'school',
+      education_level: 'upper_school',
       main_challenges: ['exam_stress'],
       support_goals: ['increase_focus'],
       onboarding_completed: true,

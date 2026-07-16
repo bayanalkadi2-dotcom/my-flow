@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const mocks = vi.hoisted(() => ({
   from: vi.fn(),
   getUser: vi.fn(),
+  updateUser: vi.fn(),
 }))
 
 vi.mock('../../lib/supabase', () => ({
@@ -10,6 +11,7 @@ vi.mock('../../lib/supabase', () => ({
     from: mocks.from,
     auth: {
       getUser: mocks.getUser,
+      updateUser: mocks.updateUser,
     },
   },
 }))
@@ -60,6 +62,7 @@ function mockUpdateSelect(result) {
 describe('authService Supabase access', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mocks.updateUser.mockResolvedValue({ data: {}, error: null })
   })
 
   it('normalizes onboarding data safely', () => {
@@ -122,9 +125,14 @@ describe('authService Supabase access', () => {
     mocks.getUser.mockResolvedValue({ data: { user: { id: 'user-1', email: 'flow@example.com' } }, error: null })
     const { upsert } = mockUpsertSingle({ data: profile, error: null })
 
-    await expect(saveOnboardingProfile({ student_status: 'training' }, 'Flow')).resolves.toEqual({
+    const result = await saveOnboardingProfile({ student_status: 'training' }, 'Flow')
+    expect(result).toEqual({
       success: true,
-      profile,
+      profile: expect.objectContaining({
+        ...profile,
+        student_status: 'training',
+        onboarding_completed: true,
+      }),
     })
     expect(upsert.mock.calls[0][0]).toMatchObject({
       id: 'user-1',

@@ -19,6 +19,26 @@ const statusOptions = [
   { value: 'other', label: 'Sonstiges' },
 ]
 
+const educationOptions = {
+  school: [
+    ['lower_school', 'Unterstufe'],
+    ['middle_school', 'Mittelstufe'],
+    ['upper_school', 'Oberstufe'],
+  ],
+  university: [
+    ['university', 'Universität'],
+    ['university_of_applied_sciences', 'Fachhochschule'],
+    ['dual_university', 'Duale Hochschule'],
+    ['remote_study', 'Fernstudium'],
+  ],
+  training: [
+    ['company_training', 'Betriebliche Ausbildung'],
+    ['school_training', 'Schulische Ausbildung'],
+    ['dual_study', 'Duales Studium'],
+  ],
+  other: [['other', 'Andere']],
+}
+
 const genderOptions = [
   ['female', 'Weiblich'],
   ['male', 'Männlich'],
@@ -143,6 +163,15 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
     setAnswers((current) => ({ ...current, [key]: value }))
   }
 
+  function updateStatus(value) {
+    setError('')
+    setAnswers((current) => ({
+      ...current,
+      student_status: value,
+      education_level: current.student_status === value ? current.education_level : '',
+    }))
+  }
+
   function markTouched(field) {
     setTouchedFields((current) => ({ ...current, [field]: true }))
   }
@@ -169,6 +198,7 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
     if (currentStep === 'activity' && !answers.activity_level) return 'Bitte wähle deine Aktivität aus.'
     if (currentStep === 'situation' && !answers.daily_context) return 'Bitte wähle deine Situation aus.'
     if (currentStep === 'status' && !answers.student_status) return 'Bitte wähle eine Option aus.'
+    if (currentStep === 'status' && !answers.education_level) return 'Bitte wähle deine Bildungsstufe aus.'
     if (currentStep === 'challenges' && answers.main_challenges.length === 0) return 'Bitte wähle mindestens eine Option aus.'
     if (currentStep === 'goals' && answers.support_goals.length === 0) return 'Bitte wähle mindestens ein Unterstützungsziel aus.'
     return ''
@@ -235,11 +265,23 @@ function StudentOnboarding({ includePreferences = false, initialAnswers = {}, mo
           <h1>Was beschreibt dich aktuell am besten?</h1>
           <div className="student-onboarding-grid status-options-grid">
             {statusOptions.map((option) => (
-              <OptionCard active={answers.student_status === option.value} key={option.value} onClick={() => update('student_status', option.value)}>
+              <OptionCard active={answers.student_status === option.value} key={option.value} onClick={() => updateStatus(option.value)}>
                 <strong>{option.label}</strong>
               </OptionCard>
             ))}
           </div>
+          {answers.student_status && (
+            <>
+              <h2>Welche Bildungsstufe passt zu dir?</h2>
+              <div className="student-chip-grid">
+                {(educationOptions[answers.student_status] ?? educationOptions.other).map(([value, label]) => (
+                  <OptionCard active={answers.education_level === value} key={value} onClick={() => update('education_level', value)}>
+                    <strong>{label}</strong>
+                  </OptionCard>
+                ))}
+              </div>
+            </>
+          )}
           {secondaryAudience && <p className="student-onboarding-note">MyFlow ist aktuell besonders auf Schule und Studium ausgerichtet. Einige Inhalte passen möglicherweise nicht vollständig zu deiner Situation.</p>}
         </div>
       )}
