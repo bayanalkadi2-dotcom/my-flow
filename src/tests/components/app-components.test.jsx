@@ -160,7 +160,7 @@ describe('authentication pages', () => {
     expect(screen.queryByLabelText('Größe')).not.toBeInTheDocument()
     expect(screen.getByText('Deutsch').closest('button')).not.toHaveClass('selected')
     expect(screen.getByText('Locker').closest('button')).not.toHaveClass('selected')
-    expect(screen.getByText('Hell').closest('button')).not.toHaveClass('selected')
+    expect(screen.getByText('Hell').closest('button')).toHaveClass('selected')
     fireEvent.click(screen.getByText('Deutsch').closest('button'))
     fireEvent.click(screen.getByText('Locker').closest('button'))
     fireEvent.click(screen.getByText('Hell').closest('button'))
@@ -411,9 +411,9 @@ describe('DailyCheckIn, diary and routines interactions', () => {
     const latestNotes = onNotesChange.mock.calls.at(-1)[0]
     expect(Object.values(latestNotes)[0]).toMatchObject({ text: 'Heute lernen' })
 
-    await user.click(screen.getByRole('button', { name: /Aufgabe/ }))
-    await user.type(screen.getByPlaceholderText(/Wasser trinken/), 'Mathe lernen')
-    await user.click(screen.getByRole('button', { name: /Hinzuf/ }))
+    await user.click(screen.getByRole('button', { name: /Termin zum Tag/ }))
+    await user.type(screen.getByPlaceholderText(/Arzttermin/), 'Mathe lernen')
+    await user.click(within(document.querySelector('.calendar-add-card')).getByRole('button', { name: /Termin hinzuf/ }))
 
     await waitFor(() => expect(screen.getAllByText('Mathe lernen').length).toBeGreaterThan(0))
   })
@@ -447,6 +447,7 @@ describe('DailyCheckIn, diary and routines interactions', () => {
     )
 
     await user.click(screen.getByRole('button', { name: t.routines.add }))
+    await user.click(screen.getByRole('button', { name: 'Eigene Routine erstellen' }))
     await user.type(screen.getByPlaceholderText(t.routines.placeholder), 'Lesen')
     await user.clear(screen.getByLabelText(t.routines.target))
     await user.type(screen.getByLabelText(t.routines.target), '20')

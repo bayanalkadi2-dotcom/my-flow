@@ -111,7 +111,7 @@ function loadAccountProfile() {
 
 function isRemovedRoutine(routine) {
   const title = String(routine?.title ?? '').trim().toLowerCase()
-  return removedRoutineTitles.has(title) || removedRoutineTitles.has(title.replaceAll('ä', 'Ã¤'))
+  return removedRoutineTitles.has(title)
 }
 
 function prepareRoutineData(routine) {

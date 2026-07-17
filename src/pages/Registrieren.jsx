@@ -15,8 +15,6 @@ const communicationOptions = [
   ['formal', 'Formal'],
 ]
 
-const designOptions = [['Hell', 'Hell'], ['Dunkel', 'Dunkel']]
-
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
@@ -39,7 +37,7 @@ function getRegisterErrorMessage(error) {
   return 'Registrierung fehlgeschlagen. Bitte versuche es später erneut.'
 }
 
-function Registrieren({ appColor, appTheme, onAppDesignChange, onNavigate, t }) {
+function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange = () => {}, onNavigate, t }) {
   const { signup } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -47,7 +45,6 @@ function Registrieren({ appColor, appTheme, onAppDesignChange, onNavigate, t }) 
   const [displayName, setDisplayName] = useState('')
   const [languageStyle, setLanguageStyle] = useState('')
   const [communicationStyle, setCommunicationStyle] = useState('')
-  const [theme, setTheme] = useState(appTheme)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false)
@@ -166,18 +163,6 @@ function Registrieren({ appColor, appTheme, onAppDesignChange, onNavigate, t }) 
         <div className="register-design-section">
           <AuthDesignPicker color={appColor} mode={appTheme} onChange={onAppDesignChange} />
         </div>
-
-        <label className="student-onboarding-label legacy-register-design">
-          Design
-          <div className="student-chip-grid">
-            {designOptions.map(([value, label]) => (
-              <button className={`student-onboarding-option ${theme === value ? 'selected' : ''}`} key={value} onClick={() => setTheme(value)} type="button" disabled={isLoading}>
-                <strong>{label}</strong>
-                <span aria-hidden="true">{theme === value ? '✓' : ''}</span>
-              </button>
-            ))}
-          </div>
-        </label>
 
         <label className="login-field">
           <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import SmartRangeTrendChart from './SmartRangeTrendChart'
 
 function WellbeingDashboard({
@@ -20,6 +21,7 @@ function WellbeingDashboard({
   noDataText,
   noInsightsText,
 }) {
+  const [isInfoOpen, setIsInfoOpen] = useState(false)
   const hasChartData = Array.isArray(chartData) && chartData.length > 0
   const hasHabits = Array.isArray(habits) && habits.length > 0
   const hasInsights = Array.isArray(insights) && insights.length > 0
@@ -40,7 +42,13 @@ function WellbeingDashboard({
           </div>
         </div>
         <div className="wellbeing-dashboard-actions">
-          <button type="button" className="secondary-button wellbeing-info-button" aria-label={infoLabel}>
+          <button
+            type="button"
+            className="secondary-button wellbeing-info-button"
+            aria-expanded={isInfoOpen}
+            aria-label={infoLabel}
+            onClick={() => setIsInfoOpen((open) => !open)}
+          >
             {infoLabel}
           </button>
           <div className="period-toggle wellbeing-period-toggle" aria-label="Zeitraum auswählen">
@@ -57,6 +65,12 @@ function WellbeingDashboard({
           </div>
         </div>
       </div>
+
+      {isInfoOpen && (
+        <p className="wellbeing-info-text" role="status">
+          Die Auswertung basiert auf deinen gespeicherten Check-ins und Routinen im ausgewählten Zeitraum.
+        </p>
+      )}
 
       <div className="wellbeing-dashboard-metrics">
         {metrics.map((metric) => (

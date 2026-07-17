@@ -265,6 +265,8 @@ function Profil({
     const savedHeight = Number(storedHeight)
 
     if (savedWeight > 0) {
+      // Keep editable measurements aligned with a profile loaded asynchronously.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setWeight(savedWeight)
     }
 

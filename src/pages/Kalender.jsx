@@ -372,11 +372,6 @@ function Kalender({ notes = {}, onNotesChange }) {
     setShowFilterResults(false)
   }
 
-  function openMonthOverview() {
-    setShowFilterResults(false)
-    setShowMonthOverview(true)
-  }
-
   useEffect(() => {
     if (!showMonthOverview) return
 
@@ -386,6 +381,8 @@ function Kalender({ notes = {}, onNotesChange }) {
   }, [showMonthOverview])
 
   useEffect(() => {
+    // Reset transient editors whenever the selected diary day changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowNoteEditor(false)
     setShowImageUploader(false)
   }, [selectedKey])
@@ -393,7 +390,7 @@ function Kalender({ notes = {}, onNotesChange }) {
   return (
     <section className="screen calendar-screen">
       <header className="calendar-header">
-        <button className="calendar-icon-button" type="button" aria-label="Filter ?ffnen" onClick={() => setShowFilterMenu(true)}>
+        <button className="calendar-icon-button" type="button" aria-label="Filter öffnen" onClick={() => setShowFilterMenu(true)}>
           <MenuIcon />
         </button>
         <h1>Tagebuch</h1>
@@ -407,7 +404,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           <div className="diary-filter-backdrop" onClick={() => setShowFilterMenu(false)} />
           <div className="diary-filter-sheet">
             <div className="calendar-section-title">
-              <span>Filter ausw?hlen</span>
+              <span>Filter auswählen</span>
               <small>Zeige: {activeFilterLabel}</small>
             </div>
             <div className="diary-filter-grid">
@@ -434,7 +431,7 @@ function Kalender({ notes = {}, onNotesChange }) {
               <span>Gefilterte Tage</span>
               <h2>{activeFilterLabel}</h2>
             </div>
-            <button type="button" onClick={() => setShowFilterResults(false)} aria-label="Filter schliessen">?</button>
+            <button type="button" onClick={() => setShowFilterResults(false)} aria-label="Filter schließen">×</button>
           </div>
           <div className="diary-filter-results-list">
             {filterResultDays.length > 0 ? (
@@ -520,7 +517,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           ⬹
         </button>
         <strong>{monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}</strong>
-        <button type="button" onClick={() => changeWeek(1)} aria-label="N?chste Woche">
+        <button type="button" onClick={() => changeWeek(1)} aria-label="Nächste Woche">
           ⬺
         </button>
         </div>
@@ -657,7 +654,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           {selectedImages.map((image, index) => (
             <figure className="diary-image-card" key={`${image.slice(0, 24)}-${index}`}>
               <img src={image} alt={`Tagesbild ${index + 1}`} />
-              <button type="button" onClick={() => removeImage(index)} aria-label={`Bild ${index + 1} entfernen`}>?</button>
+              <button type="button" onClick={() => removeImage(index)} aria-label={`Bild ${index + 1} entfernen`}>×</button>
             </figure>
           ))}
           {selectedImages.length < 3 && (
@@ -687,7 +684,7 @@ function Kalender({ notes = {}, onNotesChange }) {
       <section className="calendar-timeline-card">
         <div className="calendar-section-title">
           <span>Heute geplant</span>
-          <small>{selectedEvents.length + selectedCheckins.length} Eintr?ge</small>
+          <small>{selectedEvents.length + selectedCheckins.length} Einträge</small>
         </div>
         <div className="calendar-timeline">
           {selectedEvents.length > 0 || selectedCheckins.length > 0 ? (
@@ -695,10 +692,10 @@ function Kalender({ notes = {}, onNotesChange }) {
             {selectedEvents.map((event) => (
               <article className={`calendar-event-card ${event.tone} ${isEventDone(event) ? 'done' : ''}`} key={event.id}>
                 <time>{event.time}</time>
-                <span className="calendar-event-icon">?</span>
+                <span className="calendar-event-icon">{event.icon}</span>
                 <div>
                   <strong>{event.title}</strong>
-                  <small>{event.repeat === 'daily' ? 'T?glich wiederholt' : 'Manuell hinzugef?gt'}</small>
+                  <small>{event.repeat === 'daily' ? 'Täglich wiederholt' : 'Manuell hinzugefügt'}</small>
                 </div>
                 <button
                   className="calendar-check-button"
@@ -713,25 +710,25 @@ function Kalender({ notes = {}, onNotesChange }) {
             {selectedCheckins.map((checkin) => (
               <article className="calendar-event-card blue done" key={`checkin-${checkin.id}`}>
                 <time>{checkin.time || '--:--'}</time>
-                <span className="calendar-event-icon">?</span>
+                <span className="calendar-event-icon">✓</span>
                 <div>
                   <strong>{checkin.title}</strong>
                   <small>Eingecheckt</small>
                 </div>
-                <span className="calendar-check-button" aria-label={`${checkin.title} eingecheckt`}>?</span>
+                <span className="calendar-check-button" aria-label={`${checkin.title} eingecheckt`}>✓</span>
               </article>
             ))}
             </>
           ) : (
             <div className="calendar-empty-state">
               <strong>Noch nichts geplant</strong>
-              <p>F?ge ?ber den Plus-Button Gewohnheiten und Erinnerungen für diesen Tag hinzu.</p>
+              <p>Füge über den Plus-Button Gewohnheiten und Erinnerungen für diesen Tag hinzu.</p>
             </div>
           )}
         </div>
       </section>
 
-      <button className="calendar-fab" type="button" onClick={() => setShowForm(true)} aria-label="Termin hinzuf?gen">
+      <button className="calendar-fab" type="button" onClick={() => setShowForm(true)} aria-label="Termin hinzufügen">
         +
       </button>
     </section>

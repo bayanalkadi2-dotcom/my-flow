@@ -8989,7 +8989,7 @@ input {
 }
 
 .calendar-screen::before {
-  content: "âœ¦";
+  content: "✦";
   position: absolute;
   top: 18px;
   left: 20px;
@@ -9709,7 +9709,7 @@ h3,
   stroke-linejoin: round;
 }
 
-/* Einheitlicher Auswahlzustand fÃ¼r alle Optionen der Einstellungsseite. */
+/* Einheitlicher Auswahlzustand für alle Optionen der Einstellungsseite. */
 .profile-settings-screen .profile-choice.selected,
 .profile-settings-screen .payment-option.selected,
 .profile-settings-screen .payment-method.selected {

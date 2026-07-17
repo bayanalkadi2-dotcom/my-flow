@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState } from 'react'
 import { getContextCheckInQuestion } from '../../config/userPersonalization'
+import { useId } from 'react'
 import { useCheckins } from '../../context/checkinContextValue'
 import { useProfile } from '../../context/profileContextValue'
 import { checkInQuestions } from '../../data/checkInQuestions'
@@ -108,17 +109,18 @@ function DailyCheckIn({
   const [isComplete, setIsComplete] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
-  const [savedCheckIn, setSavedCheckIn] = useState(null)
   const [restoredRecommendationIds, setRestoredRecommendationIds] = useState([])
   const [freeMessages, setFreeMessages] = useState([])
   const [freeDraft, setFreeDraft] = useState('')
   const [isReplyLoading, setIsReplyLoading] = useState(false)
   const [chatError, setChatError] = useState('')
-  const [chatHistory, setChatHistory] = useState([])
+  const chatHistoryKey = `myflow-ai-chat-history-${user?.id ?? 'guest'}`
+  const [chatHistory, setChatHistory] = useState(() => readChatHistory(chatHistoryKey))
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const [viewedChat, setViewedChat] = useState(null)
   const chatEndRef = useRef(null)
-  const activeChatIdRef = useRef(`chat-${Date.now()}`)
+  const generatedChatId = useId()
+  const activeChatIdRef = useRef(`chat-${generatedChatId}`)
 
   const personalizedQuestions = useMemo(() => [
     ...checkInQuestions.slice(0, 2),
@@ -127,7 +129,6 @@ function DailyCheckIn({
   ], [profile])
   const currentQuestion = personalizedQuestions[currentStep]
   const recommendationHistoryKey = `myflow-recent-recommendations-${user?.id ?? 'guest'}`
-  const chatHistoryKey = `myflow-ai-chat-history-${user?.id ?? 'guest'}`
   const recentTaskIds = useMemo(() => {
     try {
       const stored = JSON.parse(localStorage.getItem(recommendationHistoryKey) || '[]')
@@ -151,10 +152,6 @@ function DailyCheckIn({
       maxResults: 4,
     })
   }, [answers, isComplete, personalization.status, recentTaskIds, restoredRecommendationIds])
-
-  useEffect(() => {
-    setChatHistory(readChatHistory(chatHistoryKey))
-  }, [chatHistoryKey])
 
   useEffect(() => {
     if (!isComplete) return
@@ -192,7 +189,6 @@ function DailyCheckIn({
     setCurrentStep(0)
     setIsComplete(false)
     setSaveError('')
-    setSavedCheckIn(null)
     setRestoredRecommendationIds([])
     setFreeMessages([])
     setFreeDraft('')
@@ -208,7 +204,6 @@ function DailyCheckIn({
     setIsComplete(true)
     setIsSaving(false)
     setSaveError('')
-    setSavedCheckIn(null)
     setRestoredRecommendationIds([])
     setFreeMessages([])
     setFreeDraft('')
@@ -244,11 +239,9 @@ function DailyCheckIn({
     setIsComplete(true)
     setIsSaving(true)
     setSaveError('')
-    setSavedCheckIn(null)
 
     try {
       if (hasCheckin('daily-check-in', getLocalDateKey())) {
-        setSavedCheckIn({ duplicate: true })
         saveChatToHistory({
           nextAnswers,
           nextRecommendations: recommendTasks(nextAnswers, undefined, {
@@ -266,7 +259,6 @@ function DailyCheckIn({
         maxResults: 4,
       })
       const savedDailyCheckIn = await saveDailyCheckIn(nextAnswers, nextRecommendations)
-      setSavedCheckIn(savedDailyCheckIn)
       setRestoredRecommendationIds(nextRecommendations.map((recommendation) => recommendation.task.id))
       saveChatToHistory({ nextAnswers, nextRecommendations })
       localStorage.setItem(
