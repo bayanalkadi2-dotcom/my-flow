@@ -938,6 +938,7 @@ function App() {
             }}
             profileName={resolvedProfileName}
             t={t}
+            languageStyle={languageStyle}
             user={user}
           />
         )
@@ -1062,13 +1063,15 @@ function App() {
                 <small>{languageStyle === 'arabic' ? 'حساب MyFlow' : 'MyFlow Konto'}</small>
               </div>
             </div>
-            <button type="button" onClick={() => openAccountScreen('profile')}>{languageStyle === 'arabic' ? 'عرض الملف الشخصي' : 'Profil ansehen'}</button>
-            <button type="button" onClick={() => openAccountScreen('profileSettings')}>{languageStyle === 'arabic' ? 'الإعدادات' : 'Einstellungen'}</button>
-            <button type="button" onClick={() => openAccountScreen('profileSettings')}>{languageStyle === 'arabic' ? 'اللغة' : 'Sprache'}</button>
+            <button type="button" onClick={() => openAccountScreen('profile')}>{({ german: 'Profil ansehen', english: 'View profile', turkish: 'Profili görüntüle', arabic: 'عرض الملف الشخصي' })[languageStyle]}</button>
+            <button type="button" onClick={() => openAccountScreen('profileSettings')}>{({ german: 'Einstellungen', english: 'Settings', turkish: 'Ayarlar', arabic: 'الإعدادات' })[languageStyle]}</button>
+            <button type="button" onClick={() => openAccountScreen('profileSettings')}>{({ german: 'Sprache', english: 'Language', turkish: 'Dil', arabic: 'اللغة' })[languageStyle]}</button>
             <button type="button" onClick={() => handleAppThemeChange(appTheme === 'Dunkel' ? 'Hell' : 'Dunkel')}>
-              {languageStyle === 'arabic' ? (appTheme === 'Dunkel' ? 'الوضع الفاتح' : 'الوضع الداكن') : (appTheme === 'Dunkel' ? 'Light Mode' : 'Dark Mode')}
+              {appTheme === 'Dunkel'
+                ? ({ german: 'Heller Modus', english: 'Light mode', turkish: 'Açık mod', arabic: 'الوضع الفاتح' })[languageStyle]
+                : ({ german: 'Dunkler Modus', english: 'Dark mode', turkish: 'Koyu mod', arabic: 'الوضع الداكن' })[languageStyle]}
             </button>
-            <button className="account-menu-logout" type="button" onClick={handleAccountLogout}>{languageStyle === 'arabic' ? 'تسجيل الخروج' : 'Abmelden'}</button>
+            <button className="account-menu-logout" type="button" onClick={handleAccountLogout}>{({ german: 'Abmelden', english: 'Log out', turkish: 'Çıkış yap', arabic: 'تسجيل الخروج' })[languageStyle]}</button>
           </section>
         )}
       </div>

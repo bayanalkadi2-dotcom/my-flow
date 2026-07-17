@@ -1088,7 +1088,7 @@ translations.turkish = {
     logout: 'Cikis yap',
     water: 'Su',
     perDay: 'gunluk',
-    challengeLevel: 'Challenge seviyesi',
+    challengeLevel: 'Zorluk seviyesi',
     points: '{points} puan toplandi',
     nextLevel: 'Sonraki seviye: {level}, {points} puandan itibaren',
     overviewText: 'Profilini ve kişisel bilgilerini buradan yönetebilirsin.',

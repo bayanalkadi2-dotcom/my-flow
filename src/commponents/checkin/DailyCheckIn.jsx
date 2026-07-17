@@ -11,6 +11,32 @@ import { CHATBOT_UNAVAILABLE_MESSAGE, sendAiChatMessage } from '../../services/a
 import { getLocalDateKey } from '../../utils/checkins'
 import CheckInProgress from './CheckInProgress'
 
+const CHECKIN_COPY = {
+  german: { history: 'Verlauf', noHistory: 'Noch keine alten Chats.', saved: 'Check-in gespeichert', freeChat: 'Freier Chat', freeText: 'Schreib mir einfach, wobei ich dir helfen soll.', placeholder: 'Frag deinen MyFlow Coach...', send: 'Senden', home: 'Home', start: 'Check-in starten', newCheckin: 'Neuer Check-in', phase: 'Phase 1', phaseText: 'Ich starte mit deinem kurzen Tages-Check-in. Danach kannst du mir frei schreiben.', back: 'Zurück', evaluate: 'Auswerten', next: 'Weiter', progress: 'Schritt {current} von {total}' },
+  english: { history: 'History', noHistory: 'No previous chats.', saved: 'Check-in saved', freeChat: 'Free chat', freeText: 'Just tell me what I can help you with.', placeholder: 'Ask your MyFlow Coach...', send: 'Send', home: 'Home', start: 'Start check-in', newCheckin: 'New check-in', phase: 'Phase 1', phaseText: 'I will start with your short daily check-in. Afterwards, you can chat freely with me.', back: 'Back', evaluate: 'Evaluate', next: 'Next', progress: 'Step {current} of {total}' },
+  turkish: { history: 'Geçmiş', noHistory: 'Henüz eski sohbet yok.', saved: 'Kontrol kaydedildi', freeChat: 'Serbest sohbet', freeText: 'Sana nasıl yardımcı olabileceğimi yaz.', placeholder: 'MyFlow Koçuna sor...', send: 'Gönder', home: 'Ana sayfa', start: 'Kontrolü başlat', newCheckin: 'Yeni kontrol', phase: 'Aşama 1', phaseText: 'Kısa günlük kontrolünle başlayacağım. Ardından benimle serbestçe yazışabilirsin.', back: 'Geri', evaluate: 'Değerlendir', next: 'İleri', progress: 'Adım {current} / {total}' },
+  arabic: { history: 'السجل', noHistory: 'لا توجد محادثات سابقة.', saved: 'تم حفظ تسجيل الدخول', freeChat: 'محادثة حرة', freeText: 'اكتب لي ببساطة كيف يمكنني مساعدتك.', placeholder: 'اسأل مدرب MyFlow...', send: 'إرسال', home: 'الرئيسية', start: 'بدء تسجيل الحالة', newCheckin: 'تسجيل جديد', phase: 'المرحلة 1', phaseText: 'سأبدأ بتسجيل قصير لحالتك اليومية، وبعد ذلك يمكنك الكتابة لي بحرية.', back: 'رجوع', evaluate: 'تقييم', next: 'متابعة', progress: 'الخطوة {current} من {total}' },
+}
+
+const TURKISH_QUESTIONS = {
+  general_mood: ['Genel durum', 'Bugün nasıl hissediyorsun?', { very_bad: 'çok kötü', bad: 'kötü', neutral: 'normal', good: 'iyi', very_good: 'çok iyi' }],
+  stress_level: ['Stres', 'Bugün çok stres yaşadın mı?', { none: 'stres yok', low: 'az stres', medium: 'orta', high: 'çok stres', very_high: 'aşırı stres' }],
+  tiredness_level: ['Yorgunluk', 'Kendini ne kadar yorgun hissediyorsun?', { none: 'hiç yorgun değilim', low: 'biraz yorgunum', medium: 'orta', high: 'çok yorgunum', exhausted: 'bitkinim' }],
+  physical_energy: ['Fiziksel enerji', 'Fiziksel olarak ne kadar dinç hissediyorsun?', { very_low: 'çok güçsüz', low: 'biraz güçsüz', medium: 'normal', high: 'dinç', very_high: 'çok dinç' }],
+  mental_energy: ['Zihinsel enerji', 'Şu anda ne kadar zihinsel gücün var?', { none: 'hiç gücüm yok', low: 'az gücüm var', medium: 'orta', high: 'çok gücüm var', very_high: 'çok fazla gücüm var' }],
+  concentration_level: ['Konsantrasyon', 'Şu anda ne kadar iyi odaklanabiliyorsun?', { none: 'hiç', low: 'kötü', medium: 'orta', high: 'iyi', very_high: 'çok iyi' }],
+  mood_tags: ['Ruh hali', 'Bugün seni en iyi hangi ruh hali anlatıyor?', { calm: 'sakin', tense: 'gergin', sad: 'üzgün', irritated: 'sinirli', motivated: 'motive', overwhelmed: 'bunalmış', balanced: 'dengeli' }],
+  available_time: ['Uygun zaman', 'Bugün ne kadar zaman ayırmak istiyorsun?', { 2: '2 dakika', 5: '5 dakika', 10: '10 dakika', 15: '15 dakika', 20: '20 dakika veya daha fazla' }],
+  support_goal: ['Destek türü', 'Şu anda sana en çok ne yardımcı olur?', { relaxation: 'rahatlama', movement: 'hareket', focus: 'odaklanma', motivation: 'motivasyon', emotional_relief: 'duygusal rahatlama', energy: 'enerji', sleep_preparation: 'uykuya hazırlık' }],
+}
+
+function localizeQuestion(question, languageStyle) {
+  if (languageStyle !== 'turkish') return question
+  const translated = TURKISH_QUESTIONS[question.id]
+  if (!translated) return question
+  return { ...question, label: translated[0], question: translated[1], options: question.options.map((option) => ({ ...option, label: translated[2][option.value] ?? option.label })) }
+}
+
 function getAnswerLabel(question, answer) {
   const values = Array.isArray(answer) ? answer : [answer].filter(Boolean)
   return values
@@ -100,12 +126,14 @@ function DailyCheckIn({
   onNavigate,
   profileName = 'Gast',
   t,
+  languageStyle = 'german',
   user,
 }) {
   const arabic = t?.nav?.dashboard === 'الرئيسية'
   const copy = arabic ? {
     history: 'السجل', noHistory: 'لا توجد محادثات سابقة.', saved: 'تم حفظ تسجيل الدخول', ai: 'ذكاء MyFlow الاصطناعي', signIn: 'يرجى تسجيل الدخول', signInText: 'يحفظ تسجيل الدخول بالذكاء الاصطناعي بيانات شخصية حساسة، لذلك لا يمكن استخدامه إلا بعد تسجيل الدخول.'
   } : null
+  const ui = CHECKIN_COPY[languageStyle] ?? CHECKIN_COPY.german
   const { personalization, profile } = useProfile()
   const { addCheckin, hasCheckin } = useCheckins()
   const [answers, setAnswers] = useState({})
@@ -131,7 +159,7 @@ function DailyCheckIn({
     ...checkInQuestions.slice(0, 2),
     getContextCheckInQuestion(profile),
     ...checkInQuestions.slice(2),
-  ], [profile])
+  ].map((question) => localizeQuestion(question, languageStyle)), [languageStyle, profile])
   const currentQuestion = personalizedQuestions[currentStep]
   const recommendationHistoryKey = `myflow-recent-recommendations-${user?.id ?? 'guest'}`
   const recentTaskIds = useMemo(() => {
@@ -370,13 +398,13 @@ function DailyCheckIn({
     return (
       <div className="ai-chat-history">
         <button className="ai-chat-history-toggle" onClick={() => setIsHistoryOpen((open) => !open)} type="button">
-          {copy?.history ?? 'Verlauf'}
+          {copy?.history ?? ui.history}
           {chatHistory.length > 0 && <span>{chatHistory.length}</span>}
         </button>
         {isHistoryOpen && (
           <div className="ai-chat-history-menu">
             {chatHistory.length === 0 ? (
-              <p>{copy?.noHistory ?? 'Noch keine alten Chats.'}</p>
+              <p>{copy?.noHistory ?? ui.noHistory}</p>
             ) : chatHistory.map((chat) => (
               <button
                 key={chat.id}
@@ -387,7 +415,7 @@ function DailyCheckIn({
                 type="button"
               >
                 <strong>{chat.title}</strong>
-                <small>{chat.messages?.[0]?.text || copy?.saved || 'Check-in gespeichert'}</small>
+                <small>{chat.messages?.[0]?.text || copy?.saved || ui.saved}</small>
               </button>
             ))}
           </div>
@@ -509,8 +537,8 @@ function DailyCheckIn({
               </article>
             ) : (
               <article className="checkin-chat-bubble assistant">
-                <span>Freier Chat</span>
-                <p>Schreib mir einfach, wobei ich dir helfen soll.</p>
+                <span>{ui.freeChat}</span>
+                <p>{ui.freeText}</p>
               </article>
             )}
 
@@ -591,18 +619,18 @@ function DailyCheckIn({
               disabled={isReplyLoading}
               value={freeDraft}
               onChange={(event) => setFreeDraft(event.target.value)}
-              placeholder="Frag deinen MyFlow Coach..."
+              placeholder={ui.placeholder}
             />
-            <button disabled={isReplyLoading} type="submit">Senden</button>
+            <button disabled={isReplyLoading} type="submit">{ui.send}</button>
           </form>
         </section>
 
         <div className="checkin-actions">
           <button className="secondary-button" onClick={() => onNavigate?.('dashboard')} type="button">
-            Home
+            {ui.home}
           </button>
           <button className="secondary-button" onClick={restartCheckIn} type="button">
-            {hasCheckInAnswers ? 'Neuer Check-in' : 'Check-in starten'}
+            {hasCheckInAnswers ? ui.newCheckin : ui.start}
           </button>
         </div>
       </section>
@@ -612,12 +640,12 @@ function DailyCheckIn({
   return (
     <section className="screen checkin-screen">
       {renderHistoryButton()}
-      <CheckInProgress currentStep={currentStep} totalSteps={personalizedQuestions.length} />
+      <CheckInProgress currentStep={currentStep} label={ui.progress} totalSteps={personalizedQuestions.length} />
       <section className="checkin-chat-card" aria-label="MyFlow KI Chat">
         <div className="checkin-chat-messages">
           <article className="checkin-chat-bubble assistant">
-            <span>Phase 1</span>
-            <p>Ich starte mit deinem kurzen Tages-Check-in. Danach kannst du mir frei schreiben.</p>
+            <span>{ui.phase}</span>
+            <p>{ui.phaseText}</p>
           </article>
 
           {renderAnsweredQuestions()}
@@ -655,11 +683,11 @@ function DailyCheckIn({
       {saveError && <p className="checkin-error">{saveError}</p>}
       <div className="checkin-actions">
         <button className="secondary-button" onClick={goBack} type="button">
-          Zurück
+          {ui.back}
         </button>
         {currentQuestion.multiple && (
           <button className="primary-cta" onClick={continueCheckIn} type="button">
-            {currentStep === personalizedQuestions.length - 1 ? 'Auswerten' : 'Weiter'}
+            {currentStep === personalizedQuestions.length - 1 ? ui.evaluate : ui.next}
           </button>
         )}
       </div>

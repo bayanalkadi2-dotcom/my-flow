@@ -15,7 +15,12 @@ import { calculateFlowtreeStats } from '../utils/flowtreeStats'
 import { isRoutineCompleted } from '../utils/routineProgress'
 
 const USAGE_STORAGE_KEY = 'myflow_app_usage_ms'
-const WEEKDAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
+const WEEKDAY_LABELS = {
+  german: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+  english: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  turkish: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+  arabic: ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'],
+}
 
 function formatUsageTime(milliseconds) {
   const totalMinutes = Math.floor(milliseconds / 60000)
@@ -46,12 +51,12 @@ function toLocalDateKey(date) {
   return `${year}-${month}-${day}`
 }
 
-function getCurrentWeek() {
+function getCurrentWeek(languageStyle = 'german') {
   const today = new Date()
   const monday = new Date(today)
   monday.setDate(today.getDate() - ((today.getDay() + 6) % 7))
 
-  return WEEKDAY_LABELS.map((label, index) => {
+  return (WEEKDAY_LABELS[languageStyle] ?? WEEKDAY_LABELS.german).map((label, index) => {
     const date = new Date(monday)
     date.setDate(monday.getDate() + index)
     return { date, dateKey: toLocalDateKey(date), label }
@@ -92,14 +97,15 @@ function calculateSleepDurationMinutes(bedtime, wakeTime) {
   return duration || 24 * 60
 }
 
-function formatSleepDuration(totalMinutes) {
-  if (totalMinutes === null) return 'Noch keine Schlafdauer berechnet.'
+function formatSleepDuration(totalMinutes, languageStyle = 'german') {
+  if (totalMinutes === null) return ({ german: 'Noch keine Schlafdauer berechnet.', english: 'No sleep duration calculated yet.', turkish: 'Henüz uyku süresi hesaplanmadı.', arabic: 'لم يتم حساب مدة النوم بعد.' })[languageStyle]
 
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60
 
-  if (minutes === 0) return `${hours} Std.`
-  return `${hours} Std. ${minutes} Min.`
+  const units = ({ german: ['Std.', 'Min.'], english: ['hr', 'min'], turkish: ['sa', 'dk'], arabic: ['س', 'د'] })[languageStyle]
+  if (minutes === 0) return `${hours} ${units[0]}`
+  return `${hours} ${units[0]} ${minutes} ${units[1]}`
 }
 
 function getEventSourceId(value, fallback) {
@@ -170,7 +176,6 @@ function buildFlowCoinEvents({ checkIns = [], routines = [], stats }) {
 }
 
 function Statistik({ habits = [], languageStyle = 'german', t }) {
-  const arabic = languageStyle === 'arabic'
   const sleepCopy = {
     german: { sleep: 'Schlaf', title: 'Trage deinen Schlaf ein', description: 'Erfasse deinen Schlaf und behalte deine Schlafgewohnheiten im Blick.', bedtime: 'Schlafenszeit', wake: 'Aufstehzeit', duration: 'Wie lange habe ich geschlafen?', save: 'Eintrag speichern', saving: 'Wird gespeichert …' },
     english: { sleep: 'Sleep', title: 'Record your sleep', description: 'Record your sleep and keep track of your sleeping habits.', bedtime: 'Bedtime', wake: 'Wake-up time', duration: 'How long did I sleep?', save: 'Save entry', saving: 'Saving…' },
@@ -205,7 +210,7 @@ function Statistik({ habits = [], languageStyle = 'german', t }) {
   const [isSleepCalendarOpen, setIsSleepCalendarOpen] = useState(false)
   const [calendarMonth, setCalendarMonth] = useState(() => new Date())
   const sleepDurationMinutes = calculateSleepDurationMinutes(sleepBedtime, sleepWakeTime)
-  const currentWeek = useMemo(() => getCurrentWeek(), [])
+  const currentWeek = useMemo(() => getCurrentWeek(languageStyle), [languageStyle])
   const weeklyEntries = useMemo(() => {
     const weekKeys = new Set(currentWeek.map((day) => day.dateKey))
     return sleepEntries.filter((entry) => weekKeys.has(entry.sleep_date))
@@ -539,7 +544,7 @@ function Statistik({ habits = [], languageStyle = 'german', t }) {
               </label>
               <div className="sleep-duration-result" aria-live="polite">
                 <span>{sleepCopy?.duration ?? 'Wie lange habe ich geschlafen?'}</span>
-                <strong>{formatSleepDuration(sleepDurationMinutes)}</strong>
+                <strong>{formatSleepDuration(sleepDurationMinutes, languageStyle)}</strong>
               </div>
               <button disabled={sleepDurationMinutes === null || sleepSaving} type="submit">
                 {sleepSaving ? (sleepCopy?.saving ?? 'Wird gespeichert …') : (sleepCopy?.save ?? 'Eintrag speichern')}
@@ -547,13 +552,13 @@ function Statistik({ habits = [], languageStyle = 'german', t }) {
             </form>
             {sleepError && <p className="sleep-tracker-error" role="alert">{sleepError}</p>}
             <div className="sleep-tracker-average">
-              <span>{arabic ? 'متوسط الأسبوع' : 'Wochendurchschnitt'}</span>
+              <span>{({ german: 'Wochendurchschnitt', english: 'Weekly average', turkish: 'Haftalık ortalama', arabic: 'متوسط الأسبوع' })[languageStyle]}</span>
               <strong>
                 {sleepLoading
-                  ? (arabic ? 'جاري التحميل …' : 'Wird geladen …')
+                  ? ({ german: 'Wird geladen …', english: 'Loading…', turkish: 'Yükleniyor…', arabic: 'جاري التحميل …' })[languageStyle]
                   : averageSleepHours === null
-                  ? (arabic ? 'لم يتم تسجيل النوم بعد.' : 'Noch kein Schlaf eingetragen.')
-                  : arabic ? `${averageSleepHours.toFixed(1)} ساعة في الليلة` : `${averageSleepHours.toFixed(1)} Stunden pro Nacht`}
+                  ? ({ german: 'Noch kein Schlaf eingetragen.', english: 'No sleep recorded yet.', turkish: 'Henüz uyku kaydı yok.', arabic: 'لم يتم تسجيل النوم بعد.' })[languageStyle]
+                  : ({ german: `${averageSleepHours.toFixed(1)} Stunden pro Nacht`, english: `${averageSleepHours.toFixed(1)} hours per night`, turkish: `Gecelik ${averageSleepHours.toFixed(1)} saat`, arabic: `${averageSleepHours.toFixed(1)} ساعة في الليلة` })[languageStyle]}
               </strong>
             </div>
             <div className="sleep-week-row">

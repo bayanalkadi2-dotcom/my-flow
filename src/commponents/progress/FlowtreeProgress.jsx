@@ -44,12 +44,20 @@ function FlowtreeProgress({
   plantedTrees = 0,
   redeemingTree = false,
   stats,
-  t,
   languageStyle = 'german',
 }) {
-  const arabic = t?.nav?.progress === 'الإحصائيات'
-  const graphCopy = arabic ? { week: 'الأسبوع', streak: 'السلسلة', day: 'اليوم', active: '7 أيام نشطة متتالية', until: '{days} أيام حتى سلسلة 7 أيام', weekdays: ['الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد'] } : null
-  const copy = arabic ? { tree: 'شجرة التدفق', yours: 'شجرة التدفق الخاصة بك', grow: 'انمُ مع كل نشاط – من أجلك ومن أجل البيئة.', points: 'نقاط النمو', until: '{points} نقطة حتى المستوى التالي', max: 'تم الوصول إلى أعلى مستوى.', checkins: 'تسجيلات الدخول', routines: 'الروتينات', streak: 'السلسلة', appTime: 'وقت التطبيق', done: 'مكتمل', completed: 'منجز', activeDays: 'أيام نشطة', total: 'إجمالي الاستخدام', stages: ['بذرة','بادرة','نبتة','شجرة','شجرة مزهرة'] } : null
+  const graphCopy = {
+    german: { week: 'Woche', streak: 'Serie', day: 'Tage', active: '7 Tage in Folge aktiv', until: '{days} Tage bis zur 7er-Serie', weekdays: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'] },
+    english: { week: 'Week', streak: 'Streak', day: 'days', active: 'Active 7 days in a row', until: '{days} days to a 7-day streak', weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+    turkish: { week: 'Hafta', streak: 'Seri', day: 'gün', active: '7 gün üst üste aktif', until: '7 günlük seriye {days} gün kaldı', weekdays: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'] },
+    arabic: { week: 'الأسبوع', streak: 'السلسلة', day: 'اليوم', active: '7 أيام نشطة متتالية', until: '{days} أيام حتى سلسلة 7 أيام', weekdays: ['الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد'] },
+  }[languageStyle]
+  const copy = {
+    german: { yours: 'Dein Flowtree', grow: 'Wachse mit jeder Aktivität – für dich und die Umwelt.', points: 'Wachstumspunkte', until: '{points} Punkte bis zur nächsten Stufe', max: 'Höchste FlowTree-Stufe erreicht.', checkins: 'Check-ins', routines: 'Routinen', streak: 'Serie', appTime: 'App-Zeit', done: 'abgeschlossen', completed: 'erledigt', activeDays: 'Tage aktiv', total: 'insgesamt genutzt', stages: ['Samen','Keimling','Pflanze','Baum','Blühender Baum'] },
+    english: { yours: 'Your Flowtree', grow: 'Grow with every activity – for yourself and the environment.', points: 'Growth points', until: '{points} points to the next level', max: 'Highest FlowTree level reached.', checkins: 'Check-ins', routines: 'Routines', streak: 'Streak', appTime: 'App time', done: 'completed', completed: 'done', activeDays: 'active days', total: 'used in total', stages: ['Seed','Sprout','Plant','Tree','Flowering tree'] },
+    turkish: { yours: 'Flowtree ağacın', grow: 'Her etkinlikle büyü – kendin ve çevre için.', points: 'Büyüme puanları', until: 'Sonraki seviyeye {points} puan kaldı', max: 'En yüksek FlowTree seviyesine ulaşıldı.', checkins: 'Kontroller', routines: 'Rutinler', streak: 'Seri', appTime: 'Uygulama süresi', done: 'tamamlandı', completed: 'tamamlandı', activeDays: 'aktif gün', total: 'toplam kullanım', stages: ['Tohum','Filiz','Bitki','Ağaç','Çiçekli ağaç'] },
+    arabic: { yours: 'شجرة التدفق الخاصة بك', grow: 'انمُ مع كل نشاط – من أجلك ومن أجل البيئة.', points: 'نقاط النمو', until: '{points} نقطة حتى المستوى التالي', max: 'تم الوصول إلى أعلى مستوى.', checkins: 'تسجيلات الدخول', routines: 'الروتينات', streak: 'السلسلة', appTime: 'وقت التطبيق', done: 'مكتمل', completed: 'منجز', activeDays: 'أيام نشطة', total: 'إجمالي الاستخدام', stages: ['بذرة','بادرة','نبتة','شجرة','شجرة مزهرة'] },
+  }[languageStyle]
   const localizedGraph = {
     german: ['Fortschritt', 'Grafischer Überblick', 'Heute', 'Tagesziele', '{done} von {total} Routinen erledigt'],
     english: ['Progress', 'Graphical overview', 'Today', 'Daily goals', '{done} of {total} routines completed'],
@@ -70,8 +78,8 @@ function FlowtreeProgress({
   const coinsUntilTree = Math.max(SUSTAINABILITY_TREE_COST - safeFlowCoins, 0)
   const sustainabilityProgress = Math.min(Math.round((safeFlowCoins / SUSTAINABILITY_TREE_COST) * 100), 100)
   const statusMessage = nextLevel
-    ? (copy ? copy.until.replace('{points}', pointsToNextLevel) : `${pointsToNextLevel} Punkte bis ${nextLevel.name}`)
-    : (copy?.max ?? 'Höchste FlowTree-Stufe erreicht.')
+    ? copy.until.replace('{points}', pointsToNextLevel)
+    : copy.max
   const pointsRangeText = nextLevel ? `${animatedGrowthPoints} / ${nextLevelPoints}` : `${animatedGrowthPoints}`
   const statCards = [
     { icon: '✓', label: copy?.checkins ?? 'Check-ins', value: stats.checkIns, note: copy?.done ?? 'abgeschlossen' },
