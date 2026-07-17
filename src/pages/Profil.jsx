@@ -12,7 +12,7 @@ import iconReminders from '../assets/settings-icons/reminders.png'
 import iconSubscription from '../assets/settings-icons/subscription.png'
 import iconWeight from '../assets/settings-icons/weight.png'
 import { calculateChallengePoints } from '../utils/progressLevels'
-import { updateProfile, uploadProfileAvatar } from '../services/authService'
+import { updateProfile, updateUserSettings, uploadProfileAvatar } from '../services/authService'
 import PwaInstallOption from '../commponents/PwaInstallOption'
 import AuthDesignPicker from '../commponents/AuthDesignPicker'
 import {
@@ -232,7 +232,7 @@ function Profil({
   const [ageError, setAgeError] = useState('')
   const [measurementErrors, setMeasurementErrors] = useState({ weight: '', height: '' })
   const [gender, setGender] = useState(profile?.gender || 'male')
-  const [reminders, setReminders] = useState(true)
+  const [reminders, setReminders] = useState(() => localStorage.getItem('myflow-reminders-enabled') !== 'false')
   const [age, setAge] = useState(Number(profile?.age) || 0)
   const [weight, setWeight] = useState(Number(storedWeight) || 0)
   const [height, setHeight] = useState(Number(storedHeight) || 175)
@@ -334,6 +334,11 @@ function Profil({
   function selectTreeType(nextTreeType) {
     setTreeType(nextTreeType)
     localStorage.setItem('myflow-tree-type', nextTreeType)
+    if (user?.id) {
+      updateUserSettings(user.id, { tree_type: nextTreeType }).then((result) => {
+        if (!result.success) console.error('Baumart konnte nicht gespeichert werden:', result.error)
+      })
+    }
   }
 
   async function savePersonalDetails(updates) {
@@ -431,6 +436,8 @@ function Profil({
       }
       case 'reminders':
         setReminders(draftSettings.reminders)
+        localStorage.setItem('myflow-reminders-enabled', String(draftSettings.reminders))
+        if (user?.id) updateUserSettings(user.id, { notifications_enabled: draftSettings.reminders })
         break
       case 'language':
         onSelectStyle(draftSettings.languageStyle)

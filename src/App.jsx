@@ -256,13 +256,23 @@ function App() {
         const settingsRes = await getUserSettings(user.id)
         const savedTheme = localStorage.getItem(getThemeStorageKey(user.id))
         const savedColor = localStorage.getItem(getColorThemeStorageKey(user.id))
-        setAppColor(savedColor || 'Lila')
         if (settingsRes.success && settingsRes.settings) {
           setLanguageStyle(settingsRes.settings.language_style || 'german')
           setCommunicationStyle(settingsRes.settings.communication_style || 'casual')
-          setAppTheme(savedTheme || settingsRes.settings.theme || 'Hell')
+          const syncedTheme = settingsRes.settings.theme || savedTheme || 'Hell'
+          const syncedColor = settingsRes.settings.color_theme || savedColor || 'Lila'
+          const syncedTreeType = settingsRes.settings.tree_type || 'oak'
+          const syncedReminders = settingsRes.settings.notifications_enabled !== false
+          setAppTheme(syncedTheme)
+          setAppColor(syncedColor)
+          localStorage.setItem(getThemeStorageKey(user.id), syncedTheme)
+          localStorage.setItem(getColorThemeStorageKey(user.id), syncedColor)
+          localStorage.setItem('myflow-last-color-theme', syncedColor)
+          localStorage.setItem('myflow-tree-type', syncedTreeType)
+          localStorage.setItem('myflow-reminders-enabled', String(syncedReminders))
         } else {
           setAppTheme(savedTheme || 'Hell')
+          setAppColor(savedColor || 'Lila')
         }
 
         // Load routines
@@ -708,6 +718,11 @@ function App() {
     localStorage.setItem('myflow-last-color-theme', color)
     localStorage.setItem('myflow-last-display-mode', mode)
     handleAppThemeChange(mode)
+    if (isAuthenticated && user) {
+      import('./services/authService').then(({ updateUserSettings }) => (
+        updateUserSettings(user.id, { color_theme: color, theme: mode })
+      )).catch((err) => console.error('Fehler beim Speichern des Designs:', err))
+    }
   }
 
   async function handleGuestSetupComplete(answers) {

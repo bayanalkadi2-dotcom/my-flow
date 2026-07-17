@@ -169,6 +169,8 @@ CREATE TABLE IF NOT EXISTS public.user_settings (
   language_style VARCHAR(50) DEFAULT 'german',
   communication_style VARCHAR(50) DEFAULT 'casual',
   theme VARCHAR(50) DEFAULT 'Hell',
+  color_theme VARCHAR(50) DEFAULT 'Lila',
+  tree_type VARCHAR(50) DEFAULT 'oak',
   notifications_enabled BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
