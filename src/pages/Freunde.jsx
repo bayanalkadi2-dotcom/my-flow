@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { getFlowtreeLevel } from '../data/flowtreeLevels'
 import {
   challengeTemplates,
@@ -40,7 +41,7 @@ function FriendProfileModal({ friend, onClose }) {
     ? new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' }).format(new Date(friend.since))
     : null
 
-  return (
+  return createPortal(
     <div className="social-modal-backdrop" role="presentation" onMouseDown={onClose}>
       <section className="social-modal friend-profile-modal" role="dialog" aria-modal="true" aria-labelledby="friend-profile-title" onMouseDown={(event) => event.stopPropagation()}>
         <button className="social-modal-close" type="button" aria-label="Schließen" onClick={onClose}>×</button>
@@ -52,7 +53,8 @@ function FriendProfileModal({ friend, onClose }) {
           <article><span>Gesammelte Punkte</span><strong>{friend.points}</strong><small>Flow-Punkte</small></article>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
