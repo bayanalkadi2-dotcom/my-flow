@@ -484,21 +484,39 @@ function App() {
     const nextDone = !selectedHabit.done
     const nextCurrent = nextDone ? selectedHabit.target : 0
     const nextProgress = nextDone ? 100 : 0
+    const progressDate = getLocalDateKey()
     pendingRoutineCompletionsRef.current.add(selectedHabit.id)
+
+    // React immediately to the tap. Database latency or an unavailable RPC must
+    // never make the status control appear broken.
+    setRoutineItems((current) => current.map((habit) => (
+      habit.id === selectedHabit.id
+        ? { ...habit, done: nextDone, current: nextCurrent, progress: nextProgress, progress_date: progressDate }
+        : habit
+    )))
+    if (nextDone) addCheckin({ routineId: selectedHabit.id, title: selectedHabit.title, points: 10 })
+    else removeCheckin(selectedHabit.id)
+
     try {
       const result = isAuthenticated && user
-        ? await setRoutineCompletion(selectedHabit.id, getLocalDateKey(), nextDone, 10)
+        ? await setRoutineCompletion(selectedHabit.id, progressDate, nextDone, 10)
         : null
-      if (nextDone) addCheckin({ routineId: selectedHabit.id, title: selectedHabit.title, points: 10 })
-      else removeCheckin(selectedHabit.id)
-      setRoutineItems((current) => current.map((habit) => (
-        habit.id === selectedHabit.id
-          ? { ...habit, done: nextDone, current: nextCurrent, progress: nextProgress, progress_date: getLocalDateKey() }
-          : habit
-      )))
       if (result) window.dispatchEvent(new CustomEvent('myflow:flowtree-points', { detail: result.growth_points }))
     } catch (error) {
       console.error('Routine und FlowTree-Punkte konnten nicht atomar aktualisiert werden:', error)
+      // Compatibility fallback for installations where the newer atomic
+      // database function has not been installed yet.
+      if (isAuthenticated && user) {
+        const fallback = await updateRoutine(selectedHabit.id, user.id, {
+          current: nextCurrent,
+          progress: nextProgress,
+          done: nextDone,
+          progress_date: progressDate,
+        })
+        if (!fallback.success) {
+          console.error('Routine konnte auch über den Ersatzweg nicht gespeichert werden:', fallback.error)
+        }
+      }
     } finally {
       pendingRoutineCompletionsRef.current.delete(selectedHabit.id)
     }
