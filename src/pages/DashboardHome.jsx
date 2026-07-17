@@ -5,6 +5,7 @@ import { useCheckins } from '../context/checkinContextValue'
 import { flowtreeLevels } from '../data/flowtreeLevels'
 import { getDailyThought } from '../data/dailyThoughts'
 import { getUserCheckIns } from '../services/checkInService'
+import { getFlowCoinProfile } from '../services/coinService'
 import { calculateDailyRoutineProgress } from '../utils/dailyRoutineProgress'
 import { calculateFlowtreeStats } from '../utils/flowtreeStats'
 import { getLocalDateKey } from '../utils/checkins'
@@ -57,6 +58,7 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
   const { checkins: localCheckIns } = useCheckins()
   const [checkIns, setCheckIns] = useState([])
   const [checkInsLoading, setCheckInsLoading] = useState(true)
+  const [durableGrowthPoints, setDurableGrowthPoints] = useState(null)
   const dailyProgress = calculateDailyRoutineProgress(habits)
   const mergedCheckIns = useMemo(() => {
     const merged = new Map()
@@ -67,8 +69,8 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
     return [...merged.values()]
   }, [checkIns, localCheckIns])
   const flowtreeStats = useMemo(() => (
-    calculateFlowtreeStats({ routines: habits, checkIns: mergedCheckIns })
-  ), [habits, mergedCheckIns])
+    calculateFlowtreeStats({ routines: habits, checkIns: mergedCheckIns, growthPoints: durableGrowthPoints })
+  ), [durableGrowthPoints, habits, mergedCheckIns])
   const flowtree = flowtreeStats.flowtree
   const currentLevel = flowtree.currentLevel
   const treeType = localStorage.getItem('myflow-tree-type') || 'oak'
@@ -117,6 +119,19 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
     window.addEventListener('focus', loadCheckIns)
     return () => window.removeEventListener('focus', loadCheckIns)
   }, [loadCheckIns])
+
+  useEffect(() => {
+    let cancelled = false
+    getFlowCoinProfile().then((profile) => {
+      if (!cancelled) setDurableGrowthPoints(profile.growth_points)
+    }).catch((error) => console.error('FlowTree-Punkte konnten nicht geladen werden:', error))
+    const updatePoints = (event) => setDurableGrowthPoints(Math.max(Number(event.detail) || 0, 0))
+    window.addEventListener('myflow:flowtree-points', updatePoints)
+    return () => {
+      cancelled = true
+      window.removeEventListener('myflow:flowtree-points', updatePoints)
+    }
+  }, [])
 
   return (
     <section className="screen home-screen">

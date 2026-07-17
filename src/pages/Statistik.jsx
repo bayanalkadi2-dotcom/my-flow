@@ -9,7 +9,6 @@ import {
   awardFlowCoinEvents,
   getFlowCoinProfile,
   redeemSupportedTree,
-  syncFlowtreeProgress,
 } from '../services/coinService'
 import { getSleepEntries, saveSleepEntry } from '../services/sleepService'
 import { calculateFlowtreeStats } from '../utils/flowtreeStats'
@@ -174,7 +173,6 @@ function Statistik({ habits = [], t }) {
   const { personalizedTexts } = useProfile()
   const { checkins: localCheckIns } = useCheckins()
   const lastCoinSyncKeyRef = useRef('')
-  const lastGrowthSyncKeyRef = useRef('')
   const [checkIns, setCheckIns] = useState([])
   const [checkInsLoading, setCheckInsLoading] = useState(true)
   const [checkInsError, setCheckInsError] = useState('')
@@ -221,9 +219,9 @@ function Statistik({ habits = [], t }) {
     return [...merged.values()]
   }, [checkIns, localCheckIns])
   const stats = useMemo(() => ({
-    ...calculateFlowtreeStats({ routines: habits, checkIns: mergedCheckIns }),
+    ...calculateFlowtreeStats({ routines: habits, checkIns: mergedCheckIns, growthPoints: coinProfile.growth_points }),
     usageTime: formatUsageTime(usageTimeMs),
-  }), [habits, mergedCheckIns, usageTimeMs])
+  }), [coinProfile.growth_points, habits, mergedCheckIns, usageTimeMs])
   const flowCoinEvents = useMemo(() => buildFlowCoinEvents({
     checkIns: mergedCheckIns,
     routines: habits,
@@ -343,34 +341,13 @@ function Statistik({ habits = [], t }) {
   }, [checkInsLoading, flowCoinEvents, sleepLoading])
 
   useEffect(() => {
-    if (checkInsLoading) return
-
-    const syncKey = `${stats.growthPoints}:${stats.flowtree.currentLevel.id}`
-    if (lastGrowthSyncKeyRef.current === syncKey) return
-    lastGrowthSyncKeyRef.current = syncKey
-
-    let cancelled = false
-
-    async function syncGrowthProgress() {
-      try {
-        const profile = await syncFlowtreeProgress({
-          growthPoints: stats.growthPoints,
-          currentLevel: stats.flowtree.currentLevel.id,
-        })
-        if (!cancelled) {
-          setCoinProfile(profile)
-          setCoinError('')
-        }
-      } catch (error) {
-        console.error('FlowTree-Fortschritt konnte nicht synchronisiert werden:', error)
-      }
-    }
-
-    syncGrowthProgress()
-    return () => {
-      cancelled = true
-    }
-  }, [checkInsLoading, stats.flowtree.currentLevel.id, stats.growthPoints])
+    const updatePoints = (event) => setCoinProfile((current) => ({
+      ...current,
+      growth_points: Math.max(Number(event.detail) || 0, 0),
+    }))
+    window.addEventListener('myflow:flowtree-points', updatePoints)
+    return () => window.removeEventListener('myflow:flowtree-points', updatePoints)
+  }, [])
 
   useEffect(() => {
     function handleFocus() {

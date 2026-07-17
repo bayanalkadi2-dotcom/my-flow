@@ -95,6 +95,15 @@ export async function getFlowCoinProfile() {
   return getOwnCoinProfile(user.id)
 }
 
+export async function getFlowtreeGrowthPoints() {
+  const { data, error } = await supabase.rpc('get_flowtree_growth_points')
+  if (error) {
+    logCoinError(error, 'growth point total', {})
+    throw error
+  }
+  return Math.max(Number(data) || 0, 0)
+}
+
 export async function syncFlowtreeProgress({ growthPoints = 0, currentLevel = 'seed' } = {}) {
   const user = await getAuthenticatedUser()
   return updateOwnCoinProfile(user.id, {

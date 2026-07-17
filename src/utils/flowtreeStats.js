@@ -76,17 +76,19 @@ function getWeekOverview(activityDates) {
   })
 }
 
-export function calculateFlowtreeStats({ routines = [], checkIns = [] } = {}) {
+export function calculateFlowtreeStats({ routines = [], checkIns = [], growthPoints } = {}) {
   const dailyProgress = calculateDailyRoutineProgress(routines)
   const completedRoutines = dailyProgress.completed
   const activityDates = getActivityDates(routines, checkIns)
   const week = getWeekOverview(activityDates)
   const activeDays = week.filter((day) => day.active)
-  const growthPoints = calculateGrowthPoints({ routines, checkIns })
-  const flowtree = getFlowtreeProgress(growthPoints)
+  const resolvedGrowthPoints = growthPoints == null
+    ? calculateGrowthPoints({ routines, checkIns })
+    : Math.max(Number(growthPoints) || 0, 0)
+  const flowtree = getFlowtreeProgress(resolvedGrowthPoints)
 
   return {
-    growthPoints,
+    growthPoints: resolvedGrowthPoints,
     checkIns: checkIns.length,
     completedRoutines,
     dailyGoalProgress: dailyProgress.percent,

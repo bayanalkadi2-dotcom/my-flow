@@ -2,15 +2,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   from: vi.fn(),
+  rpc: vi.fn(),
 }))
 
 vi.mock('../../lib/supabase', () => ({
   supabase: {
     from: mocks.from,
+    rpc: mocks.rpc,
   },
 }))
 
-const { createRoutine, deleteRoutine, getRoutines } = await import('../../services/routineService')
+const { createRoutine, deleteRoutine, getRoutines, setRoutineCompletion } = await import('../../services/routineService')
 
 describe('routineService', () => {
   beforeEach(() => {
@@ -55,5 +57,29 @@ describe('routineService', () => {
     await expect(deleteRoutine('routine-1', 'user-1')).resolves.toEqual({ success: true })
     expect(update).toHaveBeenCalledWith({ deleted_at: expect.any(String) })
     expect(secondEq).toHaveBeenCalledWith('id', 'routine-1')
+  })
+
+  it('uses the atomic completion RPC with a local calendar date and ten points', async () => {
+    mocks.rpc.mockResolvedValue({ data: { completed: true, growth_points: 10 }, error: null })
+
+    await expect(setRoutineCompletion('routine-1', '2026-07-17', true, 10)).resolves.toEqual({
+      completed: true,
+      growth_points: 10,
+    })
+    expect(mocks.rpc).toHaveBeenCalledWith('set_routine_completion', {
+      p_routine_id: 'routine-1',
+      p_progress_date: '2026-07-17',
+      p_completed: true,
+      p_points: 10,
+      p_period: null,
+    })
+  })
+
+  it('uses the same atomic RPC to remove completion and its points', async () => {
+    mocks.rpc.mockResolvedValue({ data: { completed: false, growth_points: 0 }, error: null })
+    await expect(setRoutineCompletion('routine-1', '2026-07-17', false, 10)).resolves.toMatchObject({
+      completed: false,
+      growth_points: 0,
+    })
   })
 })

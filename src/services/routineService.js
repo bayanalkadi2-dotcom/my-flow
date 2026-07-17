@@ -17,6 +17,30 @@ export async function getRoutines(userId) {
   }
 }
 
+export async function getRoutineProgressForDate(userId, progressDate) {
+  const { data, error } = await supabase
+    .from('routine_progress')
+    .select('routine_id, progress_date, status, completed_at')
+    .eq('user_id', userId)
+    .eq('progress_date', progressDate)
+
+  if (error) throw error
+  return data || []
+}
+
+export async function setRoutineCompletion(routineId, progressDate, completed, points = 10, period = null) {
+  const { data, error } = await supabase.rpc('set_routine_completion', {
+    p_routine_id: routineId,
+    p_progress_date: progressDate,
+    p_completed: completed,
+    p_points: points,
+    p_period: period,
+  })
+
+  if (error) throw error
+  return data
+}
+
 export async function createRoutine(userId, routineData) {
   try {
     const { data, error } = await supabase
