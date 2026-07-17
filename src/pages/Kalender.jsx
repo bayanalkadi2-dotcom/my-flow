@@ -185,15 +185,23 @@ function MenuIcon() {
 }
 
 function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
-  const arabic = languageStyle === 'arabic'
-  const ar = arabic ? {
-    title: 'اليوميات', filter: 'اختيار التصفية', show: 'عرض', daily: 'المواعيد اليومية', addEvent: 'إضافة موعد لليوم', note: 'ملاحظة اليوم', addNote: 'إضافة ملاحظة لليوم', images: 'صور اليوم', addImages: 'إضافة صور لليوم', optional: 'اختياري', filters: { all: 'الكل', today: 'اليوم', notes: 'ملاحظات', images: 'صور', tasks: 'مواعيد' }, months: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'], weekdays: ['الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد']
-  } : null
+  const ar = {
+    german: { title: 'Tagebuch', filter: 'Filter auswählen', show: 'Zeige', daily: 'Tägliche Termine', addEvent: 'Termin zum Tag hinzufügen', note: 'Notiz zum Tag', addNote: 'Notiz zum Tag hinzufügen', images: 'Bilder zum Tag', addImages: 'Bilder zum Tag hinzufügen', optional: 'Optional', saved: 'Gespeichert', filters: { all: 'Alle', today: 'Heute', notes: 'Notizen', images: 'Bilder', tasks: 'Termine' }, months: monthNames, weekdays },
+    english: { title: 'Journal', filter: 'Select filter', show: 'Show', daily: 'Daily appointments', addEvent: 'Add appointment to the day', note: 'Note for the day', addNote: 'Add note for the day', images: 'Images for the day', addImages: 'Add images for the day', optional: 'Optional', saved: 'Saved', filters: { all: 'All', today: 'Today', notes: 'Notes', images: 'Images', tasks: 'Appointments' }, months: ['January','February','March','April','May','June','July','August','September','October','November','December'], weekdays: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
+    turkish: { title: 'Günlük', filter: 'Filtre seç', show: 'Göster', daily: 'Günlük randevular', addEvent: 'Güne randevu ekle', note: 'Günün notu', addNote: 'Güne not ekle', images: 'Günün resimleri', addImages: 'Güne resim ekle', optional: 'İsteğe bağlı', saved: 'Kaydedildi', filters: { all: 'Tümü', today: 'Bugün', notes: 'Notlar', images: 'Resimler', tasks: 'Randevular' }, months: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'], weekdays: ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'] },
+    arabic: { title: 'اليوميات', filter: 'اختيار التصفية', show: 'عرض', daily: 'المواعيد اليومية', addEvent: 'إضافة موعد لليوم', note: 'ملاحظة اليوم', addNote: 'إضافة ملاحظة لليوم', images: 'صور اليوم', addImages: 'إضافة صور لليوم', optional: 'اختياري', saved: 'محفوظ', filters: { all: 'الكل', today: 'اليوم', notes: 'ملاحظات', images: 'صور', tasks: 'مواعيد' }, months: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'], weekdays: ['الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد'] },
+  }[languageStyle]
   const calendarUi = {
     german: { overview: 'Monatsübersicht', allMonths: 'Alle Monate', closeOverview: 'Monatsübersicht schließen', time: 'Uhrzeit', type: 'Art', event: 'Termin', placeholder: 'z. B. Arzttermin, Lernen, Wasser trinken', repeat: 'Wiederholung', cancel: 'Abbrechen', add: 'Termin hinzufügen', types: ['Morgenroutine','Sport','Wasser trinken','Lernen','Dankbarkeit'], repeats: ['Einmalig','Täglich','Wöchentlich','Monatlich'] },
     english: { overview: 'Monthly overview', allMonths: 'All months', closeOverview: 'Close monthly overview', time: 'Time', type: 'Type', event: 'Appointment', placeholder: 'e.g. doctor appointment, studying, drinking water', repeat: 'Repeat', cancel: 'Cancel', add: 'Add appointment', types: ['Morning routine','Exercise','Drink water','Study','Gratitude'], repeats: ['Once','Daily','Weekly','Monthly'] },
     turkish: { overview: 'Aylık genel bakış', allMonths: 'Tüm aylar', closeOverview: 'Aylık genel bakışı kapat', time: 'Saat', type: 'Tür', event: 'Randevu', placeholder: 'örn. doktor randevusu, ders çalışma, su içme', repeat: 'Tekrar', cancel: 'İptal', add: 'Randevu ekle', types: ['Sabah rutini','Spor','Su içme','Ders çalışma','Minnettarlık'], repeats: ['Bir kez','Günlük','Haftalık','Aylık'] },
     arabic: { overview: 'نظرة عامة شهرية', allMonths: 'جميع الأشهر', closeOverview: 'إغلاق النظرة الشهرية', time: 'الوقت', type: 'النوع', event: 'الموعد', placeholder: 'مثلا: موعد طبيب، دراسة، شرب الماء', repeat: 'التكرار', cancel: 'إلغاء', add: 'إضافة موعد', types: ['روتين الصباح','رياضة','شرب الماء','الدراسة','الامتنان'], repeats: ['مرة واحدة','يوميا','أسبوعيا','شهريا'] },
+  }[languageStyle]
+  const calendarExtra = {
+    german: { filterAria: 'Tagebuch-Filter', results: 'im Tagebuch', empty: 'Noch nichts gefunden', emptyText: 'Speichere zuerst einen passenden Eintrag, dann erscheint er hier als Liste.', week: 'Wochenübersicht', previous: 'Vorherige Woche', next: 'Nächste Woche', removeImage: 'Bild {number} entfernen', nothing: 'Noch nichts geplant' },
+    english: { filterAria: 'Journal filters', results: 'in the journal', empty: 'Nothing found yet', emptyText: 'Save a matching entry first, then it will appear here as a list.', week: 'Weekly overview', previous: 'Previous week', next: 'Next week', removeImage: 'Remove image {number}', nothing: 'Nothing planned yet' },
+    turkish: { filterAria: 'Günlük filtreleri', results: 'günlükte', empty: 'Henüz bir şey bulunamadı', emptyText: 'Önce uygun bir kayıt kaydet; daha sonra burada liste olarak görünür.', week: 'Haftalık genel bakış', previous: 'Önceki hafta', next: 'Sonraki hafta', removeImage: '{number}. resmi kaldır', nothing: 'Henüz bir şey planlanmadı' },
+    arabic: { filterAria: 'فلاتر اليوميات', results: 'في اليوميات', empty: 'لم يتم العثور على شيء بعد', emptyText: 'احفظ إدخالا مناسبا أولا، ثم سيظهر هنا كقائمة.', week: 'نظرة أسبوعية', previous: 'الأسبوع السابق', next: 'الأسبوع التالي', removeImage: 'إزالة الصورة {number}', nothing: 'لم يتم التخطيط لشيء بعد' },
   }[languageStyle]
   const { checkins } = useCheckins()
   const today = useMemo(() => {
@@ -410,7 +418,7 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
       </header>
 
       {showFilterMenu && (
-        <section className="diary-filter-menu" aria-label="Tagebuch Filter">
+        <section className="diary-filter-menu" aria-label={calendarExtra.filterAria}>
           <div className="diary-filter-backdrop" onClick={() => setShowFilterMenu(false)} />
           <div className="diary-filter-sheet">
             <div className="calendar-section-title">
@@ -435,7 +443,7 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
       )}
 
       {showFilterResults && (
-        <section className="diary-filter-results" aria-label={`${activeFilterLabel} im Tagebuch`}>
+        <section className="diary-filter-results" aria-label={`${activeFilterLabel} ${calendarExtra.results}`}>
           <div className="diary-filter-results-header">
             <div>
               <span>Gefilterte Tage</span>
@@ -464,8 +472,8 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
               ))
             ) : (
               <div className="diary-filter-empty">
-                <strong>Noch nichts gefunden</strong>
-                <p>Speichere zuerst einen passenden Eintrag, dann erscheint er hier als Liste.</p>
+                <strong>{calendarExtra.empty}</strong>
+                <p>{calendarExtra.emptyText}</p>
               </div>
             )}
           </div>
@@ -521,13 +529,13 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
         </section>
       )}
 
-      <section className="calendar-date-card" aria-label="Wochenuebersicht">
+      <section className="calendar-date-card" aria-label={calendarExtra.week}>
         <div className="calendar-month-card">
-        <button type="button" onClick={() => changeWeek(-1)} aria-label="Vorherige Woche">
+        <button type="button" onClick={() => changeWeek(-1)} aria-label={calendarExtra.previous}>
           ⬹
         </button>
         <strong>{(ar?.months ?? monthNames)[selectedDate.getMonth()]} {selectedDate.getFullYear()}</strong>
-        <button type="button" onClick={() => changeWeek(1)} aria-label="Nächste Woche">
+        <button type="button" onClick={() => changeWeek(1)} aria-label={calendarExtra.next}>
           ⬺
         </button>
         </div>
@@ -628,14 +636,14 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
           {selectedEvents.length === 0 && selectedCheckins.length === 0 && (
             <div className="diary-task-empty" aria-live="polite">
               <span>↺</span>
-              <strong>Termin hinzufügen</strong>
+              <strong>{calendarUi.add}</strong>
             </div>
           )}
         </div>
 
         <div className="calendar-section-title">
           <span>{ar?.note ?? 'Notiz zum Tag'}</span>
-          <small>{selectedNote.trim() || selectedImages.length ? (arabic ? 'محفوظ' : 'Gespeichert') : (ar?.optional ?? 'Optional')}</small>
+          <small>{selectedNote.trim() || selectedImages.length ? ar.saved : ar.optional}</small>
         </div>
         <button
           className="diary-add-row note"
@@ -664,7 +672,7 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
           {selectedImages.map((image, index) => (
             <figure className="diary-image-card" key={`${image.slice(0, 24)}-${index}`}>
               <img src={image} alt={`Tagesbild ${index + 1}`} />
-              <button type="button" onClick={() => removeImage(index)} aria-label={`Bild ${index + 1} entfernen`}>×</button>
+              <button type="button" onClick={() => removeImage(index)} aria-label={calendarExtra.removeImage.replace('{number}', index + 1)}>×</button>
             </figure>
           ))}
           {selectedImages.length < 3 && (
@@ -731,14 +739,14 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
             </>
           ) : (
             <div className="calendar-empty-state">
-              <strong>Noch nichts geplant</strong>
+              <strong>{calendarExtra.nothing}</strong>
               <p>Füge über den Plus-Button Gewohnheiten und Erinnerungen für diesen Tag hinzu.</p>
             </div>
           )}
         </div>
       </section>
 
-      <button className="calendar-fab" type="button" onClick={() => setShowForm(true)} aria-label="Termin hinzufügen">
+      <button className="calendar-fab" type="button" onClick={() => setShowForm(true)} aria-label={calendarUi.add}>
         +
       </button>
     </section>

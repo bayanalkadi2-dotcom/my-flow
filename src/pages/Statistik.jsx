@@ -170,8 +170,13 @@ function buildFlowCoinEvents({ checkIns = [], routines = [], stats }) {
 }
 
 function Statistik({ habits = [], languageStyle = 'german', t }) {
-  const arabic = t?.nav?.progress === 'الإحصائيات'
-  const sleepCopy = arabic ? { sleep: 'النوم', title: 'سجل نومك', description: 'سجل نومك وتابع عادات نومك.', bedtime: 'وقت النوم', wake: 'وقت الاستيقاظ', duration: 'كم من الوقت نمت؟', save: 'حفظ الإدخال', saving: 'جاري الحفظ …' } : null
+  const arabic = languageStyle === 'arabic'
+  const sleepCopy = {
+    german: { sleep: 'Schlaf', title: 'Trage deinen Schlaf ein', description: 'Erfasse deinen Schlaf und behalte deine Schlafgewohnheiten im Blick.', bedtime: 'Schlafenszeit', wake: 'Aufstehzeit', duration: 'Wie lange habe ich geschlafen?', save: 'Eintrag speichern', saving: 'Wird gespeichert …' },
+    english: { sleep: 'Sleep', title: 'Record your sleep', description: 'Record your sleep and keep track of your sleeping habits.', bedtime: 'Bedtime', wake: 'Wake-up time', duration: 'How long did I sleep?', save: 'Save entry', saving: 'Saving…' },
+    turkish: { sleep: 'Uyku', title: 'Uykunu kaydet', description: 'Uykunu kaydet ve uyku alışkanlıklarını takip et.', bedtime: 'Uyuma saati', wake: 'Uyanma saati', duration: 'Ne kadar uyudum?', save: 'Kaydı kaydet', saving: 'Kaydediliyor…' },
+    arabic: { sleep: 'النوم', title: 'سجل نومك', description: 'سجل نومك وتابع عادات نومك.', bedtime: 'وقت النوم', wake: 'وقت الاستيقاظ', duration: 'كم من الوقت نمت؟', save: 'حفظ الإدخال', saving: 'جاري الحفظ …' },
+  }[languageStyle]
   const { personalizedTexts } = useProfile()
   const { checkins: localCheckIns } = useCheckins()
   const lastCoinSyncKeyRef = useRef('')

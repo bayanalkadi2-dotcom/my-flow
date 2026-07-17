@@ -86,7 +86,7 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
   const visibleDailyRoutine = formatProfileList(accountProfile.dailyRoutine)
   const todayNote = String(calendarNotes[getLocalDateKey()] || '').trim()
   const hasProfileDetails = visibleGoals.length > 0 || visibleDailyRoutine.length > 0
-  const todayThought = t.dashboard.flowTreeName ? t.dashboard.thoughtText : getDailyThought()
+  const todayThought = t.dashboard.thoughtText ?? getDailyThought()
   const loadCheckIns = useCallback(async () => {
     setCheckInsLoading(true)
 
