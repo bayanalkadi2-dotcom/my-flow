@@ -27,8 +27,8 @@ jobs:
       - run: npm run build
         env:
           VITE_PUBLIC_BASE: /my-flow/
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: https://hworkwmyndeofwwldgzs.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_1toOmzVdmd3Xtc00p2z6Pw_pbDJuBsH
       - uses: actions/configure-pages@v5
         with:
           enablement: true
