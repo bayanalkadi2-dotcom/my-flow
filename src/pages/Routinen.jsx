@@ -2,6 +2,7 @@ import { useState } from 'react'
 import HabitCard from '../commponents/HabitCard'
 import { useProfile } from '../context/profileContextValue'
 import { translateCategory, translateHabitTitle } from '../i18n'
+import { filterRoutinesForGender } from '../utils/routineVisibility'
 
 const routineCategories = [
   {
@@ -64,7 +65,7 @@ function getCategoryDesign(title) {
   }
 }
 
-function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement, onResetProgress, onSaveDailyEntry, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
+function Routinen({ habits, gender, languageStyle, onAddHabit, onIncrement, onDecrement, onResetProgress, onSaveDailyEntry, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
   const { routineSuggestions } = useProfile()
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('4')
@@ -76,7 +77,11 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
   const availableCategories = [
     { title: 'Für dich', routines: routineSuggestions },
     ...routineCategories,
-  ]
+  ].map((category) => ({
+    ...category,
+    routines: filterRoutinesForGender(category.routines, gender),
+  }))
+  const visibleHabits = filterRoutinesForGender(habits, gender)
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -241,13 +246,13 @@ function Routinen({ habits, languageStyle, onAddHabit, onIncrement, onDecrement,
       )}
 
       <div className="habit-list">
-        {habits.length === 0 && (
+        {visibleHabits.length === 0 && (
           <div className="routines-empty-state">
             <strong>Du hast noch keine Routinen hinzugefügt.</strong>
             <p>Tippe auf das Plus, um eine neue Routine auszuwählen.</p>
           </div>
         )}
-        {habits.map((habit) => (
+        {visibleHabits.map((habit) => (
           <HabitCard
             habit={habit}
             key={habit.id}

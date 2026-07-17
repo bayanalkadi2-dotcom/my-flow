@@ -11,6 +11,10 @@ import { loadCalendarNotes, saveCalendarNotes } from './utils/calendarNotes'
 import { getLocalDateKey } from './utils/checkins'
 import { writeCachedProfile } from './utils/profileCache'
 import { calculateRoutineProgress, getRoutineCredits, getRoutineProgress } from './utils/routineProgress'
+import {
+  canDisplayRoutineForGender,
+  filterRoutinesForGender,
+} from './utils/routineVisibility'
 import DashboardHome from './pages/DashboardHome'
 import DailyCheckIn from './commponents/checkin/DailyCheckIn'
 import Datenschutz from './pages/Datenschutz'
@@ -194,6 +198,8 @@ function App() {
   const accountMenuRef = useRef(null)
   const currentDayRef = useRef(getLocalDateKey())
   const resolvedProfileName = profile?.display_name || profileName
+  const routineGender =
+    profile?.gender ?? (!isAuthenticated && guestSetup.completed ? guestSetup.gender : null)
 
   function saveRoutinePointsBeforeReset(routine, fallbackDateKey = currentDayRef.current) {
     const progressPoints = getRoutineCredits(routine)
@@ -339,8 +345,9 @@ function App() {
   const profileInitial = (resolvedProfileName || 'Gast').trim().charAt(0).toUpperCase() || 'G'
   const profileImage = profile?.avatar_url || localStorage.getItem('myflow-profile-image') || ''
   const preparedHabits = useMemo(
-    () => routineItems.map((habit) => translateHabit(prepareRoutineData(habit), languageStyle)),
-    [languageStyle, routineItems],
+    () => filterRoutinesForGender(routineItems, routineGender)
+      .map((habit) => translateHabit(prepareRoutineData(habit), languageStyle)),
+    [languageStyle, routineGender, routineItems],
   )
 
   function handleCalendarNotesChange(nextNotes) {
@@ -353,7 +360,10 @@ function App() {
   }
 
   function addHabit(newHabit) {
-    if (isRemovedRoutine(newHabit)) {
+    if (
+      isRemovedRoutine(newHabit) ||
+      !canDisplayRoutineForGender(newHabit, routineGender)
+    ) {
       return
     }
 
@@ -869,6 +879,7 @@ function App() {
         return (
           <Routinen
             habits={preparedHabits}
+            gender={routineGender}
             languageStyle={languageStyle}
             t={t}
             translateUnit={(unit) => translateUnit(unit, languageStyle)}
