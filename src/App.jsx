@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from './context/authContextValue'
 import { useProfile } from './context/profileContextValue'
 import { useCheckins } from './context/checkinContextValue'
-import { getRoutines, updateRoutine } from './services/routineService'
+import { getRoutineProgressForDate, getRoutines, setRoutineCompletion, updateRoutine } from './services/routineService'
 import { getUserSettings, saveOnboardingProfile } from './services/authService'
 import Navbar from './commponents/Navbar'
 import { languageStyles } from './data/appData'
@@ -10,7 +10,11 @@ import { getAppTranslations, translateHabit, translateUnit } from './i18n'
 import { loadCalendarNotes, saveCalendarNotes } from './utils/calendarNotes'
 import { getLocalDateKey } from './utils/checkins'
 import { writeCachedProfile } from './utils/profileCache'
-import { calculateRoutineProgress, getRoutineCredits, getRoutineProgress } from './utils/routineProgress'
+import {
+  calculateRoutineProgress,
+  getRoutineProgress,
+} from './utils/routineProgress'
+
 import {
   canDisplayRoutineForGender,
   filterRoutinesForGender,
@@ -196,24 +200,19 @@ function App() {
   const [guestSetup, setGuestSetup] = useState(loadGuestSetup)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const accountMenuRef = useRef(null)
+  const pendingRoutineCompletionsRef = useRef(new Set())
   const currentDayRef = useRef(getLocalDateKey())
   const resolvedProfileName = profile?.display_name || profileName
   const routineGender =
     profile?.gender ?? (!isAuthenticated && guestSetup.completed ? guestSetup.gender : null)
 
-  function saveRoutinePointsBeforeReset(routine, fallbackDateKey = currentDayRef.current) {
-    const progressPoints = getRoutineCredits(routine)
-    if (progressPoints <= 0) return
+  async function persistRoutineState(routineId, updates, wasDone = false) {
+    const changesCompletion = updates.done === true || (updates.done === false && wasDone)
+    if (!changesCompletion) return updateRoutine(routineId, user.id, updates)
 
-    const date = getRoutineActivityDateKey(routine) || fallbackDateKey
-    const completionBonus = routine.done === true ? 5 : 0
-    addCheckin({
-      routineId: routine.id,
-      title: routine.title,
-      date,
-      points: progressPoints + completionBonus,
-      source: 'routine-history',
-    })
+    const result = await setRoutineCompletion(routineId, getLocalDateKey(), updates.done === true, 10, updates.period ?? null)
+    window.dispatchEvent(new CustomEvent('myflow:flowtree-points', { detail: result.growth_points }))
+    return result
   }
 
   // Load user settings and routines from Supabase
@@ -261,17 +260,23 @@ function App() {
         if (routinesRes.success) {
           const todayKey = getLocalDateKey()
           const visibleRoutines = routinesRes.routines.filter((routine) => !isRemovedRoutine(routine))
-          const resetRoutines = visibleRoutines.filter((routine) => shouldResetRoutineForToday(routine, todayKey))
-          resetRoutines.forEach((routine) => saveRoutinePointsBeforeReset(routine, getRoutineActivityDateKey(routine) || todayKey))
-          setRoutineItems(visibleRoutines.map((routine) => (
-            prepareRoutineData(shouldResetRoutineForToday(routine, todayKey) ? resetRoutineForNewDay(routine) : routine)
-          )))
-
-          resetRoutines.forEach((routine) => {
-            updateRoutine(routine.id, user.id, { current: 0, progress: 0, done: false }).catch((err) => {
-              console.error('Routine konnte nicht automatisch für den neuen Tag zurückgesetzt werden:', err)
+          const dailyProgress = await getRoutineProgressForDate(user.id, todayKey)
+          const progressByRoutine = new Map(dailyProgress.map((entry) => [entry.routine_id, entry]))
+          setRoutineItems(visibleRoutines.map((routine) => {
+            const entry = progressByRoutine.get(routine.id)
+            if (!entry) {
+              return prepareRoutineData(shouldResetRoutineForToday(routine, todayKey) ? resetRoutineForNewDay(routine) : routine)
+            }
+            const completed = entry.status === 'completed'
+            return prepareRoutineData({
+              ...routine,
+              current: completed ? routine.target : 0,
+              progress: completed ? 100 : 0,
+              done: completed,
+              progress_date: entry.progress_date,
+              completed_at: entry.completed_at,
             })
-          })
+          }))
         }
         if (!initialPasswordResetUrl) setScreen(loadLastScreen(user.id))
       } catch (err) {
@@ -297,20 +302,10 @@ function App() {
       const todayKey = getLocalDateKey()
       if (todayKey === currentDayRef.current) return
 
-      const previousDayKey = currentDayRef.current
       currentDayRef.current = todayKey
       setRoutineItems((current) => {
         const routinesToReset = current.filter((routine) => shouldResetRoutineForToday(routine, todayKey))
         if (routinesToReset.length === 0) return current
-
-        if (isAuthenticated && user) {
-          routinesToReset.forEach((routine) => {
-            saveRoutinePointsBeforeReset(routine, previousDayKey)
-            updateRoutine(routine.id, user.id, { current: 0, progress: 0, done: false }).catch((err) => {
-              console.error('Routine konnte nach Mitternacht nicht automatisch zurückgesetzt werden:', err)
-            })
-          })
-        }
 
         return current.map((routine) => (
           shouldResetRoutineForToday(routine, todayKey)
@@ -426,12 +421,9 @@ function App() {
 
         // If authenticated, save to Supabase
         if (isAuthenticated && user) {
-          (async () => {
-            const { updateRoutine } = await import('./services/routineService')
-            updateRoutine(id, user.id, { current: nextCurrent, progress, done: updated.done }).catch((err) => {
-              console.error('Fehler beim Aktualisieren der Routine:', err)
-            })
-          })()
+          persistRoutineState(id, { current: nextCurrent, progress, done: updated.done }, habit.done).catch((err) => {
+            console.error('Fehler beim Aktualisieren der Routine:', err)
+          })
         }
 
         return updated
@@ -454,12 +446,9 @@ function App() {
 
         // If authenticated, save to Supabase
         if (isAuthenticated && user) {
-          (async () => {
-            const { updateRoutine } = await import('./services/routineService')
-            updateRoutine(id, user.id, { current: nextCurrent, progress, done: false }).catch((err) => {
-              console.error('Fehler beim Aktualisieren der Routine:', err)
-            })
-          })()
+          persistRoutineState(id, { current: nextCurrent, progress, done: false }, habit.done).catch((err) => {
+            console.error('Fehler beim Aktualisieren der Routine:', err)
+          })
         }
 
         return updated
@@ -467,31 +456,28 @@ function App() {
     )
   }
 
-  function toggleHabitDone(selectedHabit) {
+  async function toggleHabitDone(selectedHabit) {
+    if (pendingRoutineCompletionsRef.current.has(selectedHabit.id)) return
     const nextDone = !selectedHabit.done
-    const nextCurrent = nextDone ? selectedHabit.target : selectedHabit.current
-    const nextProgress = nextDone ? 100 : getRoutineProgress({ ...selectedHabit, done: false, current: nextCurrent })
-    if (nextDone) {
-      addCheckin({ routineId: selectedHabit.id, title: selectedHabit.title })
-    } else {
-      removeCheckin(selectedHabit.id)
-    }
-    setRoutineItems((current) =>
-      current.map((habit) =>
+    const nextCurrent = nextDone ? selectedHabit.target : 0
+    const nextProgress = nextDone ? 100 : 0
+    pendingRoutineCompletionsRef.current.add(selectedHabit.id)
+    try {
+      const result = isAuthenticated && user
+        ? await setRoutineCompletion(selectedHabit.id, getLocalDateKey(), nextDone, 10)
+        : null
+      if (nextDone) addCheckin({ routineId: selectedHabit.id, title: selectedHabit.title, points: 10 })
+      else removeCheckin(selectedHabit.id)
+      setRoutineItems((current) => current.map((habit) => (
         habit.id === selectedHabit.id
-          ? { ...habit, done: nextDone, current: nextCurrent, progress: nextProgress }
-          : habit,
-      ),
-    )
-
-    // If authenticated, save to Supabase
-    if (isAuthenticated && user) {
-      (async () => {
-        const { updateRoutine } = await import('./services/routineService')
-        updateRoutine(selectedHabit.id, user.id, { current: nextCurrent, progress: nextProgress, done: nextDone }).catch((err) => {
-          console.error('Fehler beim Aktualisieren der Routine:', err)
-        })
-      })()
+          ? { ...habit, done: nextDone, current: nextCurrent, progress: nextProgress, progress_date: getLocalDateKey() }
+          : habit
+      )))
+      if (result) window.dispatchEvent(new CustomEvent('myflow:flowtree-points', { detail: result.growth_points }))
+    } catch (error) {
+      console.error('Routine und FlowTree-Punkte konnten nicht atomar aktualisiert werden:', error)
+    } finally {
+      pendingRoutineCompletionsRef.current.delete(selectedHabit.id)
     }
   }
 
@@ -523,7 +509,7 @@ function App() {
     )
 
     if (isAuthenticated && user) {
-      updateRoutine(id, user.id, updates).catch((err) => {
+      persistRoutineState(id, updates, currentHabit.done).catch((err) => {
         console.error('Fehler beim Speichern des Routine-Eintrags:', err)
       })
     }
@@ -570,12 +556,9 @@ function App() {
 
     // If authenticated, save to Supabase
     if (isAuthenticated && user) {
-      (async () => {
-        const { updateRoutine } = await import('./services/routineService')
-        updateRoutine(id, user.id, { period: updatedPeriod, current: Number(currentHabit?.target ?? 1), progress: 100, done: true }).catch((err) => {
-          console.error('Fehler beim Aktualisieren der Routine:', err)
-        })
-      })()
+      persistRoutineState(id, { period: updatedPeriod, current: Number(currentHabit?.target ?? 1), progress: 100, done: true }, currentHabit.done).catch((err) => {
+        console.error('Fehler beim Aktualisieren der Routine:', err)
+      })
     }
   }
 
@@ -751,7 +734,7 @@ function App() {
     )))
 
     if (isAuthenticated && user) {
-      updateRoutine(selectedHabit.id, user.id, updates).catch((err) => {
+      persistRoutineState(selectedHabit.id, updates, selectedHabit.done).catch((err) => {
         console.error('Fehler beim Aktualisieren der Routine:', err)
       })
     }
@@ -765,7 +748,7 @@ function App() {
     )))
 
     if (isAuthenticated && user) {
-      updateRoutine(selectedHabit.id, user.id, updates).catch((err) => {
+      persistRoutineState(selectedHabit.id, updates, selectedHabit.done).catch((err) => {
         console.error('Fehler beim Aktualisieren der Routine:', err)
       })
     }
