@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { getFlowtreeLevel } from '../data/flowtreeLevels'
 import {
   challengeTemplates,
   cancelFriendRequest,
@@ -28,6 +29,29 @@ function FriendAvatar({ name, src }) {
   return (
     <div className="social-avatar">
       {src ? <img src={src} alt={`Profilbild von ${name}`} /> : initials(name)}
+    </div>
+  )
+}
+
+function FriendProfileModal({ friend, onClose }) {
+  if (!friend) return null
+  const level = getFlowtreeLevel(friend.points)
+  const friendsSince = friend.since
+    ? new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' }).format(new Date(friend.since))
+    : null
+
+  return (
+    <div className="social-modal-backdrop" role="presentation" onMouseDown={onClose}>
+      <section className="social-modal friend-profile-modal" role="dialog" aria-modal="true" aria-labelledby="friend-profile-title" onMouseDown={(event) => event.stopPropagation()}>
+        <button className="social-modal-close" type="button" aria-label="Schließen" onClick={onClose}>×</button>
+        <FriendAvatar name={friend.name} src={friend.avatarUrl} />
+        <h2 id="friend-profile-title">{friend.name}</h2>
+        <p>MyFlow-Freund{friendsSince ? ` seit ${friendsSince}` : ''}</p>
+        <div className="friend-profile-stats">
+          <article><span>Flowtree-Level</span><strong>{level.name}</strong><small>Level {level.level}</small></article>
+          <article><span>Gesammelte Punkte</span><strong>{friend.points}</strong><small>Flow-Punkte</small></article>
+        </div>
+      </section>
     </div>
   )
 }
@@ -107,6 +131,7 @@ function Freunde({ profileName, user }) {
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
   const [friendModalOpen, setFriendModalOpen] = useState(false)
+  const [selectedFriend, setSelectedFriend] = useState(null)
   const [challengeModalOpen, setChallengeModalOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [friendId, setFriendId] = useState('')
@@ -247,7 +272,10 @@ function Freunde({ profileName, user }) {
             {dashboard.friends.map((friend) => (
               <article className="social-friend-card" key={friend.id}>
                 <FriendAvatar name={friend.name} src={friend.avatarUrl} />
-                <div><strong>{friend.name}</strong><span>MyFlow-Freund</span></div>
+                <button className="friend-profile-button" type="button" onClick={() => setSelectedFriend(friend)}>
+                  <strong>{friend.name}</strong>
+                  <span>Profil ansehen · {friend.points} Punkte</span>
+                </button>
                 <button
                   className="remove-friend-button"
                   type="button"
@@ -384,6 +412,8 @@ function Freunde({ profileName, user }) {
           </section>
         </div>
       )}
+
+      <FriendProfileModal friend={selectedFriend} onClose={() => setSelectedFriend(null)} />
 
       {challengeModalOpen && (
         <div className="social-modal-backdrop" role="presentation" onMouseDown={() => setChallengeModalOpen(false)}>

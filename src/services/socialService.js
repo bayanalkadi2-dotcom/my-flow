@@ -29,6 +29,10 @@ function socialProfileAvatar(profile) {
   return profile?.avatar_url?.trim() || ''
 }
 
+function socialProfilePoints(profile) {
+  return Math.max(Number(profile?.growth_points) || 0, 0)
+}
+
 export async function loadSocialDashboard(userId) {
   if (!userId) {
     return { friends: [], friendRequests: [], sentFriendRequests: [], challengeRequests: [], challenges: [] }
@@ -77,7 +81,7 @@ export async function loadSocialDashboard(userId) {
     if (error?.code === 'PGRST202') {
       const fallback = await supabase
         .from('profiles')
-        .select('id, display_name, avatar_url')
+        .select('id, display_name, avatar_url, growth_points')
         .in('id', [...profileIds])
       data = fallback.data
       error = fallback.error
@@ -97,7 +101,13 @@ export async function loadSocialDashboard(userId) {
   return {
     friends: (friendshipRows ?? []).map((row) => {
       const id = row.user_a === userId ? row.user_b : row.user_a
-      return { id, name: friendName(id), avatarUrl: friendAvatar(id), since: row.created_at }
+      return {
+        id,
+        name: friendName(id),
+        avatarUrl: friendAvatar(id),
+        points: socialProfilePoints(profileMap.get(id)),
+        since: row.created_at,
+      }
     }),
     friendRequests: (friendRequestRows ?? []).map((row) => ({
       ...row,
