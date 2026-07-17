@@ -33,8 +33,10 @@ function myFlowApiPlugin() {
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   Object.assign(process.env, loadEnv(mode, process.cwd(), ''))
+  const publicBase = process.env.VITE_PUBLIC_BASE || '/'
 
   return {
+    base: publicBase,
     plugins: [
       react(),
       myFlowApiPlugin(),
@@ -42,22 +44,22 @@ export default defineConfig(({ mode }) => {
       registerType: 'autoUpdate',
       injectRegister: false,
       manifest: {
-        id: '/',
+        id: publicBase,
         name: 'MyFlow',
         short_name: 'MyFlow',
         description: 'MyFlow begleitet Routinen, Wohlbefinden und Fortschritt im Alltag.',
         lang: 'de',
-        start_url: '/',
-        scope: '/',
+        start_url: publicBase,
+        scope: publicBase,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#f8f6ff',
         theme_color: '#8d63ff',
         categories: ['health', 'lifestyle', 'productivity'],
         icons: [
-          { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: '/pwa-maskable-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: `${publicBase}pwa-192x192.png`, sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: `${publicBase}pwa-512x512.png`, sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: `${publicBase}pwa-maskable-512x512.png`, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
@@ -65,7 +67,7 @@ export default defineConfig(({ mode }) => {
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        navigateFallback: '/index.html',
+        navigateFallback: `${publicBase}index.html`,
         navigateFallbackDenylist: [/^\/api\//, /^\/auth\//, /^\/rest\//],
       },
       devOptions: {
