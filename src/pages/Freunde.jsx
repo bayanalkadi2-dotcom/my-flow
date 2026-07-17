@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { getFlowtreeLevel } from '../data/flowtreeLevels'
+import { translateHabitTitle, translateUnit } from '../i18n'
 import {
   challengeTemplates,
   cancelFriendRequest,
@@ -34,11 +35,11 @@ function FriendAvatar({ name, src }) {
   )
 }
 
-function FriendProfileModal({ friend, onClose }) {
+function FriendProfileModal({ friend, onClose, arabic }) {
   if (!friend) return null
   const level = getFlowtreeLevel(friend.points)
   const friendsSince = friend.since
-    ? new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' }).format(new Date(friend.since))
+    ? new Intl.DateTimeFormat(arabic ? 'ar' : 'de-DE', { month: 'long', year: 'numeric' }).format(new Date(friend.since))
     : null
 
   return createPortal(
@@ -47,10 +48,10 @@ function FriendProfileModal({ friend, onClose }) {
         <button className="social-modal-close" type="button" aria-label="Schließen" onClick={onClose}>×</button>
         <FriendAvatar name={friend.name} src={friend.avatarUrl} />
         <h2 id="friend-profile-title">{friend.name}</h2>
-        <p>MyFlow-Freund{friendsSince ? ` seit ${friendsSince}` : ''}</p>
+        <p>{arabic ? `صديق MyFlow${friendsSince ? ` منذ ${friendsSince}` : ''}` : `MyFlow-Freund${friendsSince ? ` seit ${friendsSince}` : ''}`}</p>
         <div className="friend-profile-stats">
-          <article><span>Flowtree-Level</span><strong>{level.name}</strong><small>Level {level.level}</small></article>
-          <article><span>Gesammelte Punkte</span><strong>{friend.points}</strong><small>Flow-Punkte</small></article>
+          <article><span>{arabic ? 'مستوى شجرة التدفق' : 'Flowtree-Level'}</span><strong>{arabic ? 'بذرة' : level.name}</strong><small>{arabic ? 'المستوى' : 'Level'} {level.level}</small></article>
+          <article><span>{arabic ? 'النقاط المجمعة' : 'Gesammelte Punkte'}</span><strong>{friend.points}</strong><small>{arabic ? 'نقاط التدفق' : 'Flow-Punkte'}</small></article>
         </div>
       </section>
     </div>,
@@ -126,7 +127,17 @@ function EmptyState({ title, text }) {
   )
 }
 
-function Freunde({ profileName, user }) {
+function Freunde({ languageStyle = 'german', profileName, user }) {
+  const arabic = languageStyle === 'arabic'
+  let copy = arabic ? {
+    subtitle: 'ابقوا متحمسين معا', title: 'الأصدقاء والتحديات', intro: 'حققوا أهدافكم اليومية معا.', add: 'إضافة صديق', start: 'بدء تحدٍ', circle: 'دائرتك', friends: 'أصدقائي', noFriends: 'لا يوجد أصدقاء بعد', noFriendsText: 'أضف أصدقاء عبر البريد الإلكتروني وتحمسوا معا.', new: 'جديد', incoming: 'طلبات الصداقة الواردة', noRequests: 'لا توجد طلبات جديدة', noRequestsText: 'ستظهر طلبات الصداقة الجديدة هنا.', shared: 'أهداف مشتركة', running: 'التحديات الجارية', noChallenges: 'لا توجد تحديات جارية', noChallengesText: 'ابدأ تحديا مشتركا مع صديق.', loading: 'جاري التحميل …', view: 'عرض الملف', points: 'نقطة', remove: 'إزالة', accept: 'قبول', decline: 'رفض'
+  } : null
+  if (languageStyle === 'english') copy = {
+    subtitle: 'Stay motivated together', title: 'Friends & Challenges', intro: 'Reach your daily goals together.', add: 'Add friend', start: 'Start challenge', circle: 'YOUR CIRCLE', friends: 'My friends', noFriends: 'No friends yet', noFriendsText: 'Add friends by email and motivate each other.', new: 'NEW', incoming: 'Incoming friend requests', noRequests: 'No new requests', noRequestsText: 'New friend requests will appear here.', shared: 'SHARED GOALS', running: 'Active challenges', noChallenges: 'No active challenge yet', noChallengesText: 'Start a shared challenge with a friend.', loading: 'Loading…', view: 'View profile', points: 'points', remove: 'Remove', accept: 'Accept', decline: 'Decline'
+  }
+  if (languageStyle === 'turkish') copy = {
+    subtitle: 'Birlikte motive kalın', title: 'Arkadaşlar ve Meydan Okumalar', intro: 'Günlük hedeflerinize birlikte ulaşın.', add: 'Arkadaş ekle', start: 'Meydan okuma başlat', circle: 'ÇEVREN', friends: 'Arkadaşlarım', noFriends: 'Henüz arkadaş yok', noFriendsText: 'E-posta ile arkadaş ekleyin ve birbirinizi motive edin.', new: 'YENİ', incoming: 'Gelen arkadaşlık istekleri', noRequests: 'Yeni istek yok', noRequestsText: 'Yeni arkadaşlık istekleri burada görünür.', shared: 'ORTAK HEDEFLER', running: 'Devam eden meydan okumalar', noChallenges: 'Devam eden meydan okuma yok', noChallengesText: 'Bir arkadaşınla ortak bir meydan okuma başlat.', loading: 'Yükleniyor…', view: 'Profili gör', points: 'puan', remove: 'Kaldır', accept: 'Kabul et', decline: 'Reddet'
+  }
   const userId = user?.id
   const [dashboard, setDashboard] = useState(emptyDashboard)
   const [loading, setLoading] = useState(Boolean(user))
@@ -239,9 +250,9 @@ function Freunde({ profileName, user }) {
     <div className="friends-page social-friends-page">
       <header className="friends-header social-hero">
         <div>
-          <p className="friends-subtitle">Gemeinsam motiviert bleiben</p>
-          <h1>Freunde & Challenges</h1>
-          <p>Erreicht eure täglichen Ziele zusammen.</p>
+          <p className="friends-subtitle">{copy?.subtitle ?? 'Gemeinsam motiviert bleiben'}</p>
+          <h1>{copy?.title ?? 'Freunde & Challenges'}</h1>
+          <p>{copy?.intro ?? 'Erreicht eure täglichen Ziele zusammen.'}</p>
         </div>
         <div className="social-user-badge" aria-label={`Angemeldet als ${userName}`}>
           {initials(userName)}
@@ -250,10 +261,10 @@ function Freunde({ profileName, user }) {
 
       <div className="social-actions">
         <button type="button" onClick={() => { setNotice(''); setFriendModalOpen(true) }}>
-          <span>＋</span> Freund hinzufügen
+          <span>＋</span> {copy?.add ?? 'Freund hinzufügen'}
         </button>
         <button type="button" onClick={() => { setNotice(''); setChallengeModalOpen(true) }} disabled={!dashboard.friends.length}>
-          <span>⚡</span> Challenge starten
+          <span>⚡</span> {copy?.start ?? 'Challenge starten'}
         </button>
       </div>
 
@@ -266,17 +277,17 @@ function Freunde({ profileName, user }) {
 
       <section className="social-section">
         <div className="social-section-title">
-          <div><span>DEIN KREIS</span><h2>Meine Freunde</h2></div>
+          <div><span>{copy?.circle ?? 'DEIN KREIS'}</span><h2>{copy?.friends ?? 'Meine Freunde'}</h2></div>
           <b>{dashboard.friends.length}</b>
         </div>
-        {loading ? <p className="social-loading">Wird geladen …</p> : (
+        {loading ? <p className="social-loading">{copy?.loading ?? 'Wird geladen …'}</p> : (
           <div className="social-friend-grid">
             {dashboard.friends.map((friend) => (
               <article className="social-friend-card" key={friend.id}>
                 <FriendAvatar name={friend.name} src={friend.avatarUrl} />
                 <button className="friend-profile-button" type="button" onClick={() => setSelectedFriend(friend)}>
                   <strong>{friend.name}</strong>
-                  <span>Profil ansehen · {friend.points} Punkte</span>
+                  <span>{copy?.view ?? 'Profil ansehen'} · {friend.points} {copy?.points ?? 'Punkte'}</span>
                 </button>
                 <button
                   className="remove-friend-button"
@@ -291,12 +302,12 @@ function Freunde({ profileName, user }) {
                     )
                   }}
                 >
-                  Entfernen
+                  {copy?.remove ?? 'Entfernen'}
                 </button>
               </article>
             ))}
             {!dashboard.friends.length && (
-              <EmptyState title="Noch keine Freunde" text="Füge Freunde per E-Mail hinzu und motiviert euch gemeinsam." />
+              <EmptyState title={copy?.noFriends ?? 'Noch keine Freunde'} text={copy?.noFriendsText ?? 'Füge Freunde per E-Mail hinzu und motiviert euch gemeinsam.'} />
             )}
           </div>
         )}
@@ -304,7 +315,7 @@ function Freunde({ profileName, user }) {
 
       <section className="social-section">
         <div className="social-section-title">
-          <div><span>NEU</span><h2>Eingehende Freundschaftsanfragen</h2></div>
+          <div><span>{copy?.new ?? 'NEU'}</span><h2>{copy?.incoming ?? 'Eingehende Freundschaftsanfragen'}</h2></div>
           {!!dashboard.friendRequests.length && <b>{dashboard.friendRequests.length}</b>}
         </div>
         <div className="social-request-list">
@@ -313,18 +324,18 @@ function Freunde({ profileName, user }) {
               <FriendAvatar name={request.name} src={request.avatarUrl} />
               <div><strong>{request.name}</strong><span>Möchte mit dir befreundet sein</span></div>
               <div className="request-buttons">
-                <button type="button" disabled={busy} onClick={() => runAction(() => respondToFriendRequest(request.id, true), `${request.name} ist jetzt dein Freund.`)}>Annehmen</button>
-                <button type="button" disabled={busy} onClick={() => runAction(() => respondToFriendRequest(request.id, false), 'Anfrage abgelehnt.')}>Ablehnen</button>
+                <button type="button" disabled={busy} onClick={() => runAction(() => respondToFriendRequest(request.id, true), `${request.name} ist jetzt dein Freund.`)}>{copy?.accept ?? 'Annehmen'}</button>
+                <button type="button" disabled={busy} onClick={() => runAction(() => respondToFriendRequest(request.id, false), 'Anfrage abgelehnt.')}>{copy?.decline ?? 'Ablehnen'}</button>
               </div>
             </article>
           ))}
-          {!dashboard.friendRequests.length && <EmptyState title="Keine neuen Anfragen" text="Neue Freundschaftsanfragen erscheinen hier." />}
+          {!dashboard.friendRequests.length && <EmptyState title={copy?.noRequests ?? 'Keine neuen Anfragen'} text={copy?.noRequestsText ?? 'Neue Freundschaftsanfragen erscheinen hier.'} />}
         </div>
       </section>
 
       <section className="social-section">
         <div className="social-section-title">
-          <div><span>GEMEINSAME ZIELE</span><h2>Laufende Challenges</h2></div>
+          <div><span>{copy?.shared ?? 'GEMEINSAME ZIELE'}</span><h2>{copy?.running ?? 'Laufende Challenges'}</h2></div>
           {!!dashboard.challenges.length && <b>{dashboard.challenges.length}</b>}
         </div>
         <div className="social-challenge-list">
@@ -340,13 +351,13 @@ function Freunde({ profileName, user }) {
               key={challenge.id}
             />
           ))}
-          {!dashboard.challenges.length && <EmptyState title="Noch keine laufende Challenge" text="Starte mit einem Freund eine gemeinsame Challenge." />}
+          {!dashboard.challenges.length && <EmptyState title={copy?.noChallenges ?? 'Noch keine laufende Challenge'} text={copy?.noChallengesText ?? 'Starte mit einem Freund eine gemeinsame Challenge.'} />}
         </div>
       </section>
 
       <section className="social-section">
         <div className="social-section-title">
-          <div><span>ENTSCHEIDE DU</span><h2>Challenge-Anfragen</h2></div>
+          <div><span>{arabic ? 'قرارك' : 'ENTSCHEIDE DU'}</span><h2>{arabic ? 'طلبات التحدي' : 'Challenge-Anfragen'}</h2></div>
           {!!dashboard.challengeRequests.length && <b>{dashboard.challengeRequests.length}</b>}
         </div>
         <div className="social-request-list">
@@ -358,18 +369,18 @@ function Freunde({ profileName, user }) {
                 <span>{request.friendName} · {request.duration_days} Tage · {request.daily_goal} {request.goal_unit}</span>
               </div>
               <div className="request-buttons">
-                <button type="button" disabled={busy} onClick={() => runAction(() => respondToChallengeRequest(request.id, true), 'Challenge angenommen – los geht’s!')}>Annehmen</button>
-                <button type="button" disabled={busy} onClick={() => runAction(() => respondToChallengeRequest(request.id, false), 'Challenge abgelehnt.')}>Ablehnen</button>
+                <button type="button" disabled={busy} onClick={() => runAction(() => respondToChallengeRequest(request.id, true), 'Challenge angenommen – los geht’s!')}>{copy?.accept ?? 'Annehmen'}</button>
+                <button type="button" disabled={busy} onClick={() => runAction(() => respondToChallengeRequest(request.id, false), 'Challenge abgelehnt.')}>{copy?.decline ?? 'Ablehnen'}</button>
               </div>
             </article>
           ))}
-          {!dashboard.challengeRequests.length && <EmptyState title="Keine Challenge-Anfragen" text="Einladungen deiner Freunde erscheinen hier." />}
+          {!dashboard.challengeRequests.length && <EmptyState title={arabic ? 'لا توجد طلبات تحدٍ' : 'Keine Challenge-Anfragen'} text={arabic ? 'ستظهر دعوات أصدقائك هنا.' : 'Einladungen deiner Freunde erscheinen hier.'} />}
         </div>
       </section>
 
       <section className="social-section sent-invitations-section">
         <div className="social-section-title">
-          <div><span>NOCH OFFEN</span><h2>Gesendete Einladungen</h2></div>
+          <div><span>{arabic ? 'قيد الانتظار' : 'NOCH OFFEN'}</span><h2>{arabic ? 'الدعوات المرسلة' : 'Gesendete Einladungen'}</h2></div>
           {!!dashboard.sentFriendRequests.length && <b>{dashboard.sentFriendRequests.length}</b>}
         </div>
         <div className="social-request-list">
@@ -389,12 +400,12 @@ function Freunde({ profileName, user }) {
                   `Einladung an ${request.name} wurde zurückgezogen.`,
                 )}
               >
-                Zurückziehen
+                {arabic ? 'سحب' : 'Zurückziehen'}
               </button>
             </article>
           ))}
           {!dashboard.sentFriendRequests.length && (
-            <EmptyState title="Keine offenen Einladungen" text="Alle gesendeten Anfragen wurden beantwortet." />
+            <EmptyState title={arabic ? 'لا توجد دعوات معلقة' : 'Keine offenen Einladungen'} text={arabic ? 'تم الرد على جميع الطلبات المرسلة.' : 'Alle gesendeten Anfragen wurden beantwortet.'} />
           )}
         </div>
       </section>
@@ -404,41 +415,41 @@ function Freunde({ profileName, user }) {
           <section className="social-modal" role="dialog" aria-modal="true" aria-labelledby="friend-modal-title" onMouseDown={(event) => event.stopPropagation()}>
             <button className="social-modal-close" type="button" aria-label="Schließen" onClick={() => setFriendModalOpen(false)}>×</button>
             <span className="social-modal-icon">♡</span>
-            <h2 id="friend-modal-title">Freund hinzufügen</h2>
-            <p>Sende eine Anfrage an die E-Mail-Adresse des MyFlow-Kontos.</p>
+            <h2 id="friend-modal-title">{arabic ? 'إضافة صديق' : 'Freund hinzufügen'}</h2>
+            <p>{arabic ? 'أرسل طلبا إلى عنوان البريد الإلكتروني لحساب MyFlow.' : 'Sende eine Anfrage an die E-Mail-Adresse des MyFlow-Kontos.'}</p>
             {notice && <div className="social-modal-error" role="alert">{notice}</div>}
             <form onSubmit={submitFriendRequest}>
-              <label>E-Mail-Adresse<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="freund@beispiel.de" required autoFocus /></label>
-              <button type="submit" disabled={busy}>{busy ? 'Wird gesendet …' : 'Anfrage senden'}</button>
+              <label>{arabic ? 'عنوان البريد الإلكتروني' : 'E-Mail-Adresse'}<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="friend@example.com" required autoFocus /></label>
+              <button type="submit" disabled={busy}>{busy ? (arabic ? 'جاري الإرسال …' : 'Wird gesendet …') : (arabic ? 'إرسال الطلب' : 'Anfrage senden')}</button>
             </form>
           </section>
         </div>
       )}
 
-      <FriendProfileModal friend={selectedFriend} onClose={() => setSelectedFriend(null)} />
+      <FriendProfileModal friend={selectedFriend} onClose={() => setSelectedFriend(null)} arabic={arabic} />
 
       {challengeModalOpen && (
         <div className="social-modal-backdrop" role="presentation" onMouseDown={() => setChallengeModalOpen(false)}>
           <section className="social-modal challenge-modal" role="dialog" aria-modal="true" aria-labelledby="challenge-modal-title" onMouseDown={(event) => event.stopPropagation()}>
             <button className="social-modal-close" type="button" aria-label="Schließen" onClick={() => setChallengeModalOpen(false)}>×</button>
             <span className="social-modal-icon">⚡</span>
-            <h2 id="challenge-modal-title">Challenge starten</h2>
-            <p>Wähle Freund, Vorlage und euer tägliches Ziel.</p>
+            <h2 id="challenge-modal-title">{arabic ? 'بدء تحدٍ' : 'Challenge starten'}</h2>
+            <p>{arabic ? 'اختر صديقا ونموذجا وهدفكما اليومي.' : 'Wähle Freund, Vorlage und euer tägliches Ziel.'}</p>
             {notice && <div className="social-modal-error" role="alert">{notice}</div>}
             <form onSubmit={submitChallenge}>
-              <label>Freund<select value={friendId} onChange={(event) => setFriendId(event.target.value)} required><option value="">Bitte wählen</option>{dashboard.friends.map((friend) => <option value={friend.id} key={friend.id}>{friend.name}</option>)}</select></label>
-              <label>Challenge-Typ<select value={templateKey} onChange={(event) => {
+              <label>{arabic ? 'الصديق' : 'Freund'}<select value={friendId} onChange={(event) => setFriendId(event.target.value)} required><option value="">{arabic ? 'يرجى الاختيار' : 'Bitte wählen'}</option>{dashboard.friends.map((friend) => <option value={friend.id} key={friend.id}>{friend.name}</option>)}</select></label>
+              <label>{arabic ? 'نوع التحدي' : 'Challenge-Typ'}<select value={templateKey} onChange={(event) => {
                 const nextTemplate = challengeTemplates.find((template) => template.id === event.target.value) ?? challengeTemplates[0]
                 setTemplateKey(nextTemplate.id)
                 setDays(nextTemplate.days)
                 setGoal(nextTemplate.goal)
-              }}>{challengeTemplates.map((template) => <option value={template.id} key={template.id}>{template.days} Tage {template.title}</option>)}</select></label>
+              }}>{challengeTemplates.map((template) => <option value={template.id} key={template.id}>{template.days} {languageStyle === 'arabic' ? 'أيام' : languageStyle === 'english' ? 'days' : languageStyle === 'turkish' ? 'gün' : 'Tage'} · {translateHabitTitle(template.title, languageStyle)}</option>)}</select></label>
               <div className="social-form-row">
-                <label>Dauer in Tagen<input type="number" min="1" max="365" value={days} onChange={(event) => setDays(event.target.value)} required /></label>
-                <label>Tägliches Ziel<input type="number" min="1" step="1" value={goal} onChange={(event) => setGoal(event.target.value)} required /></label>
+                <label>{arabic ? 'المدة بالأيام' : 'Dauer in Tagen'}<input type="number" min="1" max="365" value={days} onChange={(event) => setDays(event.target.value)} required /></label>
+                <label>{arabic ? 'الهدف اليومي' : 'Tägliches Ziel'}<input type="number" min="1" step="1" value={goal} onChange={(event) => setGoal(event.target.value)} required /></label>
               </div>
-              <small>Einheit: {selectedTemplate.unit}</small>
-              <button type="submit" disabled={busy || !friendId}>{busy ? 'Wird gesendet …' : 'Challenge-Anfrage senden'}</button>
+              <small>{arabic ? 'الوحدة' : languageStyle === 'english' ? 'Unit' : languageStyle === 'turkish' ? 'Birim' : 'Einheit'}: {translateUnit(selectedTemplate.unit, languageStyle)}</small>
+              <button type="submit" disabled={busy || !friendId}>{busy ? (arabic ? 'جاري الإرسال …' : 'Wird gesendet …') : (arabic ? 'إرسال طلب التحدي' : 'Challenge-Anfrage senden')}</button>
             </form>
           </section>
         </div>

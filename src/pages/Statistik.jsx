@@ -169,7 +169,9 @@ function buildFlowCoinEvents({ checkIns = [], routines = [], stats }) {
   ]
 }
 
-function Statistik({ habits = [], t }) {
+function Statistik({ habits = [], languageStyle = 'german', t }) {
+  const arabic = t?.nav?.progress === 'الإحصائيات'
+  const sleepCopy = arabic ? { sleep: 'النوم', title: 'سجل نومك', description: 'سجل نومك وتابع عادات نومك.', bedtime: 'وقت النوم', wake: 'وقت الاستيقاظ', duration: 'كم من الوقت نمت؟', save: 'حفظ الإدخال', saving: 'جاري الحفظ …' } : null
   const { personalizedTexts } = useProfile()
   const { checkins: localCheckIns } = useCheckins()
   const lastCoinSyncKeyRef = useRef('')
@@ -467,17 +469,17 @@ function Statistik({ habits = [], t }) {
       <header className="stats-hero flowtree-hero">
         <div>
           <p className="eyebrow">{t.stats.eyebrow}</p>
-          <h1>{personalizedTexts.statisticsTitle}</h1>
-          <p>{headerMessage}</p>
+          <h1>{t.stats.title}</h1>
+          <p>{t.nav.progress === 'الإحصائيات' ? 'هنا يمكنك متابعة تقدمك في الروتينات وتسجيلات الدخول.' : headerMessage}</p>
         </div>
-        <span className="stats-date-chip">Heute</span>
+        <span className="stats-date-chip">{t.stats.today}</span>
       </header>
 
       {checkInsError && (
         <div className="stats-empty-state flowtree-error-state" role="alert">
-          <strong>Check-ins konnten nicht geladen werden.</strong>
-          <p>{checkInsError}</p>
-          <button className="secondary-button" onClick={loadCheckIns} type="button">Erneut laden</button>
+          <strong>{t.nav.progress === 'الإحصائيات' ? 'تعذر تحميل تسجيلات الدخول.' : 'Check-ins konnten nicht geladen werden.'}</strong>
+          <p>{t.nav.progress === 'الإحصائيات' ? 'جلسة المصادقة غير متاحة.' : checkInsError}</p>
+          <button className="secondary-button" onClick={loadCheckIns} type="button">{t.nav.progress === 'الإحصائيات' ? 'إعادة التحميل' : 'Erneut laden'}</button>
         </div>
       )}
 
@@ -496,55 +498,57 @@ function Statistik({ habits = [], t }) {
             plantedTrees={coinProfile.planted_trees}
             redeemingTree={redeemingTree}
             stats={stats}
+            t={t}
+            languageStyle={languageStyle}
           />
           <section className="sleep-tracker-card" aria-labelledby="sleep-tracker-title">
             <div className="sleep-tracker-header">
               <span className="sleep-tracker-icon" aria-hidden="true">Zz</span>
               <div>
-                <span>Schlaf</span>
-                <h2 id="sleep-tracker-title">Trage deinen Schlaf ein</h2>
+                <span>{sleepCopy?.sleep ?? 'Schlaf'}</span>
+                <h2 id="sleep-tracker-title">{sleepCopy?.title ?? 'Trage deinen Schlaf ein'}</h2>
               </div>
             </div>
 
             <p className="sleep-tracker-description">
-              Erfasse deinen Schlaf und behalte deine Schlafgewohnheiten im Blick.
+              {sleepCopy?.description ?? 'Erfasse deinen Schlaf und behalte deine Schlafgewohnheiten im Blick.'}
             </p>
             <form className="sleep-tracker-form" onSubmit={handleSaveSleepEntry}>
               <label>
-                <span>Schlafenszeit</span>
+                <span>{sleepCopy?.bedtime ?? 'Schlafenszeit'}</span>
                 <input
-                  aria-label="Schlafenszeit"
+                  aria-label={sleepCopy?.bedtime ?? 'Schlafenszeit'}
                   onChange={(event) => setSleepBedtime(event.target.value)}
                   type="time"
                   value={sleepBedtime}
                 />
               </label>
               <label>
-                <span>Aufstehzeit</span>
+                <span>{sleepCopy?.wake ?? 'Aufstehzeit'}</span>
                 <input
-                  aria-label="Aufstehzeit"
+                  aria-label={sleepCopy?.wake ?? 'Aufstehzeit'}
                   onChange={(event) => setSleepWakeTime(event.target.value)}
                   type="time"
                   value={sleepWakeTime}
                 />
               </label>
               <div className="sleep-duration-result" aria-live="polite">
-                <span>Wie lange habe ich geschlafen?</span>
+                <span>{sleepCopy?.duration ?? 'Wie lange habe ich geschlafen?'}</span>
                 <strong>{formatSleepDuration(sleepDurationMinutes)}</strong>
               </div>
               <button disabled={sleepDurationMinutes === null || sleepSaving} type="submit">
-                {sleepSaving ? 'Wird gespeichert …' : 'Eintrag speichern'}
+                {sleepSaving ? (sleepCopy?.saving ?? 'Wird gespeichert …') : (sleepCopy?.save ?? 'Eintrag speichern')}
               </button>
             </form>
             {sleepError && <p className="sleep-tracker-error" role="alert">{sleepError}</p>}
             <div className="sleep-tracker-average">
-              <span>Wochendurchschnitt</span>
+              <span>{arabic ? 'متوسط الأسبوع' : 'Wochendurchschnitt'}</span>
               <strong>
                 {sleepLoading
-                  ? 'Wird geladen …'
+                  ? (arabic ? 'جاري التحميل …' : 'Wird geladen …')
                   : averageSleepHours === null
-                  ? 'Noch kein Schlaf eingetragen.'
-                  : `${averageSleepHours.toFixed(1)} Stunden pro Nacht`}
+                  ? (arabic ? 'لم يتم تسجيل النوم بعد.' : 'Noch kein Schlaf eingetragen.')
+                  : arabic ? `${averageSleepHours.toFixed(1)} ساعة في الليلة` : `${averageSleepHours.toFixed(1)} Stunden pro Nacht`}
               </strong>
             </div>
             <div className="sleep-week-row">

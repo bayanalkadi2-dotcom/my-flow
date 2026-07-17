@@ -184,7 +184,17 @@ function MenuIcon() {
   )
 }
 
-function Kalender({ notes = {}, onNotesChange }) {
+function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
+  const arabic = languageStyle === 'arabic'
+  const ar = arabic ? {
+    title: 'اليوميات', filter: 'اختيار التصفية', show: 'عرض', daily: 'المواعيد اليومية', addEvent: 'إضافة موعد لليوم', note: 'ملاحظة اليوم', addNote: 'إضافة ملاحظة لليوم', images: 'صور اليوم', addImages: 'إضافة صور لليوم', optional: 'اختياري', filters: { all: 'الكل', today: 'اليوم', notes: 'ملاحظات', images: 'صور', tasks: 'مواعيد' }, months: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'], weekdays: ['الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد']
+  } : null
+  const calendarUi = {
+    german: { overview: 'Monatsübersicht', allMonths: 'Alle Monate', closeOverview: 'Monatsübersicht schließen', time: 'Uhrzeit', type: 'Art', event: 'Termin', placeholder: 'z. B. Arzttermin, Lernen, Wasser trinken', repeat: 'Wiederholung', cancel: 'Abbrechen', add: 'Termin hinzufügen', types: ['Morgenroutine','Sport','Wasser trinken','Lernen','Dankbarkeit'], repeats: ['Einmalig','Täglich','Wöchentlich','Monatlich'] },
+    english: { overview: 'Monthly overview', allMonths: 'All months', closeOverview: 'Close monthly overview', time: 'Time', type: 'Type', event: 'Appointment', placeholder: 'e.g. doctor appointment, studying, drinking water', repeat: 'Repeat', cancel: 'Cancel', add: 'Add appointment', types: ['Morning routine','Exercise','Drink water','Study','Gratitude'], repeats: ['Once','Daily','Weekly','Monthly'] },
+    turkish: { overview: 'Aylık genel bakış', allMonths: 'Tüm aylar', closeOverview: 'Aylık genel bakışı kapat', time: 'Saat', type: 'Tür', event: 'Randevu', placeholder: 'örn. doktor randevusu, ders çalışma, su içme', repeat: 'Tekrar', cancel: 'İptal', add: 'Randevu ekle', types: ['Sabah rutini','Spor','Su içme','Ders çalışma','Minnettarlık'], repeats: ['Bir kez','Günlük','Haftalık','Aylık'] },
+    arabic: { overview: 'نظرة عامة شهرية', allMonths: 'جميع الأشهر', closeOverview: 'إغلاق النظرة الشهرية', time: 'الوقت', type: 'النوع', event: 'الموعد', placeholder: 'مثلا: موعد طبيب، دراسة، شرب الماء', repeat: 'التكرار', cancel: 'إلغاء', add: 'إضافة موعد', types: ['روتين الصباح','رياضة','شرب الماء','الدراسة','الامتنان'], repeats: ['مرة واحدة','يوميا','أسبوعيا','شهريا'] },
+  }[languageStyle]
   const { checkins } = useCheckins()
   const today = useMemo(() => {
     const currentDate = new Date()
@@ -213,7 +223,7 @@ function Kalender({ notes = {}, onNotesChange }) {
   const selectedImages = selectedEntry.images
   const shouldShowNoteEditor = showNoteEditor || selectedNote.trim().length > 0
   const shouldShowImageUploader = showImageUploader && selectedImages.length < 3
-  const activeFilterLabel = diaryFilters.find((filter) => filter.id === activeFilter)?.label ?? 'Alle'
+  const activeFilterLabel = ar?.filters[activeFilter] ?? diaryFilters.find((filter) => filter.id === activeFilter)?.label ?? 'Alle'
 
   const filterResultDays = useMemo(() => {
     const dayKeys = new Set()
@@ -393,8 +403,8 @@ function Kalender({ notes = {}, onNotesChange }) {
         <button className="calendar-icon-button" type="button" aria-label="Filter öffnen" onClick={() => setShowFilterMenu(true)}>
           <MenuIcon />
         </button>
-        <h1>Tagebuch</h1>
-        <button className="calendar-icon-button" type="button" aria-label="Monatsuebersicht oeffnen" onClick={() => setShowMonthOverview(true)}>
+        <h1>{ar?.title ?? 'Tagebuch'}</h1>
+        <button className="calendar-icon-button" type="button" aria-label={calendarUi.overview} onClick={() => setShowMonthOverview(true)}>
           <CalendarIcon />
         </button>
       </header>
@@ -404,8 +414,8 @@ function Kalender({ notes = {}, onNotesChange }) {
           <div className="diary-filter-backdrop" onClick={() => setShowFilterMenu(false)} />
           <div className="diary-filter-sheet">
             <div className="calendar-section-title">
-              <span>Filter auswählen</span>
-              <small>Zeige: {activeFilterLabel}</small>
+              <span>{ar?.filter ?? 'Filter auswählen'}</span>
+              <small>{ar?.show ?? 'Zeige'}: {activeFilterLabel}</small>
             </div>
             <div className="diary-filter-grid">
               {diaryFilters.map((filter) => (
@@ -416,7 +426,7 @@ function Kalender({ notes = {}, onNotesChange }) {
                   type="button"
                 >
                   <span>{filter.icon}</span>
-                  <strong>{filter.label}</strong>
+                  <strong>{ar?.filters[filter.id] ?? filter.label}</strong>
                 </button>
               ))}
             </div>
@@ -438,7 +448,7 @@ function Kalender({ notes = {}, onNotesChange }) {
               filterResultDays.map((day) => (
                 <button className="diary-filter-result-card" key={day.key} type="button" onClick={() => selectResultDay(day.date)}>
                   <time>
-                    {day.date.getDate()}. {monthNames[day.date.getMonth()]} {day.date.getFullYear()}
+                    {day.date.getDate()}. {(ar?.months ?? monthNames)[day.date.getMonth()]} {day.date.getFullYear()}
                   </time>
                   <span>
                     {day.note || `${day.taskCount} Aufgaben / ${day.imageCount} Bilder`}
@@ -463,13 +473,13 @@ function Kalender({ notes = {}, onNotesChange }) {
       )}
 
       {showMonthOverview && (
-        <section className="calendar-month-overview" aria-label="Monatsuebersicht">
+        <section className="calendar-month-overview" aria-label={calendarUi.overview}>
           <div className="calendar-month-overview-header">
             <div>
-              <span>Monatsuebersicht</span>
-              <h2>Alle Monate</h2>
+              <span>{calendarUi.overview}</span>
+              <h2>{calendarUi.allMonths}</h2>
             </div>
-            <button type="button" onClick={() => setShowMonthOverview(false)} aria-label="Monatsuebersicht schliessen">x</button>
+            <button type="button" onClick={() => setShowMonthOverview(false)} aria-label={calendarUi.closeOverview}>x</button>
           </div>
           <div className="calendar-month-list">
             {calendarMonths.map(({ year, month, id }) => (
@@ -478,7 +488,7 @@ function Kalender({ notes = {}, onNotesChange }) {
                 key={id}
                 ref={year === today.getFullYear() && month === today.getMonth() ? currentMonthRef : null}
               >
-                <h3>{monthNames[month]} {year}</h3>
+                <h3>{(ar?.months ?? monthNames)[month]} {year}</h3>
                 <div className="calendar-full-month-weekdays" aria-hidden="true">
                   {weekdays.map((weekday) => <span key={weekday}>{weekday}</span>)}
                 </div>
@@ -516,14 +526,14 @@ function Kalender({ notes = {}, onNotesChange }) {
         <button type="button" onClick={() => changeWeek(-1)} aria-label="Vorherige Woche">
           ⬹
         </button>
-        <strong>{monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}</strong>
+        <strong>{(ar?.months ?? monthNames)[selectedDate.getMonth()]} {selectedDate.getFullYear()}</strong>
         <button type="button" onClick={() => changeWeek(1)} aria-label="Nächste Woche">
           ⬺
         </button>
         </div>
 
         <div className="calendar-week-card">
-        {weekDays.map((day) => {
+        {weekDays.map((day, index) => {
           const isToday = day.key === getLocalDateKey(today)
           const isSelected = day.key === selectedKey
           const hasEvents = hasFilteredEntry(day.key)
@@ -535,7 +545,7 @@ function Kalender({ notes = {}, onNotesChange }) {
               onClick={() => setSelectedDate(day.date)}
               type="button"
             >
-              <span>{day.weekday}</span>
+              <span>{ar?.weekdays[index] ?? day.weekday}</span>
               <strong>{day.dayNumber}</strong>
               {hasEvents && <i aria-hidden="true" />}
             </button>
@@ -548,7 +558,7 @@ function Kalender({ notes = {}, onNotesChange }) {
         <form className="calendar-add-card" onSubmit={addEvent}>
           <div className="calendar-form-row">
             <label>
-              Uhrzeit
+              {calendarUi.time}
               <input
                 type="time"
                 value={draft.time}
@@ -556,7 +566,7 @@ function Kalender({ notes = {}, onNotesChange }) {
               />
             </label>
             <label>
-              Art
+              {calendarUi.type}
               <select
                 value={draft.type}
                 onChange={(event) => {
@@ -569,44 +579,44 @@ function Kalender({ notes = {}, onNotesChange }) {
                 }}
               >
                 {eventTypes.map((type) => (
-                  <option key={type.id} value={type.id}>{type.label}</option>
+                  <option key={type.id} value={type.id}>{calendarUi.types[eventTypes.findIndex((item) => item.id === type.id)]}</option>
                 ))}
               </select>
             </label>
           </div>
           <label>
-            Termin
+            {calendarUi.event}
             <input
               value={draft.title}
               onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))}
-              placeholder="z. B. Arzttermin, Lernen, Wasser trinken"
+              placeholder={calendarUi.placeholder}
             />
           </label>
           <label>
-            Wiederholung
+            {calendarUi.repeat}
             <select
               value={draft.repeat}
               onChange={(event) => setDraft((current) => ({ ...current, repeat: event.target.value }))}
             >
               {repeatOptions.map((option) => (
-                <option key={option.id} value={option.id}>{option.label}</option>
+                <option key={option.id} value={option.id}>{calendarUi.repeats[repeatOptions.findIndex((item) => item.id === option.id)]}</option>
               ))}
             </select>
           </label>
           <div className="calendar-form-actions">
-            <button className="secondary-button" type="button" onClick={() => setShowForm(false)}>Abbrechen</button>
-            <button type="submit">Termin hinzufügen</button>
+            <button className="secondary-button" type="button" onClick={() => setShowForm(false)}>{calendarUi.cancel}</button>
+            <button type="submit">{calendarUi.add}</button>
           </div>
         </form>
       )}
 
       <section className="calendar-note-card">
         <div className="calendar-section-title">
-          <span>Tägliche Termine</span>
+          <span>{ar?.daily ?? 'Tägliche Termine'}</span>
         </div>
         <button className="diary-add-row appointment" type="button" onClick={() => setShowForm(true)}>
           <span>+</span>
-          <strong>Termin zum Tag hinzufügen</strong>
+          <strong>{ar?.addEvent ?? 'Termin zum Tag hinzufügen'}</strong>
         </button>
         <div className="diary-task-strip">
           {selectedEvents.slice(0, 3).map((event) => (
@@ -624,8 +634,8 @@ function Kalender({ notes = {}, onNotesChange }) {
         </div>
 
         <div className="calendar-section-title">
-          <span>Notiz zum Tag</span>
-          <small>{selectedNote.trim() || selectedImages.length ? 'Gespeichert' : 'Optional'}</small>
+          <span>{ar?.note ?? 'Notiz zum Tag'}</span>
+          <small>{selectedNote.trim() || selectedImages.length ? (arabic ? 'محفوظ' : 'Gespeichert') : (ar?.optional ?? 'Optional')}</small>
         </div>
         <button
           className="diary-add-row note"
@@ -636,7 +646,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           }}
         >
           <span>+</span>
-          <strong>Notiz zum Tag hinzufügen</strong>
+          <strong>{ar?.addNote ?? 'Notiz zum Tag hinzufügen'}</strong>
         </button>
         {shouldShowNoteEditor && (
           <textarea
@@ -647,7 +657,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           />
         )}
         <div className="diary-images-header">
-          <span>Bilder zum Tag</span>
+          <span>{ar?.images ?? 'Bilder zum Tag'}</span>
           <small>{selectedImages.length}/3</small>
         </div>
         <div className="diary-image-grid">
@@ -660,7 +670,7 @@ function Kalender({ notes = {}, onNotesChange }) {
           {selectedImages.length < 3 && (
             <button className="diary-add-row images" type="button" onClick={() => setShowImageUploader(true)}>
               <span>+</span>
-              <strong>Bilder zum Tag hinzufügen</strong>
+              <strong>{ar?.addImages ?? 'Bilder zum Tag hinzufügen'}</strong>
             </button>
           )}
           {shouldShowImageUploader && (

@@ -99,8 +99,13 @@ function DailyCheckIn({
   habits = [],
   onNavigate,
   profileName = 'Gast',
+  t,
   user,
 }) {
+  const arabic = t?.nav?.dashboard === 'الرئيسية'
+  const copy = arabic ? {
+    history: 'السجل', noHistory: 'لا توجد محادثات سابقة.', saved: 'تم حفظ تسجيل الدخول', ai: 'ذكاء MyFlow الاصطناعي', signIn: 'يرجى تسجيل الدخول', signInText: 'يحفظ تسجيل الدخول بالذكاء الاصطناعي بيانات شخصية حساسة، لذلك لا يمكن استخدامه إلا بعد تسجيل الدخول.'
+  } : null
   const { personalization, profile } = useProfile()
   const { addCheckin, hasCheckin } = useCheckins()
   const [answers, setAnswers] = useState({})
@@ -365,13 +370,13 @@ function DailyCheckIn({
     return (
       <div className="ai-chat-history">
         <button className="ai-chat-history-toggle" onClick={() => setIsHistoryOpen((open) => !open)} type="button">
-          Verlauf
+          {copy?.history ?? 'Verlauf'}
           {chatHistory.length > 0 && <span>{chatHistory.length}</span>}
         </button>
         {isHistoryOpen && (
           <div className="ai-chat-history-menu">
             {chatHistory.length === 0 ? (
-              <p>Noch keine alten Chats.</p>
+              <p>{copy?.noHistory ?? 'Noch keine alten Chats.'}</p>
             ) : chatHistory.map((chat) => (
               <button
                 key={chat.id}
@@ -382,7 +387,7 @@ function DailyCheckIn({
                 type="button"
               >
                 <strong>{chat.title}</strong>
-                <small>{chat.messages?.[0]?.text || 'Check-in gespeichert'}</small>
+                <small>{chat.messages?.[0]?.text || copy?.saved || 'Check-in gespeichert'}</small>
               </button>
             ))}
           </div>
@@ -451,9 +456,9 @@ function DailyCheckIn({
       <section className="screen checkin-screen">
         {renderHistoryButton()}
         <div className="checkin-intro-card">
-          <p className="eyebrow">MyFlow KI</p>
-          <h1>Bitte melde dich an</h1>
-          <p>Der KI-Check-in speichert sensible persönliche Angaben und ist deshalb nur angemeldet nutzbar.</p>
+          <p className="eyebrow">{copy?.ai ?? 'MyFlow KI'}</p>
+          <h1>{copy?.signIn ?? 'Bitte melde dich an'}</h1>
+          <p>{copy?.signInText ?? 'Der KI-Check-in speichert sensible persönliche Angaben und ist deshalb nur angemeldet nutzbar.'}</p>
         </div>
       </section>
     )

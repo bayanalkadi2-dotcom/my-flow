@@ -10,6 +10,7 @@ import Profil from '../../pages/Profil'
 import Registrieren from '../../pages/Registrieren'
 import Routinen from '../../pages/Routinen'
 import StudentOnboarding from '../../pages/StudentOnboarding'
+import { getAppTranslations } from '../../i18n'
 import { defaultProfileMock, renderWithDefaults, t } from '../test-utils'
 
 const mocks = vi.hoisted(() => ({
@@ -158,7 +159,7 @@ describe('authentication pages', () => {
     expect(screen.queryByLabelText('Alter')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Gewicht')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Größe')).not.toBeInTheDocument()
-    expect(screen.getByText('Deutsch').closest('button')).not.toHaveClass('selected')
+    expect(screen.getByText('Deutsch').closest('button')).toHaveClass('selected')
     expect(screen.getByText('Locker').closest('button')).not.toHaveClass('selected')
     expect(screen.getByText('Hell').closest('button')).toHaveClass('selected')
     fireEvent.click(screen.getByText('Deutsch').closest('button'))
@@ -184,6 +185,14 @@ describe('authentication pages', () => {
 
     await waitFor(() => expect(mocks.signup).toHaveBeenCalled())
     expect(await screen.findByText(/Registrierung erfolgreich/)).toBeInTheDocument()
+  })
+
+  it('updates every registration footer text for Arabic', () => {
+    const arabic = getAppTranslations('arabic', 'casual')
+    renderWithDefaults(<Registrieren languageStyle="arabic" onNavigate={vi.fn()} t={arabic} />)
+
+    expect(screen.getByText('أوافق على سياسة الخصوصية.')).toBeInTheDocument()
+    expect(screen.getByText('لديك حساب بالفعل؟')).toBeInTheDocument()
   })
 })
 

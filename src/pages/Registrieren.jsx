@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/authContextValue'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
 import AuthDesignPicker from '../commponents/AuthDesignPicker'
@@ -37,19 +37,34 @@ function getRegisterErrorMessage(error) {
   return 'Registrierung fehlgeschlagen. Bitte versuche es später erneut.'
 }
 
-function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange = () => {}, onNavigate, t }) {
+function Registrieren({ appColor = 'Lila', appTheme = 'Hell', draft = {}, languageStyle = 'german', onAppDesignChange = () => {}, onDraftChange = () => {}, onLanguageChange = () => {}, onNavigate, t }) {
   const { signup } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [displayName, setDisplayName] = useState('')
-  const [languageStyle, setLanguageStyle] = useState('')
-  const [communicationStyle, setCommunicationStyle] = useState('')
+  const [email, setEmail] = useState(draft.email ?? '')
+  const [password, setPassword] = useState(draft.password ?? '')
+  const [passwordConfirm, setPasswordConfirm] = useState(draft.passwordConfirm ?? '')
+  const [displayName, setDisplayName] = useState(draft.displayName ?? '')
+  const [communicationStyle, setCommunicationStyle] = useState(draft.communicationStyle ?? '')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false)
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(draft.acceptedPrivacy ?? false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const activeLanguage = t?.nav?.profile === 'الملف الشخصي'
+    ? 'arabic'
+    : t?.nav?.profile === 'Profile'
+      ? 'english'
+      : t?.common?.back === 'Geri'
+        ? 'turkish'
+        : languageStyle
+  useEffect(() => {
+    onDraftChange({ acceptedPrivacy, communicationStyle, displayName, email, password, passwordConfirm })
+  }, [acceptedPrivacy, communicationStyle, displayName, email, onDraftChange, password, passwordConfirm])
+  const copy = {
+    german: { name: 'Name', namePlaceholder: 'Dein Name', language: 'Sprache', communication: 'Kommunikationsstil', styles: ['Locker', 'Formal'], repeat: 'Passwort wiederholen', passwordPlaceholder: 'Mindestens 8 Zeichen', privacy: 'Ich akzeptiere die Datenschutzbestimmungen.', show: 'Anzeigen', loading: 'Wird registriert...', account: 'Bereits ein Konto?' },
+    english: { name: 'Name', namePlaceholder: 'Your name', language: 'Language', communication: 'Communication style', styles: ['Casual', 'Formal'], repeat: 'Repeat password', passwordPlaceholder: 'At least 8 characters', privacy: 'I accept the privacy policy.', show: 'View', loading: 'Signing up...', account: 'Already have an account?' },
+    turkish: { name: 'Ad', namePlaceholder: 'Adın', language: 'Dil', communication: 'İletişim tarzı', styles: ['Samimi', 'Resmî'], repeat: 'Şifreyi tekrar et', passwordPlaceholder: 'En az 8 karakter', privacy: 'Gizlilik politikasını kabul ediyorum.', show: 'Göster', loading: 'Kayıt yapılıyor...', account: 'Zaten hesabın var mı?' },
+    arabic: { name: 'الاسم', namePlaceholder: 'اسمك', language: 'اللغة', communication: 'أسلوب التواصل', styles: ['ودي', 'رسمي'], repeat: 'تكرار كلمة المرور', passwordPlaceholder: 'على الأقل 8 أحرف', privacy: 'أوافق على سياسة الخصوصية.', show: 'عرض', loading: 'جاري إنشاء الحساب...', account: 'لديك حساب بالفعل؟' },
+  }[activeLanguage]
 
   async function handleRegister(e) {
     e.preventDefault()
@@ -66,7 +81,7 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
       return
     }
 
-    if (!languageStyle || !communicationStyle) {
+    if (!communicationStyle) {
       setError('Bitte wähle Sprache, Kommunikationsstil und Design aus.')
       return
     }
@@ -90,7 +105,7 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
     setIsLoading(true)
     try {
       await signup(email, password, displayName.trim(), {
-        language_style: languageStyle,
+        language_style: activeLanguage,
         communication_style: communicationStyle,
         theme: appTheme,
         color_theme: appColor,
@@ -101,9 +116,9 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
       setPassword('')
       setPasswordConfirm('')
       setDisplayName('')
-      setLanguageStyle('')
       setCommunicationStyle('')
       setAcceptedPrivacy(false)
+      onDraftChange({})
     } catch (err) {
       setError(getRegisterErrorMessage(err))
     } finally {
@@ -125,10 +140,10 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
           <svg className="field-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
           </svg>
-          <span>Name</span>
+          <span>{copy.name}</span>
           <input
             type="text"
-            placeholder="Dein Name"
+            placeholder={copy.namePlaceholder}
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             disabled={isLoading}
@@ -137,23 +152,23 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
         </label>
 
         <label className="student-onboarding-label">
-          Sprache
+          {copy.language}
           <div className="student-chip-grid">
             {languageOptions.map(([value, label]) => (
-              <button className={`student-onboarding-option ${languageStyle === value ? 'selected' : ''}`} key={value} onClick={() => setLanguageStyle(value)} type="button" disabled={isLoading}>
+              <button className={`student-onboarding-option ${activeLanguage === value ? 'selected' : ''}`} key={value} onClick={() => onLanguageChange(value)} type="button" disabled={isLoading}>
                 <strong>{label}</strong>
-                <span aria-hidden="true">{languageStyle === value ? '✓' : ''}</span>
+                <span aria-hidden="true">{activeLanguage === value ? '✓' : ''}</span>
               </button>
             ))}
           </div>
         </label>
 
         <label className="student-onboarding-label">
-          Kommunikationsstil
+          {copy.communication}
           <div className="student-chip-grid">
-            {communicationOptions.map(([value, label]) => (
+            {communicationOptions.map(([value], index) => (
               <button className={`student-onboarding-option ${communicationStyle === value ? 'selected' : ''}`} key={value} onClick={() => setCommunicationStyle(value)} type="button" disabled={isLoading}>
-                <strong>{label}</strong>
+                <strong>{copy.styles[index]}</strong>
                 <span aria-hidden="true">{communicationStyle === value ? '✓' : ''}</span>
               </button>
             ))}
@@ -161,7 +176,7 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
         </label>
 
         <div className="register-design-section">
-          <AuthDesignPicker color={appColor} mode={appTheme} onChange={onAppDesignChange} />
+          <AuthDesignPicker color={appColor} mode={appTheme} onChange={onAppDesignChange} t={t} />
         </div>
 
         <label className="login-field">
@@ -188,7 +203,7 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
           <span>{t.auth.password}</span>
           <input
             type={showPassword ? 'text' : 'password'}
-            placeholder="Mindestens 8 Zeichen"
+            placeholder={copy.passwordPlaceholder}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
@@ -205,10 +220,10 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
             <rect x="5" y="10" width="14" height="10" rx="2.5" />
             <path d="M8 10V7.7a4 4 0 0 1 8 0V10" />
           </svg>
-          <span>Passwort wiederholen</span>
+          <span>{copy.repeat}</span>
           <input
             type={showPassword ? 'text' : 'password'}
-            placeholder="Passwort wiederholen"
+            placeholder={copy.repeat}
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
             disabled={isLoading}
@@ -228,9 +243,9 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
             type="checkbox"
           />
           <span>
-            Ich akzeptiere die Datenschutzbestimmungen.
+            {copy.privacy}
             <button type="button" onClick={() => onNavigate('privacy')} disabled={isLoading}>
-              Anzeigen
+              {copy.show}
             </button>
           </span>
         </label>
@@ -238,11 +253,11 @@ function Registrieren({ appColor = 'Lila', appTheme = 'Hell', onAppDesignChange 
         {error && <div style={{ color: '#e74c3c', fontSize: '14px', marginBottom: '10px' }}>{error}</div>}
         {success && <div style={{ color: '#27ae60', fontSize: '14px', marginBottom: '10px' }}>{success}</div>}
         <button className="login-submit" type="submit" disabled={isLoading}>
-          {isLoading ? 'Wird registriert...' : t.start.register}
+          {isLoading ? copy.loading : t.start.register}
         </button>
       </form>
       <p className="register-copy">
-        Bereits ein Konto? <button type="button" onClick={() => onNavigate('login')} disabled={isLoading}>{t.start.login}</button>
+        {copy.account} <button type="button" onClick={() => onNavigate('login')} disabled={isLoading}>{t.start.login}</button>
       </p>
     </section>
   )

@@ -44,7 +44,18 @@ function FlowtreeProgress({
   plantedTrees = 0,
   redeemingTree = false,
   stats,
+  t,
+  languageStyle = 'german',
 }) {
+  const arabic = t?.nav?.progress === 'الإحصائيات'
+  const graphCopy = arabic ? { week: 'الأسبوع', streak: 'السلسلة', day: 'اليوم', active: '7 أيام نشطة متتالية', until: '{days} أيام حتى سلسلة 7 أيام', weekdays: ['الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد'] } : null
+  const copy = arabic ? { tree: 'شجرة التدفق', yours: 'شجرة التدفق الخاصة بك', grow: 'انمُ مع كل نشاط – من أجلك ومن أجل البيئة.', points: 'نقاط النمو', until: '{points} نقطة حتى المستوى التالي', max: 'تم الوصول إلى أعلى مستوى.', checkins: 'تسجيلات الدخول', routines: 'الروتينات', streak: 'السلسلة', appTime: 'وقت التطبيق', done: 'مكتمل', completed: 'منجز', activeDays: 'أيام نشطة', total: 'إجمالي الاستخدام', stages: ['بذرة','بادرة','نبتة','شجرة','شجرة مزهرة'] } : null
+  const localizedGraph = {
+    german: ['Fortschritt', 'Grafischer Überblick', 'Heute', 'Tagesziele', '{done} von {total} Routinen erledigt'],
+    english: ['Progress', 'Graphical overview', 'Today', 'Daily goals', '{done} of {total} routines completed'],
+    turkish: ['İlerleme', 'Grafiksel genel bakış', 'Bugün', 'Günlük hedefler', '{total} rutinden {done} tanesi tamamlandı'],
+    arabic: ['التقدم', 'نظرة عامة بالرسوم', 'اليوم', 'الأهداف اليومية', 'تم إنجاز {done} من {total} روتينات'],
+  }[languageStyle] ?? ['Fortschritt', 'Grafischer Überblick', 'Heute', 'Tagesziele', '{done} von {total} Routinen erledigt']
   const animatedGrowthPoints = useAnimatedNumber(stats.growthPoints)
   const animatedFlowCoins = useAnimatedNumber(flowCoins)
   const animatedFlowtree = useMemo(() => getFlowtreeProgress(animatedGrowthPoints), [animatedGrowthPoints])
@@ -59,14 +70,14 @@ function FlowtreeProgress({
   const coinsUntilTree = Math.max(SUSTAINABILITY_TREE_COST - safeFlowCoins, 0)
   const sustainabilityProgress = Math.min(Math.round((safeFlowCoins / SUSTAINABILITY_TREE_COST) * 100), 100)
   const statusMessage = nextLevel
-    ? `${pointsToNextLevel} Punkte bis ${nextLevel.name}`
-    : 'Höchste FlowTree-Stufe erreicht.'
+    ? (copy ? copy.until.replace('{points}', pointsToNextLevel) : `${pointsToNextLevel} Punkte bis ${nextLevel.name}`)
+    : (copy?.max ?? 'Höchste FlowTree-Stufe erreicht.')
   const pointsRangeText = nextLevel ? `${animatedGrowthPoints} / ${nextLevelPoints}` : `${animatedGrowthPoints}`
   const statCards = [
-    { icon: '✓', label: 'Check-ins', value: stats.checkIns, note: 'abgeschlossen' },
-    { icon: '↟', label: 'Routinen', value: stats.completedRoutines, note: 'erledigt' },
-    { icon: '•', label: 'Serie', value: stats.streak, note: 'Tage aktiv' },
-    { icon: '◷', label: 'App-Zeit', value: stats.usageTime, note: 'insgesamt genutzt' },
+    { icon: '✓', label: copy?.checkins ?? 'Check-ins', value: stats.checkIns, note: copy?.done ?? 'abgeschlossen' },
+    { icon: '↟', label: copy?.routines ?? 'Routinen', value: stats.completedRoutines, note: copy?.completed ?? 'erledigt' },
+    { icon: '•', label: copy?.streak ?? 'Serie', value: stats.streak, note: copy?.activeDays ?? 'Tage aktiv' },
+    { icon: '◷', label: copy?.appTime ?? 'App-Zeit', value: stats.usageTime, note: copy?.total ?? 'insgesamt genutzt' },
   ]
 
   useEffect(() => {
@@ -91,7 +102,7 @@ function FlowtreeProgress({
       <div className="flowtree-card">
         <div className="flowtree-hero-row">
           <div className="flowtree-card-copy">
-            <span>Dein Flowtree</span>
+            <span>{copy?.yours ?? 'Dein Flowtree'}</span>
             <button
               aria-label={`FlowCoins öffnen, aktueller Stand ${safeFlowCoins}`}
               className="flowtree-coin-chip"
@@ -100,7 +111,7 @@ function FlowtreeProgress({
             >
               <span aria-hidden="true">🪙</span> FlowCoins: {safeFlowCoins}
             </button>
-            <small>Wachse mit jeder Aktivität – für dich und die Umwelt.</small>
+            <small>{copy?.grow ?? 'Wachse mit jeder Aktivität – für dich und die Umwelt.'}</small>
           </div>
 
           <div className="flowtree-visual-panel">
@@ -112,7 +123,7 @@ function FlowtreeProgress({
         <div className="flowtree-points-panel">
           <div className="flowtree-points-head">
             <div>
-              <span>Wachstumspunkte</span>
+              <span>{copy?.points ?? 'Wachstumspunkte'}</span>
               <strong>{pointsRangeText}</strong>
             </div>
           </div>
@@ -139,7 +150,7 @@ function FlowtreeProgress({
                   <div className="flowtree-step-node">
                     <img src={level.image} alt="" aria-hidden="true" />
                   </div>
-                  <small>{level.name}</small>
+                  <small>{copy?.stages[index] ?? level.name}</small>
                   {index < flowtreeLevels.length - 1 && <i aria-hidden="true" />}
                 </div>
               )
@@ -166,8 +177,8 @@ function FlowtreeProgress({
       <section className="flowtree-graph-card" aria-label="Grafischer Fortschritt">
         <div className="stats-section-header flowtree-week-header">
           <div>
-            <span>Fortschritt</span>
-            <h2>Grafischer Überblick</h2>
+            <span>{localizedGraph[0]}</span>
+            <h2>{localizedGraph[1]}</h2>
           </div>
         </div>
 
@@ -183,24 +194,24 @@ function FlowtreeProgress({
               style={{ '--progress': `${stats.dailyGoalProgress}%` }}
             >
               <strong>{stats.dailyGoalProgress}%</strong>
-              <span>Heute</span>
+              <span>{localizedGraph[2]}</span>
             </div>
             <div>
-              <span>Tagesziele</span>
-              <p>{stats.dailyGoalCompleted} von {stats.dailyGoalTotal} Routinen erledigt</p>
+              <span>{localizedGraph[3]}</span>
+              <p>{localizedGraph[4].replace('{done}', stats.dailyGoalCompleted).replace('{total}', stats.dailyGoalTotal)}</p>
             </div>
           </article>
 
           <article className="flowtree-bars-card">
             <div>
-              <span>Woche</span>
+              <span>{graphCopy?.week ?? 'Woche'}</span>
               <strong>{stats.activeDays.length}/7</strong>
             </div>
             <div className="flowtree-week-bars" aria-label="Aktive Tage als Balkendiagramm">
-              {stats.week.map((day) => (
+              {stats.week.map((day, index) => (
                 <div key={day.dateKey}>
                   <i style={{ height: day.active ? '100%' : '18%' }} />
-                  <span>{day.label}</span>
+                  <span>{graphCopy?.weekdays[index] ?? day.label}</span>
                 </div>
               ))}
             </div>
@@ -208,9 +219,9 @@ function FlowtreeProgress({
 
           <article className="flowtree-streak-card">
             <div>
-              <span>Streak</span>
-              <strong>{stats.streak} Tage</strong>
-              <p>{stats.streak >= 7 ? '7 Tage in Folge aktiv' : `${Math.max(7 - stats.streak, 0)} Tage bis zur 7er-Serie`}</p>
+              <span>{graphCopy?.streak ?? 'Streak'}</span>
+              <strong>{stats.streak} {graphCopy?.day ?? 'Tage'}</strong>
+              <p>{stats.streak >= 7 ? (graphCopy?.active ?? '7 Tage in Folge aktiv') : (graphCopy ? graphCopy.until.replace('{days}', Math.max(7 - stats.streak, 0)) : `${Math.max(7 - stats.streak, 0)} Tage bis zur 7er-Serie`)}</p>
             </div>
             <div className="flowtree-streak-dots" aria-label={`${stats.streak} Tage in Folge aktiv`}>
               {streakDays.map((active, index) => (

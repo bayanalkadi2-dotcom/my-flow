@@ -66,6 +66,13 @@ function getCategoryDesign(title) {
 }
 
 function Routinen({ habits, gender, languageStyle, onAddHabit, onIncrement, onDecrement, onResetProgress, onSaveDailyEntry, onSetMood, onSetPartial, onUpdatePeriod, onRemove, onToggleDone, t, translateUnit }) {
+  const pickerCopy = {
+    german: { intro: 'Kleine Schritte, große Wirkung.', aria: 'Routine-Kategorien', customEyebrow: 'EIGENE ROUTINE', customTitle: 'Eigene Routine', customText: 'Erstelle deine ganz persönliche Routine, die perfekt zu dir passt.', customButton: 'Eigene Routine erstellen', empty: 'Du hast noch keine Routinen hinzugefügt.', emptyText: 'Tippe auf das Plus, um eine neue Routine auszuwählen.', subtitles: ['Empfohlen für dich', 'Achtsamkeit & Wohlbefinden', 'Bewegung & Ernährung', 'Einnahmen im Blick behalten', 'Fokus & Ziele erreichen', 'Weniger Stress, mehr Balance'] },
+    english: { intro: 'Small steps, big impact.', aria: 'Routine categories', customEyebrow: 'CUSTOM ROUTINE', customTitle: 'Custom routine', customText: 'Create a personal routine that fits you perfectly.', customButton: 'Create custom routine', empty: 'You have not added any routines yet.', emptyText: 'Tap the plus button to choose a new routine.', subtitles: ['Recommended for you', 'Mindfulness & wellbeing', 'Movement & nutrition', 'Keep track of intake', 'Focus & achieve goals', 'Less stress, more balance'] },
+    turkish: { intro: 'Küçük adımlar, büyük etki.', aria: 'Rutin kategorileri', customEyebrow: 'ÖZEL RUTİN', customTitle: 'Özel rutin', customText: 'Sana tam uyan kişisel rutinini oluştur.', customButton: 'Özel rutin oluştur', empty: 'Henüz rutin eklemedin.', emptyText: 'Yeni bir rutin seçmek için artı düğmesine dokun.', subtitles: ['Senin için önerilen', 'Farkındalık ve iyi oluş', 'Hareket ve beslenme', 'Alımları takip et', 'Odaklan ve hedeflere ulaş', 'Daha az stres, daha fazla denge'] },
+    arabic: { intro: 'خطوات صغيرة، تأثير كبير.', aria: 'فئات الروتين', customEyebrow: 'روتين خاص', customTitle: 'روتين خاص', customText: 'أنشئ روتينا شخصيا يناسبك تماما.', customButton: 'إنشاء روتين خاص', empty: 'لم تضف أي روتين بعد.', emptyText: 'اضغط على علامة الجمع لاختيار روتين جديد.', subtitles: ['موصى به لك', 'اليقظة والعافية', 'الحركة والتغذية', 'متابعة الأدوية والفيتامينات', 'التركيز وتحقيق الأهداف', 'توتر أقل، توازن أكبر'] },
+  }[languageStyle]
+  const categoryOrder = ['Für dich', 'Mentale Gesundheit', 'Körperliche Gesundheit', 'Medikamente & Vitamine', 'Produktivität', 'Gewohnheiten reduzieren']
   const { routineSuggestions } = useProfile()
   const [title, setTitle] = useState('')
   const [target, setTarget] = useState('4')
@@ -122,9 +129,9 @@ function Routinen({ habits, gender, languageStyle, onAddHabit, onIncrement, onDe
     <section className="screen routines-screen">
       <header className="routines-page-header">
         <div>
-          <p className="eyebrow">ROUTINEN</p>
-          <h1>Deine Routinen</h1>
-          <p>Kleine Schritte, große Wirkung.</p>
+          <p className="eyebrow">{t.routines.eyebrow}</p>
+          <h1>{t.routines.title}</h1>
+          <p>{pickerCopy.intro}</p>
         </div>
         <button
           className="routine-add-circle"
@@ -143,7 +150,7 @@ function Routinen({ habits, gender, languageStyle, onAddHabit, onIncrement, onDe
 
       {pickerOpen && (
         <div className="routine-selection-panel">
-          <div className="routine-picker" aria-label="Routine-Kategorien">
+          <div className="routine-picker" aria-label={pickerCopy.aria}>
         {availableCategories.map((category) => {
           const isOpen = openCategory === category.title
           const design = getCategoryDesign(category.title)
@@ -158,7 +165,7 @@ function Routinen({ habits, gender, languageStyle, onAddHabit, onIncrement, onDe
                 <span className="routine-category-icon" aria-hidden="true">{design.icon}</span>
                 <span className="routine-category-copy">
                   <span>{translateCategory(category.title, languageStyle)}</span>
-                  <small>{design.subtitle}</small>
+                  <small>{pickerCopy.subtitles[categoryOrder.indexOf(category.title)] ?? design.subtitle}</small>
                 </span>
                 <strong aria-hidden="true">{isOpen ? '-' : '+'}</strong>
               </button>
@@ -194,11 +201,11 @@ function Routinen({ habits, gender, languageStyle, onAddHabit, onIncrement, onDe
 
           <article className="custom-routine-card">
         <div>
-          <span>Eigene Routine</span>
-          <h2>Eigene Routine</h2>
-          <p>Erstelle deine ganz persönliche Routine, die perfekt zu dir passt.</p>
+          <span>{pickerCopy.customEyebrow}</span>
+          <h2>{pickerCopy.customTitle}</h2>
+          <p>{pickerCopy.customText}</p>
           <button type="button" onClick={() => setCustomFormOpen((open) => !open)}>
-            Eigene Routine erstellen
+            {pickerCopy.customButton}
           </button>
         </div>
         <div className="custom-routine-illustration" aria-hidden="true">
@@ -248,8 +255,8 @@ function Routinen({ habits, gender, languageStyle, onAddHabit, onIncrement, onDe
       <div className="habit-list">
         {visibleHabits.length === 0 && (
           <div className="routines-empty-state">
-            <strong>Du hast noch keine Routinen hinzugefügt.</strong>
-            <p>Tippe auf das Plus, um eine neue Routine auszuwählen.</p>
+            <strong>{pickerCopy.empty}</strong>
+            <p>{pickerCopy.emptyText}</p>
           </div>
         )}
         {visibleHabits.map((habit) => (
@@ -266,6 +273,7 @@ function Routinen({ habits, gender, languageStyle, onAddHabit, onIncrement, onDe
             onRemove={onRemove}
             onToggleDone={onToggleDone}
             t={t}
+            languageStyle={languageStyle}
           />
         ))}
       </div>

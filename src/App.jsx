@@ -190,6 +190,8 @@ function App() {
   const { profile, setProfile, isLoading: profileLoading } = useProfile()
   const { addCheckin, removeCheckin } = useCheckins()
   const [screen, setScreen] = useState(() => initialPasswordResetUrl ? 'passwordRecovery' : 'dashboard')
+  const [privacyReturnScreen, setPrivacyReturnScreen] = useState('profileSettings')
+  const [registrationDraft, setRegistrationDraft] = useState({})
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(() => localStorage.getItem('hasSeenOnboarding') === 'true')
   const [languageStyle, setLanguageStyle] = useState('german')
   const [communicationStyle, setCommunicationStyle] = useState('casual')
@@ -224,7 +226,6 @@ function App() {
   useEffect(() => {
     if (!isAuthenticated || !user) {
       queueMicrotask(() => {
-        setLanguageStyle('german')
         setCommunicationStyle('casual')
         setProfileName('Gast')
         setAppTheme('Hell')
@@ -237,7 +238,7 @@ function App() {
         const savedGuestTheme = localStorage.getItem(getThemeStorageKey(null))
         const savedGuestColor = localStorage.getItem(getColorThemeStorageKey(null)) || localStorage.getItem('myflow-last-color-theme')
         setGuestSetup(savedGuestSetup)
-        setLanguageStyle(savedGuestSetup.language_style || 'german')
+        setLanguageStyle(localStorage.getItem('myflow-language-style') || savedGuestSetup.language_style || 'german')
         setCommunicationStyle(savedGuestSetup.communication_style || 'casual')
         setProfileName(savedGuestSetup.display_name || 'Gast')
         setAppTheme(savedGuestTheme || savedGuestSetup.theme || 'Hell')
@@ -257,7 +258,9 @@ function App() {
         const savedTheme = localStorage.getItem(getThemeStorageKey(user.id))
         const savedColor = localStorage.getItem(getColorThemeStorageKey(user.id))
         if (settingsRes.success && settingsRes.settings) {
-          setLanguageStyle(settingsRes.settings.language_style || 'german')
+          const syncedLanguage = settingsRes.settings.language_style || localStorage.getItem('myflow-language-style') || 'german'
+          setLanguageStyle(syncedLanguage)
+          localStorage.setItem('myflow-language-style', syncedLanguage)
           setCommunicationStyle(settingsRes.settings.communication_style || 'casual')
           const syncedTheme = settingsRes.settings.theme || savedTheme || 'Hell'
           const syncedColor = settingsRes.settings.color_theme || savedColor || 'Lila'
@@ -584,6 +587,12 @@ function App() {
 
   function selectLanguage(nextLanguage) {
     setLanguageStyle(nextLanguage)
+    localStorage.setItem('myflow-language-style', nextLanguage)
+    setGuestSetup((currentSetup) => {
+      const nextSetup = { ...currentSetup, language_style: nextLanguage }
+      localStorage.setItem('myflow-guest-setup', JSON.stringify(nextSetup))
+      return nextSetup
+    })
 
     // If authenticated, save to Supabase
     if (isAuthenticated && user) {
@@ -811,7 +820,10 @@ function App() {
         case 'login':
           return <Einloggen onNavigate={setScreen} t={t} />
         case 'register':
-          return <Registrieren appColor={appColor} appTheme={appTheme} onAppDesignChange={handleAppDesignChange} onNavigate={setScreen} t={t} />
+          return <Registrieren appColor={appColor} appTheme={appTheme} draft={registrationDraft} languageStyle={languageStyle} onAppDesignChange={handleAppDesignChange} onDraftChange={setRegistrationDraft} onLanguageChange={selectLanguage} onNavigate={(nextScreen) => {
+            if (nextScreen === 'privacy') setPrivacyReturnScreen('register')
+            setScreen(nextScreen)
+          }} t={t} />
         case 'resetPassword':
           return <PasswordReset onNavigate={setScreen} t={t} />
         case 'languageStyle':
@@ -879,7 +891,10 @@ function App() {
             profileName={resolvedProfileName}
             tone={tone}
             t={t}
-            onNavigate={setScreen}
+            onNavigate={(nextScreen) => {
+              if (nextScreen === 'privacy') setPrivacyReturnScreen('profileSettings')
+              setScreen(nextScreen)
+            }}
             onIncrement={incrementHabit}
             onDecrement={decrementHabit}
             onResetProgress={resetHabitProgress}
@@ -917,19 +932,23 @@ function App() {
             accountProfile={accountProfile}
             calendarNotes={calendarNotes}
             habits={preparedHabits}
-            onNavigate={setScreen}
+            onNavigate={(nextScreen) => {
+              if (nextScreen === 'privacy') setPrivacyReturnScreen('profileSettings')
+              setScreen(nextScreen)
+            }}
             profileName={resolvedProfileName}
+            t={t}
             user={user}
           />
         )
       case 'privacy':
-        return <Datenschutz onNavigate={setScreen} />
+        return <Datenschutz backTarget={privacyReturnScreen} languageStyle={languageStyle} onNavigate={setScreen} t={t} />
       case 'calendar':
-        return <Kalender notes={calendarNotes} onNotesChange={handleCalendarNotesChange} />
+        return <Kalender languageStyle={languageStyle} notes={calendarNotes} onNotesChange={handleCalendarNotesChange} t={t} />
       case 'progress':
         return <Statistik habits={preparedHabits} languageStyle={languageStyle} onNavigate={setScreen} t={t} />
       case 'freunde':
-        return <Freunde profileName={resolvedProfileName} user={user} />
+        return <Freunde languageStyle={languageStyle} profileName={resolvedProfileName} user={user} t={t} />
       case 'welcomeCharacter':
         return <Willkommen onNavigate={setScreen} profileName={resolvedProfileName} t={t} />
       case 'profile':
@@ -947,7 +966,10 @@ function App() {
             onAccountProfileChange={handleAccountProfileChange}
             onAppThemeChange={handleAppThemeChange}
             onAppDesignChange={handleAppDesignChange}
-            onNavigate={setScreen}
+            onNavigate={(nextScreen) => {
+              if (nextScreen === 'privacy') setPrivacyReturnScreen('profileSettings')
+              setScreen(nextScreen)
+            }}
             onProfileNameChange={handleProfileNameChange}
             onCommunicationStyleChange={handleCommunicationStyleChange}
             onSelectStyle={selectLanguage}
@@ -969,7 +991,10 @@ function App() {
             onAccountProfileChange={handleAccountProfileChange}
             onAppThemeChange={handleAppThemeChange}
             onAppDesignChange={handleAppDesignChange}
-            onNavigate={setScreen}
+            onNavigate={(nextScreen) => {
+              if (nextScreen === 'privacy') setPrivacyReturnScreen('profileSettings')
+              setScreen(nextScreen)
+            }}
             onProfileNameChange={handleProfileNameChange}
             onCommunicationStyleChange={handleCommunicationStyleChange}
             onSelectStyle={selectLanguage}
@@ -1034,16 +1059,16 @@ function App() {
               <span>{profileInitial}</span>
               <div>
                 <strong>{resolvedProfileName || 'Gast'}</strong>
-                <small>MyFlow Konto</small>
+                <small>{languageStyle === 'arabic' ? 'حساب MyFlow' : 'MyFlow Konto'}</small>
               </div>
             </div>
-            <button type="button" onClick={() => openAccountScreen('profile')}>Profil ansehen</button>
-            <button type="button" onClick={() => openAccountScreen('profileSettings')}>Einstellungen</button>
-            <button type="button" onClick={() => openAccountScreen('profileSettings')}>Sprache</button>
+            <button type="button" onClick={() => openAccountScreen('profile')}>{languageStyle === 'arabic' ? 'عرض الملف الشخصي' : 'Profil ansehen'}</button>
+            <button type="button" onClick={() => openAccountScreen('profileSettings')}>{languageStyle === 'arabic' ? 'الإعدادات' : 'Einstellungen'}</button>
+            <button type="button" onClick={() => openAccountScreen('profileSettings')}>{languageStyle === 'arabic' ? 'اللغة' : 'Sprache'}</button>
             <button type="button" onClick={() => handleAppThemeChange(appTheme === 'Dunkel' ? 'Hell' : 'Dunkel')}>
-              {appTheme === 'Dunkel' ? 'Light Mode' : 'Dark Mode'}
+              {languageStyle === 'arabic' ? (appTheme === 'Dunkel' ? 'الوضع الفاتح' : 'الوضع الداكن') : (appTheme === 'Dunkel' ? 'Light Mode' : 'Dark Mode')}
             </button>
-            <button className="account-menu-logout" type="button" onClick={handleAccountLogout}>Abmelden</button>
+            <button className="account-menu-logout" type="button" onClick={handleAccountLogout}>{languageStyle === 'arabic' ? 'تسجيل الخروج' : 'Abmelden'}</button>
           </section>
         )}
       </div>

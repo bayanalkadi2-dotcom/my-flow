@@ -18,6 +18,14 @@ describe('translation helpers', () => {
     expect(translateHabitTitle('Unbekannt', 'english')).toBe('Unbekannt')
   })
 
+  it('translates database and personalized routine values in every supported language', () => {
+    expect(translateHabitTitle('Mini-Aufgaben erledigen', 'arabic')).toBe('إنجاز المهام الصغيرة')
+    expect(translateHabitTitle('Vorlesung nachbereiten', 'english')).toBe('Review lecture')
+    expect(translateHabitTitle('Schlafroutine', 'turkish')).toBe('Uyku rutini')
+    expect(translateUnit('Aufgabe', 'arabic')).toBe('مهمة')
+    expect(translateCategory('Für dich', 'turkish')).toBe('Senin için')
+  })
+
   it('builds display values for habits', () => {
     const habit = translateHabit({
       title: 'Wasser trinken',

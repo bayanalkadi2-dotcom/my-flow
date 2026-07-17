@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import mascotImage from '../assets/flowtree/mascot-cutout.webp'
-import { useProfile } from '../context/profileContextValue'
 import { useCheckins } from '../context/checkinContextValue'
 import { flowtreeLevels } from '../data/flowtreeLevels'
 import { getDailyThought } from '../data/dailyThoughts'
@@ -54,7 +53,6 @@ function getGrowthPresentation(treeType, level) {
 }
 
 function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profileName, t, onNavigate }) {
-  const { personalizedTexts } = useProfile()
   const { checkins: localCheckIns } = useCheckins()
   const [checkIns, setCheckIns] = useState([])
   const [checkInsLoading, setCheckInsLoading] = useState(true)
@@ -75,6 +73,7 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
   const currentLevel = flowtree.currentLevel
   const treeType = localStorage.getItem('myflow-tree-type') || 'oak'
   const growthPresentation = getGrowthPresentation(treeType, currentLevel.level)
+  const localizedTreeName = t.dashboard.flowTreeName ?? growthPresentation.productName
   const nextLevelTarget = flowtree.nextLevelPoints ?? flowtreeStats.growthPoints
   const completedHabits = dailyProgress.completed
   const openHabits = dailyProgress.open
@@ -87,7 +86,7 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
   const visibleDailyRoutine = formatProfileList(accountProfile.dailyRoutine)
   const todayNote = String(calendarNotes[getLocalDateKey()] || '').trim()
   const hasProfileDetails = visibleGoals.length > 0 || visibleDailyRoutine.length > 0
-  const todayThought = getDailyThought()
+  const todayThought = t.dashboard.flowTreeName ? t.dashboard.thoughtText : getDailyThought()
   const loadCheckIns = useCallback(async () => {
     setCheckInsLoading(true)
 
@@ -138,17 +137,17 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
       <div className="page-header">
         <div>
           <p className="eyebrow">{t.dashboard.hello.replace('{name}', firstName)}</p>
-          <h1>{personalizedTexts.homeQuestion}</h1>
+          <h1>{t.dashboard.title}</h1>
         </div>
       </div>
 
       <article className="home-flowtree-card" aria-label={`${growthPresentation.productName}-Statistik`}>
         <div className="home-flowtree-copy">
-          <span className="home-flowtree-badge">✦ Dein {growthPresentation.productName}</span>
-          <h2>{growthPresentation.name}</h2>
-          <p className="home-flowtree-level">✦ Stufe {currentLevel.level} von {flowtreeLevels.length}</p>
+          <span className="home-flowtree-badge">✦ {t.dashboard.home.yourTree.replace('{tree}', localizedTreeName)}</span>
+          <h2>{localizedTreeName}</h2>
+          <p className="home-flowtree-level">✦ {t.dashboard.home.level.replace('{current}', currentLevel.level).replace('{total}', flowtreeLevels.length)}</p>
           <div className="home-flowtree-message">
-            <strong>Du bist auf einem großartigen Weg!</strong>
+            <strong>{t.dashboard.home.greatWay}</strong>
             <small>✦</small>
           </div>
         </div>
@@ -160,7 +159,7 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
 
         <div className="home-flowtree-progress">
           <div>
-            <span>Wachstumspunkte</span>
+            <span>{t.dashboard.home.growthPoints}</span>
             <strong>
               {flowtreeStats.growthPoints} / {nextLevelTarget}
             </strong>
@@ -171,10 +170,10 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
           </div>
           <small className="home-flowtree-status">
             {checkInsLoading
-              ? 'Flowtree wird aktualisiert …'
+              ? t.dashboard.home.updating
               : flowtree.nextLevel
-                ? `Noch ${flowtree.pointsToNextLevel} Punkte bis zur nächsten Stufe (${flowtree.nextLevel.name}).`
-                : 'Maximale Stufe erreicht.'}
+                ? t.dashboard.home.pointsUntil.replace('{points}', flowtree.pointsToNextLevel).replace('{level}', flowtree.nextLevel.name)
+                : t.dashboard.home.maxLevel}
           </small>
         </div>
       </article>
@@ -182,18 +181,18 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
       <section className="home-goals-card">
         <div className="home-goals-header">
           <div>
-            <span>Mein Alltag</span>
-            <h2>{todayNote ? 'Notiz für heute' : hasProfileDetails ? 'Ziele und Tagesablauf' : 'Noch nichts eingetragen'}</h2>
+            <span>{t.dashboard.home.everyday}</span>
+            <h2>{todayNote ? t.dashboard.home.todayNote : hasProfileDetails ? t.dashboard.home.goalsRoutine : t.dashboard.home.nothing}</h2>
           </div>
           <button type="button" onClick={() => onNavigate?.('calendar')}>
-            Bearbeiten
+            {t.dashboard.home.edit}
           </button>
         </div>
         {todayNote && <p className="home-day-note">{todayNote}</p>}
         {hasProfileDetails ? (
           <div className="home-profile-summary">
             <div>
-              <small>Meine Ziele</small>
+              <small>{t.dashboard.home.myGoals}</small>
               {visibleGoals.length > 0 ? (
                 <div className="home-goals-list">
                   {visibleGoals.map((goal) => (
@@ -201,11 +200,11 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
                   ))}
                 </div>
               ) : (
-                <p>Noch kein Ziel eingetragen.</p>
+                <p>{t.dashboard.home.noGoal}</p>
               )}
             </div>
             <div>
-              <small>Mein Tagesablauf</small>
+              <small>{t.dashboard.home.myRoutine}</small>
               {visibleDailyRoutine.length > 0 ? (
                 <div className="home-goals-list">
                   {visibleDailyRoutine.map((routineItem) => (
@@ -213,12 +212,12 @@ function DashboardHome({ accountProfile = {}, calendarNotes = {}, habits, profil
                   ))}
                 </div>
               ) : (
-                <p>Noch kein Tagesablauf eingetragen.</p>
+                <p>{t.dashboard.home.noRoutine}</p>
               )}
             </div>
           </div>
         ) : !todayNote ? (
-          <p>Trage Ziele und Tagesablauf ein, damit MyFlow passende Routinen und Erinnerungen anzeigen kann.</p>
+          <p>{t.dashboard.home.emptyHint}</p>
         ) : null}
       </section>
 

@@ -54,8 +54,6 @@ const billingCycles = ['Monatlich', 'Jährlich']
 
 const paymentMethods = ['PayPal', 'Klarna', 'Kreditkarte', 'SEPA', 'Apple Pay', 'Google Pay']
 
-const paidTools = ['KI-Coach', 'Erweiterte Statistik', 'Premium-Routinen']
-
 const levelSteps = [
   { name: 'Starter', min: 0 },
   { name: 'Bronze', min: 250 },
@@ -113,57 +111,57 @@ function getLevel(score) {
   }
 }
 
-function getPaymentInstruction(method) {
+function getPaymentInstruction(method, copy) {
   switch (method) {
     case 'PayPal':
-      return 'Du wirst mit deinem PayPal-Konto verbunden.'
+      return copy.paypal
     case 'Klarna':
-      return 'Klarna prüft deine Zahlung und bestätigt den Kauf.'
+      return copy.klarna
     case 'Kreditkarte':
-      return 'Gib deine Kartendaten ein, um die Zahlung zu bestätigen.'
+      return copy.card
     case 'SEPA':
-      return 'Gib deine IBAN ein, damit das Abo per Lastschrift bezahlt wird.'
+      return copy.sepa
     case 'Apple Pay':
-      return 'Bestätige die Zahlung mit Apple Pay.'
+      return copy.apple
     case 'Google Pay':
-      return 'Bestätige die Zahlung mit Google Pay.'
+      return copy.google
     default:
-      return 'Wähle eine Zahlungsart aus.'
+      return copy.select
   }
 }
 
 function getBmiCategory(bmi) {
   if (bmi < 18.5) {
-    return 'Untergewicht'
+    return 'underweight'
   }
 
   if (bmi < 25) {
-    return 'Normalgewicht'
+    return 'normal'
   }
 
   if (bmi < 30) {
-    return 'Übergewicht'
+    return 'overweight'
   }
 
-  return 'Starkes Übergewicht'
+  return 'severe'
 }
 
 function getHealthRecommendation(bmi, weight) {
   const waterLiters = Math.max(1.5, Math.round(weight * 35) / 1000).toFixed(1)
 
   if (bmi < 18.5) {
-    return { water: waterLiters, steps: '7.000', note: 'ruhig steigern' }
+    return { water: waterLiters, steps: '7.000', note: 'gentle' }
   }
 
   if (bmi < 25) {
-    return { water: waterLiters, steps: '8.000', note: 'guter Durchschnitt' }
+    return { water: waterLiters, steps: '8.000', note: 'average' }
   }
 
   if (bmi < 30) {
-    return { water: waterLiters, steps: '9.000', note: 'aktiv bleiben' }
+    return { water: waterLiters, steps: '9.000', note: 'active' }
   }
 
-  return { water: waterLiters, steps: '7.500', note: 'sanft anfangen' }
+  return { water: waterLiters, steps: '7.500', note: 'start' }
 }
 
 function SettingIcon({ type }) {
@@ -218,6 +216,30 @@ function Profil({
 }) {
   const { signout, user } = useAuth()
   const { profile, profileSituation, setProfile } = useProfile()
+  const situationTranslations = {
+    german: {
+      user: { university: 'Student:in', school: 'Schüler:in', vocational_training: 'Auszubildende:r', dual_study: 'Dual Studierende:r', employed: 'Berufstätig', other: 'Andere' },
+      education: { university: 'Universität' }, challenge: { exam_stress: 'Prüfungsstress' }, goal: { better_day_structure: 'Bessere Tagesstruktur' }, none: 'Keine Angabe',
+    },
+    english: {
+      user: { university: 'University student', school: 'School student', vocational_training: 'Trainee', dual_study: 'Dual-study student', employed: 'Employed', other: 'Other' },
+      education: { university: 'University' }, challenge: { exam_stress: 'Exam stress' }, goal: { better_day_structure: 'Better daily structure' }, none: 'Not specified',
+    },
+    turkish: {
+      user: { university: 'Üniversite öğrencisi', school: 'Öğrenci', vocational_training: 'Mesleki eğitim öğrencisi', dual_study: 'İkili program öğrencisi', employed: 'Çalışan', other: 'Diğer' },
+      education: { university: 'Üniversite' }, challenge: { exam_stress: 'Sınav stresi' }, goal: { better_day_structure: 'Daha iyi günlük düzen' }, none: 'Belirtilmedi',
+    },
+    arabic: {
+      user: { university: 'طالبة جامعة', school: 'طالبة', vocational_training: 'متدربة مهنية', dual_study: 'طالبة دراسة مزدوجة', employed: 'موظفة', other: 'أخرى' },
+      education: { university: 'جامعة' }, challenge: { exam_stress: 'التوتر من الامتحانات' }, goal: { better_day_structure: 'تنظيم اليوم بشكل أفضل' }, none: 'غير محدد',
+    },
+  }[languageStyle] ?? null
+  const localizedSituation = situationTranslations ? {
+    userType: situationTranslations.user[profile?.student_status] ?? profileSituation.userType,
+    educationLevel: situationTranslations.education[profile?.education_level] ?? (profile?.education_level ? profileSituation.educationLevel : situationTranslations.none),
+    challenges: profile?.main_challenges?.length ? profile.main_challenges.map((value) => situationTranslations.challenge[value] ?? value) : [situationTranslations.none],
+    supportGoals: profile?.support_goals?.length ? profile.support_goals.map((value) => situationTranslations.goal[value] ?? value) : [situationTranslations.none],
+  } : profileSituation
   const guestDetails = (() => {
     try {
       return JSON.parse(localStorage.getItem('myflow-guest-setup') || '{}')
@@ -282,7 +304,13 @@ function Profil({
   }, [storedHeight, storedWeight])
 
   const selectedGender = genderOptions.find((option) => option.id === gender)
+  const selectedGenderLabel = t.profile.genderOptions?.[selectedGender?.id] ?? selectedGender?.label
   const selectedPlan = paymentPlans.find((plan) => plan.id === paymentPlan)
+  const paymentCopy = t.profile.paymentUi
+  const paymentInstructions = t.profile.paymentInstructions
+  const getPlanLabel = (plan) => plan.id === 'free' ? paymentCopy.free : plan.label
+  const getCycleLabel = (cycle) => cycle === 'Jährlich' ? paymentCopy.yearly : paymentCopy.monthly
+  const getPaymentMethodLabel = (method) => method === 'Kreditkarte' ? paymentCopy.card : method
   const selectedPlanPrice = billingCycle === 'Jährlich'
     ? `${selectedPlan.yearlyPrice} pro Jahr`
     : selectedPlan.monthlyPrice
@@ -296,6 +324,7 @@ function Profil({
   const bmi = weight > 0 && height > 0 ? weight / (heightInMeters * heightInMeters) : 0
   const bmiLabel = bmi.toFixed(1)
   const bmiCategory = getBmiCategory(bmi)
+  const healthCopy = t.profile.healthUi
   const recommendation = getHealthRecommendation(bmi, weight)
   const challengePoints = calculateChallengePoints(habits)
   const level = getLevel(challengePoints)
@@ -509,7 +538,7 @@ function Profil({
         style={{ display: settingsPage ? 'none' : undefined }}
         onClick={() => onNavigate('profileSettings')}
         type="button"
-        aria-label="Profil-Einstellungen öffnen"
+        aria-label={t.profile.openSettings}
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" />
@@ -524,13 +553,13 @@ function Profil({
         onChange={handleProfileImageChange}
       />
       <div className="profile-picture-card">
-        <label className="profile-picture" htmlFor="profile-image-input" aria-label="Profilbild ändern">
+        <label className="profile-picture" htmlFor="profile-image-input" aria-label={t.profile.changePicture}>
           {visibleProfileImage ? <img src={visibleProfileImage} alt="" /> : profileInitial}
         </label>
         <div>
           <strong>{name}</strong>
           <p>{t.profile.picture}</p>
-          <label className="profile-picture-button" htmlFor="profile-image-input">Bild ändern</label>
+          <label className="profile-picture-button" htmlFor="profile-image-input">{t.profile.changePicture}</label>
         </div>
       </div>
       {profileImageStatus && <p className="profile-image-status" role="status">{profileImageStatus}</p>}
@@ -538,51 +567,51 @@ function Profil({
         <section className="profile-situation-card" aria-labelledby="profile-situation-title">
           <div className="profile-situation-header">
             <div>
-              <p className="eyebrow">PERSONALISIERUNG</p>
-              <h2 id="profile-situation-title">Meine Situation</h2>
+              <p className="eyebrow">{t.profile.personalization}</p>
+              <h2 id="profile-situation-title">{t.profile.situation}</h2>
             </div>
-            <button type="button" onClick={() => onNavigate('profileOnboarding')}>Angaben bearbeiten</button>
+            <button type="button" onClick={() => onNavigate('profileOnboarding')}>{t.profile.editDetails}</button>
           </div>
           <dl className="profile-situation-list">
             <div>
-              <dt>Nutzertyp</dt>
-              <dd>{profileSituation.userType}</dd>
+              <dt>{t.profile.userType}</dt>
+              <dd>{localizedSituation.userType}</dd>
             </div>
             <div>
-              <dt>Bildungsstufe</dt>
-              <dd>{profileSituation.educationLevel}</dd>
+              <dt>{t.profile.educationLevel}</dt>
+              <dd>{localizedSituation.educationLevel}</dd>
             </div>
             <div>
-              <dt>Belastungen</dt>
-              <dd>{profileSituation.challenges.join(', ')}</dd>
+              <dt>{t.profile.challenges}</dt>
+              <dd>{localizedSituation.challenges.join(', ')}</dd>
             </div>
             <div>
-              <dt>Unterstützungsziele</dt>
-              <dd>{profileSituation.supportGoals.join(', ')}</dd>
+              <dt>{t.profile.supportGoals}</dt>
+              <dd>{localizedSituation.supportGoals.join(', ')}</dd>
             </div>
           </dl>
         </section>
       )}
       {showSettings && (
-        <section className="register-settings-panel profile-settings-panel" aria-label="Profil-Einstellungen">
+        <section className="register-settings-panel profile-settings-panel" aria-label={t.profile.settings}>
           <div className="register-settings-header">
             <div>
               <strong>{t.profile.settings}</strong>
               <p>{t.profile.settingsText}</p>
             </div>
-            <button type="button" onClick={() => settingsPage ? onNavigate('profile') : setShowProfileSettings(false)} aria-label="Einstellungen schließen">
+            <button type="button" onClick={() => settingsPage ? onNavigate('profile') : setShowProfileSettings(false)} aria-label={t.profile.closeSettings}>
               x
             </button>
           </div>
           <div className="profile-edit-panel">
-            <label className="settings-profile-avatar" htmlFor="profile-image-input" aria-label="Profilbild ändern">
+            <label className="settings-profile-avatar" htmlFor="profile-image-input" aria-label={t.profile.changePicture}>
               {visibleProfileImage ? <img src={visibleProfileImage} alt="" /> : profileInitial}
             </label>
             <strong>{profileCardTitle}</strong>
-            <p>Hier kannst du dein Profil und deine persönlichen Angaben verwalten.</p>
+            <p>{t.profile.overviewText}</p>
           </div>
           <div className="settings-list">
-        <span className="settings-section-label">Profil</span>
+        <span className="settings-section-label">{t.profile.profileSection}</span>
         <div className="profile-setting-row">
           <SettingIcon type="name" />
           <span>{t.profile.name}</span>
@@ -602,7 +631,7 @@ function Profil({
         <div className="profile-setting-row">
           <SettingIcon type="gender" />
           <span>{t.profile.gender}</span>
-          <strong>{selectedGender.label}</strong>
+          <strong>{selectedGenderLabel}</strong>
           <button type="button" onClick={() => openEditor('gender')}>{t.common.change}</button>
         </div>
         {activeEditor === 'gender' && (
@@ -615,7 +644,7 @@ function Profil({
                   onClick={() => updateDraft('gender', option.id)}
                   type="button"
                 >
-                  {option.label}
+                  {t.profile.genderOptions?.[option.id] ?? option.label}
                 </button>
               ))}
             </div>
@@ -626,13 +655,13 @@ function Profil({
         <div className="profile-setting-row">
           <SettingIcon type="age" />
           <span>{t.profile.age}</span>
-          <strong>{currentAge ? `${currentAge} Jahre` : 'Keine Angabe'}</strong>
+          <strong>{currentAge ? `${currentAge} ${t.profile.years}` : t.profile.noValue}</strong>
           <button type="button" onClick={() => openEditor('age')}>{t.common.change}</button>
         </div>
         {activeEditor === 'age' && (
           <div className="profile-edit-panel">
             <label>
-              {t.profile.age} in Jahren
+              {t.profile.ageInYears}
               <input
                 inputMode="numeric"
                 min={MIN_PROFILE_AGE}
@@ -653,13 +682,13 @@ function Profil({
         <div className="profile-setting-row">
           <SettingIcon type="weight" />
           <span>{t.profile.weight}</span>
-          <strong>{weight ? `${weight} kg` : 'Keine Angabe'}</strong>
+          <strong>{weight ? `${weight} kg` : t.profile.noValue}</strong>
           <button type="button" onClick={() => openEditor('weight')}>{t.common.change}</button>
         </div>
         {activeEditor === 'weight' && (
           <div className="profile-edit-panel">
             <label>
-              {t.profile.weight} in kg
+              {t.profile.weightInKg}
               <input
                 className={measurementErrors.weight ? 'field-invalid' : ''}
                 inputMode="decimal"
@@ -694,7 +723,7 @@ function Profil({
         {activeEditor === 'height' && (
           <div className="profile-edit-panel">
             <label>
-              {t.profile.height} in cm
+              {t.profile.heightInCm}
               <input
                 className={measurementErrors.height ? 'field-invalid' : ''}
                 inputMode="decimal"
@@ -742,12 +771,12 @@ function Profil({
 
         <div className="profile-setting-row">
           <SettingIcon type="onboarding" />
-          <span>Meine Situation</span>
-          <strong>Angaben</strong>
-          <button type="button" onClick={() => onNavigate('profileOnboarding')}>Angaben bearbeiten</button>
+          <span>{t.profile.situation}</span>
+          <strong>{t.profile.details}</strong>
+          <button type="button" onClick={() => onNavigate('profileOnboarding')}>{t.profile.editDetails}</button>
         </div>
 
-        <span className="settings-section-label">Einstellungen</span>
+        <span className="settings-section-label">{t.profile.settingsSection}</span>
         <PwaInstallOption />
         <div className="profile-setting-row">
           <SettingIcon type="language" />
@@ -800,36 +829,34 @@ function Profil({
         <div className="profile-setting-row">
           <SettingIcon type="design" />
           <span>{t.profile.design}</span>
-          <strong>{appColor} · {appTheme}</strong>
+          <strong>{appColor === 'Blau' ? t.profile.designPicker.blue : t.profile.designPicker.purple} · {appTheme === 'Dunkel' ? t.profile.designPicker.dark : t.profile.designPicker.light}</strong>
           <button type="button" onClick={() => openEditor('design')}>{t.common.change}</button>
         </div>
         {activeEditor === 'design' && (
           <div className="profile-edit-panel">
-            <AuthDesignPicker color={appColor} mode={appTheme} onChange={selectDesign} />
+            <AuthDesignPicker color={appColor} mode={appTheme} onChange={selectDesign} t={t} />
           </div>
         )}
         <div className="profile-setting-row">
           <SettingIcon type="privacy" />
-          <span>Datenschutz & Impressum</span>
-          <strong>Info</strong>
-          <button type="button" onClick={() => onNavigate('privacy')}>Öffnen</button>
+          <span>{t.profile.privacy}</span>
+          <strong>{t.profile.info}</strong>
+          <button type="button" onClick={() => onNavigate('privacy')}>{t.profile.open}</button>
         </div>
         <div className="profile-setting-row">
           <SettingIcon type="subscription" />
           <span>{t.profile.subscription}</span>
-          <strong>{selectedPlan.label}</strong>
+          <strong>{getPlanLabel(selectedPlan)}</strong>
           <button type="button" onClick={() => openEditor('payment')}>{t.common.change}</button>
         </div>
         {activeEditor === 'payment' && (
           <div className="settings-group payment-settings">
             <div className="payment-settings-title">
               <strong>{t.profile.payment}</strong>
-              <span>{selectedPlan.label} / {selectedPlanPrice}</span>
+              <span>{getPlanLabel(selectedPlan)} / {selectedPlanPrice}</span>
             </div>
             <div className="paid-tools-list">
-              {paidTools.map((tool) => (
-                <span key={tool}>{tool}</span>
-              ))}
+              {[paymentCopy.coach, paymentCopy.stats, paymentCopy.routines].map((tool) => <span key={tool}>{tool}</span>)}
             </div>
             <div className="payment-method-grid">
               {billingCycles.map((cycle) => (
@@ -842,7 +869,7 @@ function Profil({
                   }}
                   type="button"
                 >
-                  {cycle}
+                  {getCycleLabel(cycle)}
                 </button>
               ))}
             </div>
@@ -857,7 +884,7 @@ function Profil({
                   }}
                   type="button"
                 >
-                  <span>{plan.label}</span>
+                  <span>{getPlanLabel(plan)}</span>
                   <strong>
                     {billingCycle === 'Jährlich' ? `${plan.yearlyPrice} pro Jahr` : plan.monthlyPrice}
                   </strong>
@@ -873,19 +900,19 @@ function Profil({
                   onClick={() => setPaymentMethod(method)}
                   type="button"
                 >
-                  {method}
+                  {getPaymentMethodLabel(method)}
                 </button>
               ))}
             </div>
             <div className="payment-checkout">
               <div>
-                <span>Zahlung ausführen</span>
-                <strong>{paymentStatus}</strong>
-                <p>{getPaymentInstruction(paymentMethod)}</p>
+                <span>{paymentCopy.execute}</span>
+                <strong>{paymentStatus === 'Nicht gestartet' ? paymentCopy.notStarted : paymentStatus}</strong>
+                <p>{getPaymentInstruction(paymentMethod, paymentInstructions)}</p>
               </div>
               {['PayPal', 'Klarna'].includes(paymentMethod) && (
                 <label>
-                  Zahlungs-E-Mail
+                  {paymentCopy.email}
                   <input
                     type="email"
                     value={paymentEmail}
@@ -896,7 +923,7 @@ function Profil({
               )}
               {paymentMethod === 'Kreditkarte' && (
                 <label>
-                  Kartennummer
+                  {paymentInstructions.cardNumber}
                   <input
                     inputMode="numeric"
                     value={cardNumber}
@@ -916,10 +943,10 @@ function Profil({
                 </label>
               )}
               {['Apple Pay', 'Google Pay'].includes(paymentMethod) && (
-                <p className="wallet-note">Für Wallet-Zahlungen nutzt die App später die Zahlung auf deinem Gerät.</p>
+                <p className="wallet-note">{paymentInstructions.wallet}</p>
               )}
               <button className="payment-submit" type="button" onClick={handlePaymentSubmit}>
-                {paymentPlan === 'free' ? 'Kostenlosen Plan aktivieren' : 'Zahlung bestätigen'}
+                {paymentPlan === 'free' ? paymentCopy.activateFree : paymentCopy.confirm}
               </button>
             </div>
           </div>
@@ -931,7 +958,7 @@ function Profil({
         <div>
           <span>BMI</span>
           <strong>{bmiLabel}</strong>
-          <p>{bmiCategory}</p>
+          <p>{healthCopy[bmiCategory]}</p>
         </div>
         <div>
           <span>{t.profile.water}</span>
@@ -939,9 +966,9 @@ function Profil({
           <p>{t.profile.perDay}</p>
         </div>
         <div>
-          <span>Schritte</span>
+          <span>{healthCopy.steps}</span>
           <strong>{recommendation.steps}</strong>
-          <p>{recommendation.note}</p>
+          <p>{healthCopy[recommendation.note]}</p>
         </div>
       </div>
       <div className="profile-level-card">
@@ -964,13 +991,13 @@ function Profil({
         </div>
         <div className="flow-tree-info">
           <span>{flowTree.productName}</span>
-          <h2>{flowTree.stage}</h2>
-          <p>{flowTree.next}</p>
+          <h2>{healthCopy.treeNames[treeType]}</h2>
+          <p>{healthCopy.nextStage}</p>
         </div>
         <div className="flow-tree-progress">
           <span style={{ width: `${flowTree.progress}%` }} />
         </div>
-        <small>{flowTree.progress}% Wachstum bis zur nächsten Stufe</small>
+        <small>{flowTree.progress}% {healthCopy.growth}</small>
         <div className="tree-choice-row">
           {treeOptions.map((tree) => (
             <button
@@ -980,7 +1007,7 @@ function Profil({
               type="button"
             >
               <span>{tree.symbol}</span>
-              {tree.label}
+              {healthCopy.treeNames[tree.id]}
             </button>
           ))}
         </div>

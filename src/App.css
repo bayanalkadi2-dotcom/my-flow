@@ -43,38 +43,7 @@ body {
 }
 
 .app.rtl {
-  font-family: "Aref Ruqaa", "Amiri", "Noto Naskh Arabic", "Segoe UI", serif;
   letter-spacing: 0;
-}
-
-.app.rtl h1,
-.app.rtl h2,
-.app.rtl h3,
-.app.rtl strong,
-.app.rtl button,
-.app.rtl input,
-.app.rtl select {
-  font-family: "Aref Ruqaa", "Amiri", "Noto Naskh Arabic", "Segoe UI", serif;
-}
-
-.app.rtl h1 {
-  font-size: 2.35rem;
-  line-height: 1.25;
-}
-
-.app.rtl h2,
-.app.rtl h3 {
-  line-height: 1.35;
-}
-
-.app.rtl p,
-.app.rtl small,
-.app.rtl span,
-.app.rtl label,
-.app.rtl input,
-.app.rtl select,
-.app.rtl button {
-  line-height: 1.7;
 }
 
 .app.theme-dark {
@@ -10033,6 +10002,11 @@ h3,
   box-shadow: 0 16px 32px rgba(85, 62, 150, 0.18);
   font-size: 11px;
   font-weight: 900;
+}
+
+.app.rtl .floating-checkin-button {
+  right: auto;
+  left: max(18px, calc((100vw - 430px) / 2 + 18px));
 }
 
 .floating-checkin-button::before {
