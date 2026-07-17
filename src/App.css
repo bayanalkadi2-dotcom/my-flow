@@ -1343,11 +1343,34 @@ input {
 
 .social-friend-card {
   display: grid;
-  grid-template-columns: 46px 1fr 28px;
+  grid-template-columns: 46px 1fr auto;
   align-items: center;
   gap: 12px;
   padding: 13px;
   border-radius: 20px;
+}
+
+.remove-friend-button {
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid rgba(207, 72, 113, 0.2);
+  border-radius: 12px;
+  color: #b52f5c;
+  background: #fff2f7;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.remove-friend-button:hover {
+  border-color: rgba(207, 72, 113, 0.35);
+  background: #ffe7f0;
+}
+
+.remove-friend-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .social-avatar {

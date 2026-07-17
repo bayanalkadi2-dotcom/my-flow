@@ -3,6 +3,7 @@ import {
   challengeTemplates,
   cancelFriendRequest,
   loadSocialDashboard,
+  removeFriend,
   respondToChallengeRequest,
   respondToFriendRequest,
   sendChallengeRequest,
@@ -247,7 +248,21 @@ function Freunde({ profileName, user }) {
               <article className="social-friend-card" key={friend.id}>
                 <FriendAvatar name={friend.name} src={friend.avatarUrl} />
                 <div><strong>{friend.name}</strong><span>MyFlow-Freund</span></div>
-                <i aria-hidden="true">✓</i>
+                <button
+                  className="remove-friend-button"
+                  type="button"
+                  disabled={busy}
+                  aria-label={`${friend.name} als Freund entfernen`}
+                  onClick={() => {
+                    if (!window.confirm(`Möchtest du ${friend.name} wirklich als Freund entfernen?`)) return
+                    runAction(
+                      () => removeFriend(userId, friend.id),
+                      `${friend.name} wurde als Freund entfernt.`,
+                    )
+                  }}
+                >
+                  Entfernen
+                </button>
               </article>
             ))}
             {!dashboard.friends.length && (

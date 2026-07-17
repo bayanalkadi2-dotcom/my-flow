@@ -132,6 +132,14 @@ export async function cancelFriendRequest(requestId) {
   throwIfError(error)
 }
 
+export async function removeFriend(userId, friendId) {
+  const { error } = await supabase
+    .from('friendships')
+    .delete()
+    .or(`and(user_a.eq.${userId},user_b.eq.${friendId}),and(user_a.eq.${friendId},user_b.eq.${userId})`)
+  throwIfError(error)
+}
+
 export async function sendFriendRequest(email) {
   const { data, error } = await supabase.rpc('send_friend_request', {
     target_email: email.trim().toLowerCase(),

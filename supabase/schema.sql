@@ -478,7 +478,7 @@ ALTER TABLE public.challenges ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.challenge_progress ENABLE ROW LEVEL SECURITY;
 
 GRANT SELECT, DELETE ON public.friend_requests TO authenticated;
-GRANT SELECT ON public.friendships TO authenticated;
+GRANT SELECT, DELETE ON public.friendships TO authenticated;
 GRANT SELECT, INSERT ON public.challenge_requests TO authenticated;
 GRANT SELECT ON public.challenges TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.challenge_progress TO authenticated;
@@ -493,6 +493,10 @@ CREATE POLICY "Users can cancel own friend requests" ON public.friend_requests
 
 CREATE POLICY "Users can read own friendships" ON public.friendships
   FOR SELECT TO authenticated
+  USING (auth.uid() IN (user_a, user_b));
+
+CREATE POLICY "Users can delete own friendships" ON public.friendships
+  FOR DELETE TO authenticated
   USING (auth.uid() IN (user_a, user_b));
 
 CREATE POLICY "Users can read own challenge requests" ON public.challenge_requests
