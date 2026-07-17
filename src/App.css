@@ -1365,6 +1365,156 @@ input {
   overflow: hidden;
 }
 
+/* Auth & welcome: fresh blue light theme (kept separate from the dark theme). */
+.app.auth-blue.theme-light .welcome-screen,
+.app.auth-blue.theme-light .login-screen {
+  color: #1c2340;
+  border-color: rgba(255, 255, 255, 0.9);
+  background:
+    radial-gradient(circle at 88% 8%, rgba(190, 231, 255, 0.7), transparent 30%),
+    radial-gradient(circle at 6% 72%, rgba(78, 168, 255, 0.13), transparent 28%),
+    linear-gradient(145deg, #ffffff 0%, #f7faff 52%, #eaf6ff 100%);
+  box-shadow: 0 24px 64px rgba(47, 128, 255, 0.13);
+}
+
+.app.auth-blue.theme-light .welcome-screen .orb-one {
+  background: radial-gradient(circle at 28% 22%, #ffffff, #7dd3fc 52%, #4ea8ff);
+  box-shadow: 0 16px 28px rgba(47, 128, 255, 0.18);
+}
+
+.app.auth-blue.theme-light .welcome-screen .orb-two {
+  background: radial-gradient(circle at 30% 25%, #ffffff, #bee7ff 65%, #7dd3fc);
+}
+
+.app.auth-blue.theme-light .welcome-screen .shape-pink {
+  background: radial-gradient(circle at 60% 45%, #7dd3fc, #eaf6ff 68%);
+}
+
+.app.auth-blue.theme-light .welcome-screen .leaf-shape {
+  border-left-color: #4ea8ff;
+}
+
+.app.auth-blue.theme-light .welcome-screen .app-logo.hero-logo {
+  box-shadow:
+    0 28px 50px rgba(47, 128, 255, 0.2),
+    0 0 58px rgba(125, 211, 252, 0.32);
+}
+
+.app.auth-blue.theme-light .welcome-screen .wellness-badge,
+.app.auth-blue.theme-light .welcome-screen .welcome-category,
+.app.auth-blue.theme-light .welcome-screen .lead.welcome-copy,
+.app.auth-blue.theme-light .welcome-feature h2 {
+  color: #1c2340;
+}
+
+.app.auth-blue.theme-light .welcome-screen h1 {
+  background: linear-gradient(95deg, #1c2340 0%, #2f80ff 70%, #4ea8ff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 18px 38px rgba(47, 128, 255, 0.1);
+}
+
+.app.auth-blue.theme-light .welcome-category span:first-child,
+.app.auth-blue.theme-light .welcome-category span:last-child,
+.app.auth-blue.theme-light .welcome-feature p {
+  color: #2f80ff;
+}
+
+.app.auth-blue.theme-light .welcome-screen .primary-cta,
+.app.auth-blue.theme-light .login-submit {
+  border-color: rgba(255, 255, 255, 0.82);
+  background: linear-gradient(115deg, #4ea8ff 0%, #7dd3fc 100%);
+  box-shadow: 0 16px 34px rgba(47, 128, 255, 0.25);
+}
+
+.app.auth-blue.theme-light .welcome-screen .login-cta.secondary-button {
+  color: #2f80ff;
+  border-color: rgba(78, 168, 255, 0.2);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 28px rgba(47, 128, 255, 0.1);
+}
+
+.app.auth-blue.theme-light .welcome-screen .user-orb {
+  color: #2f80ff;
+  background: #eaf6ff;
+}
+
+.app.auth-blue.theme-light .welcome-screen .login-arrow {
+  color: #2f80ff;
+}
+
+.app.auth-blue.theme-light .welcome-screen .feature-strip {
+  border-color: rgba(78, 168, 255, 0.16);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 28px rgba(47, 128, 255, 0.08);
+}
+
+.app.auth-blue.theme-light .welcome-screen .feature-icon.purple,
+.app.auth-blue.theme-light .welcome-screen .feature-icon.pink,
+.app.auth-blue.theme-light .welcome-screen .feature-icon.blue {
+  background: linear-gradient(135deg, #7dd3fc, #2f80ff);
+  box-shadow: 0 8px 16px rgba(47, 128, 255, 0.18);
+}
+
+.app.auth-blue.theme-light .login-back,
+.app.auth-blue.theme-light .login-header h1,
+.app.auth-blue.theme-light .login-field span {
+  color: #1c2340;
+}
+
+.app.auth-blue.theme-light .login-header p,
+.app.auth-blue.theme-light .register-copy,
+.app.auth-blue.theme-light .auth-privacy-check {
+  color: #6d7692;
+}
+
+.app.auth-blue.theme-light .login-field,
+.app.auth-blue.theme-light .auth-privacy-check,
+.app.auth-blue.theme-light .student-onboarding-option {
+  border-color: rgba(78, 168, 255, 0.18);
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(47, 128, 255, 0.09);
+}
+
+.app.auth-blue.theme-light .login-field:focus-within {
+  border-color: #4ea8ff;
+  box-shadow: 0 0 0 4px rgba(78, 168, 255, 0.12), 0 12px 28px rgba(47, 128, 255, 0.1);
+}
+
+.app.auth-blue.theme-light .login-field input,
+.app.auth-blue.theme-light .student-onboarding-option strong {
+  color: #1c2340;
+}
+
+.app.auth-blue.theme-light .login-field input::placeholder,
+.app.auth-blue.theme-light .student-onboarding-option {
+  color: #6d7692;
+}
+
+.app.auth-blue.theme-light .field-icon,
+.app.auth-blue.theme-light .visibility-button,
+.app.auth-blue.theme-light .forgot-password,
+.app.auth-blue.theme-light .register-copy button,
+.app.auth-blue.theme-light .auth-privacy-check button {
+  color: #2f80ff;
+}
+
+.app.auth-blue.theme-light .auth-privacy-check input {
+  accent-color: #2f80ff;
+}
+
+.app.auth-blue.theme-light .student-onboarding-option.selected {
+  color: #1c2340;
+  border-color: #4ea8ff;
+  background: linear-gradient(135deg, #f7faff, #eaf6ff);
+  box-shadow: 0 10px 26px rgba(47, 128, 255, 0.12);
+}
+
+.app.auth-blue.theme-light .student-onboarding-option.selected > span {
+  background: linear-gradient(135deg, #4ea8ff, #7dd3fc);
+}
+
 .social-avatar img {
   width: 100%;
   height: 100%;
@@ -13650,4 +13800,1258 @@ button,
 
 .calendar-month-card button:last-child::before {
   content: "›";
+}
+
+/* Design choice on the public welcome/auth entry. */
+.auth-design-picker {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 342px);
+  margin: 24px auto 0;
+  text-align: left;
+}
+
+.login-screen .auth-design-picker {
+  margin: 0 0 24px;
+}
+
+.login-screen .auth-design-option {
+  min-height: 52px;
+  padding: 8px 6px;
+  border: 1px solid rgba(118, 92, 255, 0.16);
+  border-radius: 14px;
+  background: #ffffff;
+  color: #1c2340;
+  box-shadow: 0 8px 20px rgba(75, 53, 141, 0.08);
+}
+
+.login-screen .auth-design-option.selected {
+  border-color: #765cff;
+}
+
+.auth-blue .login-screen .auth-design-option.selected {
+  border-color: #2f80ff;
+}
+
+.auth-design-picker > strong {
+  display: block;
+  margin-bottom: 9px;
+  color: #1c2340;
+  font-size: 13px;
+}
+
+.auth-design-options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.welcome-screen .auth-design-option {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  min-height: 54px;
+  padding: 8px 7px;
+  border: 1px solid rgba(117, 92, 255, 0.16);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #1c2340;
+  font-size: 11px;
+  box-shadow: none;
+}
+
+.auth-design-option i {
+  grid-row: 1 / 3;
+  align-self: center;
+  width: 12px;
+  height: 30px;
+  border-radius: 9px;
+}
+
+.auth-design-option.lila i {
+  background: linear-gradient(#b893ff, #765cff);
+}
+
+.auth-design-option.blau i {
+  background: linear-gradient(#7dd3fc, #2f80ff);
+}
+
+.auth-design-option small {
+  color: #6d7692;
+  font-size: 9px;
+}
+
+.welcome-screen .auth-design-option.selected {
+  border-color: currentColor;
+  color: #765cff;
+  box-shadow: 0 0 0 2px rgba(118, 92, 255, 0.1);
+}
+
+.auth-blue .welcome-screen .auth-design-option.selected {
+  color: #2f80ff;
+  box-shadow: 0 0 0 2px rgba(47, 128, 255, 0.1);
+}
+
+/* Lila remains the default public design. */
+.app.auth-lila.theme-light .welcome-screen {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(138, 78, 255, 0.36), transparent 13%),
+    radial-gradient(circle at 16% 36%, rgba(255, 112, 193, 0.42), transparent 9%),
+    radial-gradient(circle at 102% 88%, rgba(96, 174, 255, 0.34), transparent 24%),
+    linear-gradient(145deg, rgba(248, 224, 255, 0.94), rgba(248, 247, 255, 0.86) 50%, rgba(221, 238, 255, 0.94));
+}
+
+.app.auth-lila.theme-light .welcome-screen .primary-cta {
+  background: linear-gradient(115deg, #ff71c9 0%, #9b42ff 48%, #48b8ff 100%);
+  box-shadow: 0 18px 38px rgba(126, 81, 228, 0.3);
+}
+
+.app.auth-lila.theme-light .welcome-screen h1 {
+  background: linear-gradient(95deg, #070a3d 0%, #13105d 38%, #7450ee 68%, #2d78ff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.app.auth-lila.theme-light .welcome-screen .login-cta.secondary-button,
+.app.auth-lila.theme-light .welcome-screen .user-orb,
+.app.auth-lila.theme-light .welcome-screen .login-arrow {
+  color: #7452ff;
+}
+
+.app.auth-blue.theme-dark .welcome-screen,
+.app.auth-blue.theme-dark .login-screen {
+  background:
+    radial-gradient(circle at 88% 8%, rgba(78, 168, 255, 0.24), transparent 32%),
+    linear-gradient(155deg, #111c2d 0%, #162a43 56%, #0c1726 100%);
+}
+
+.app.auth-blue.theme-dark .primary-cta,
+.app.auth-blue.theme-dark .login-submit {
+  background: linear-gradient(115deg, #2f80ff, #4ea8ff 55%, #7dd3fc);
+  box-shadow: 0 16px 34px rgba(47, 128, 255, 0.28);
+}
+
+.app.auth-blue.theme-dark .auth-design-option.selected {
+  border-color: #7dd3fc;
+  color: #bee7ff;
+}
+
+.app.auth-blue.theme-dark .welcome-screen h1 {
+  color: #f7faff;
+  background: linear-gradient(95deg, #f7faff 0%, #bee7ff 28%, #7dd3fc 58%, #4ea8ff 82%, #2f80ff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 10px 30px rgba(78, 168, 255, 0.22);
+}
+
+.app.auth-blue.theme-dark .welcome-screen .welcome-category,
+.app.auth-blue.theme-dark .welcome-screen .lead.welcome-copy,
+.app.auth-blue.theme-dark .welcome-screen .wellness-badge {
+  color: #eaf6ff;
+}
+
+.app.auth-blue.theme-dark .welcome-screen .login-cta.secondary-button {
+  color: #bee7ff;
+  border: 1px solid rgba(125, 211, 252, 0.48);
+  background: linear-gradient(110deg, rgba(20, 49, 76, 0.96), rgba(30, 73, 108, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 12px 28px rgba(2, 12, 24, 0.28);
+}
+
+.app.auth-blue.theme-dark .welcome-screen .login-cta.secondary-button:hover {
+  border-color: #7dd3fc;
+  background: linear-gradient(110deg, #183c5c, #245d88);
+}
+
+.app.auth-blue.theme-dark .welcome-screen .user-orb {
+  color: #eaf6ff;
+  border-color: rgba(125, 211, 252, 0.5);
+  background: linear-gradient(135deg, rgba(47, 128, 255, 0.42), rgba(125, 211, 252, 0.2));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.app.auth-blue.theme-dark .welcome-screen .login-arrow {
+  color: #7dd3fc;
+}
+
+.legacy-register-design {
+  display: none;
+}
+
+.register-design-section {
+  margin: 4px 0 22px;
+}
+
+.login-screen .register-design-section .auth-design-picker {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  margin: 0;
+}
+
+.login-screen .auth-design-card {
+  display: grid;
+  gap: 9px;
+  min-height: 112px;
+  padding: 13px 11px;
+  border: 2px solid rgba(118, 92, 255, 0.14);
+  border-radius: 20px;
+  background: #ffffff;
+  color: #1c2340;
+  text-align: left;
+  box-shadow: 0 8px 22px rgba(80, 70, 140, 0.07);
+}
+
+.login-screen .auth-design-card.selected {
+  border-color: #9160f4;
+  background: linear-gradient(145deg, #ffffff, #faf5ff);
+}
+
+.auth-blue.theme-light .login-screen .auth-design-card.selected {
+  border-color: #4ea8ff;
+  background: linear-gradient(145deg, #ffffff, #eaf6ff);
+}
+
+.auth-blue.theme-light .login-screen .auth-design-heading strong {
+  color: #2f80ff;
+}
+
+.auth-blue.theme-dark .login-screen .auth-design-card {
+  color: #f7faff;
+  border-color: rgba(125, 211, 252, 0.16);
+  background: #18344f;
+}
+
+.auth-blue.theme-dark .login-screen .auth-design-card.selected {
+  border-color: #7dd3fc;
+  background: #214a6d;
+}
+
+/* Global blue app design, selected from Settings > Design. */
+.app.app-color-blau {
+  --logo-pink: #7dd3fc;
+  --logo-pink-soft: #bee7ff;
+  --logo-violet: #4ea8ff;
+  --logo-violet-deep: #2f80ff;
+  --logo-blue: #7dd3fc;
+  --logo-blue-soft: #eaf6ff;
+  --logo-ink: #1c2340;
+  --logo-muted: #6d7692;
+  --logo-border: rgba(78, 168, 255, 0.18);
+  --logo-shadow: rgba(47, 128, 255, 0.14);
+  --logo-gradient: linear-gradient(135deg, #4ea8ff 0%, #7dd3fc 100%);
+  --logo-soft-gradient: linear-gradient(145deg, #ffffff 0%, #f7faff 52%, #eaf6ff 100%);
+  color: #1c2340;
+}
+
+.app.app-color-blau.theme-light .screen,
+.app.app-color-blau.theme-light .friends-page,
+.app.app-color-blau.theme-light .home-screen,
+.app.app-color-blau.theme-light .profile-settings-screen {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.14);
+  background:
+    radial-gradient(circle at 92% 4%, rgba(190, 231, 255, 0.56), transparent 32%),
+    linear-gradient(145deg, #ffffff 0%, #f7faff 52%, #eaf6ff 100%);
+  box-shadow: 0 24px 64px rgba(47, 128, 255, 0.13);
+}
+
+.app.app-color-blau.theme-light h1,
+.app.app-color-blau.theme-light h2,
+.app.app-color-blau.theme-light h3,
+.app.app-color-blau.theme-light strong,
+.app.app-color-blau.theme-light .profile-setting-row span {
+  color: #1c2340;
+}
+
+.app.app-color-blau.theme-light p,
+.app.app-color-blau.theme-light small,
+.app.app-color-blau.theme-light .lead,
+.app.app-color-blau.theme-light .profile-setting-row strong,
+.app.app-color-blau.theme-light .flow-reason {
+  color: #6d7692;
+}
+
+.app.app-color-blau.theme-light :is(
+  .stat-card, .habit-card, .chart-card, .settings-list, .profile-picture-card,
+  .bmi-card, .profile-level-card, .flow-tree-card, .day-overview-card,
+  .home-flowtree-card, .home-goals-card, .daily-focus-card, .day-plan-card,
+  .home-motivation-card, .flow-coach-card, .challenge-form, .challenge-card,
+  .friend-card, .invite-panel, .register-settings-panel, .profile-edit-panel,
+  .calendar-month-card, .calendar-event-card, .checkin-card, .diary-card
+) {
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(47, 128, 255, 0.1);
+}
+
+.app.app-color-blau.theme-light :is(
+  button, .primary-cta, .bottom-item.active, .profile-confirm-button,
+  .add-friend-button, .habit-done-button, .floating-checkin-button
+) {
+  border-color: rgba(255, 255, 255, 0.78);
+}
+
+.app.app-color-blau.theme-light :is(
+  .primary-cta, .login-submit, .profile-confirm-button, .add-friend-button,
+  .bottom-item.active, .floating-checkin-button
+) {
+  color: #ffffff;
+  background: linear-gradient(135deg, #4ea8ff, #7dd3fc);
+  box-shadow: 0 12px 28px rgba(47, 128, 255, 0.22);
+}
+
+.app.app-color-blau.theme-light :is(
+  .eyebrow, .section-label, .settings-section-label, .register-copy button,
+  .forgot-password, .profile-level-number, .settings-gear-button,
+  .profile-setting-row button, .bottom-item, a
+) {
+  color: #2f80ff;
+}
+
+.app.app-color-blau.theme-light :is(input, select, textarea, .profile-choice, .payment-option, .payment-method) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.2);
+  background: #f7faff;
+}
+
+.app.app-color-blau.theme-light :is(input, select, textarea):focus {
+  border-color: #4ea8ff;
+  box-shadow: 0 0 0 4px rgba(78, 168, 255, 0.12);
+}
+
+.app.app-color-blau.theme-light :is(.profile-choice.selected, .routine-category.selected, .payment-option.selected) {
+  color: #1c2340;
+  border-color: #4ea8ff;
+  background: linear-gradient(135deg, #f7faff, #eaf6ff);
+}
+
+.app.app-color-blau.theme-light .bottom-nav,
+.app.app-color-blau.theme-light .account-menu {
+  border-color: rgba(78, 168, 255, 0.16);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 16px 38px rgba(47, 128, 255, 0.13);
+}
+
+.app.app-color-blau.theme-light .setting-row-icon {
+  background: linear-gradient(135deg, #eaf6ff, #bee7ff);
+}
+
+.app.app-color-blau.theme-dark .screen,
+.app.app-color-blau.theme-dark .friends-page,
+.app.app-color-blau.theme-dark .home-screen,
+.app.app-color-blau.theme-dark .profile-settings-screen {
+  background:
+    radial-gradient(circle at 90% 5%, rgba(78, 168, 255, 0.2), transparent 34%),
+    linear-gradient(155deg, #101b2b 0%, #16283d 55%, #0b1522 100%);
+}
+
+.app.app-color-blau.theme-dark :is(
+  .stat-card, .habit-card, .chart-card, .settings-list, .profile-picture-card,
+  .bmi-card, .profile-level-card, .flow-tree-card, .day-overview-card,
+  .home-flowtree-card, .home-goals-card, .daily-focus-card, .day-plan-card,
+  .home-motivation-card, .flow-coach-card, .challenge-form, .challenge-card,
+  .friend-card, .invite-panel, .register-settings-panel, .profile-edit-panel
+) {
+  border-color: rgba(125, 211, 252, 0.14);
+  background: rgba(18, 38, 59, 0.92);
+  box-shadow: 0 14px 34px rgba(3, 12, 22, 0.3);
+}
+
+.app.app-color-blau.theme-dark :is(.primary-cta, .profile-confirm-button, .bottom-item.active, .floating-checkin-button) {
+  background: linear-gradient(135deg, #2f80ff, #4ea8ff 55%, #7dd3fc);
+}
+
+/* Recolor mascots and every Flowtree accent when the blue design is active. */
+.app.app-color-blau :is(
+  .home-flowtree-mascot-image,
+  .flowtree-mascot-image,
+  .progress-mascot img,
+  .flow-character-image,
+  .floating-checkin-button img,
+  .task-companion img,
+  .voice-exercise-character img
+) {
+  filter: hue-rotate(285deg) saturate(0.9) brightness(1.06);
+}
+
+.app.app-color-blau :is(
+  .home-flowtree-badge,
+  .home-flowtree-level,
+  .flowtree-card-eyebrow,
+  .flowtree-points-label,
+  .flowtree-status-message,
+  .flowtree-coin-chip,
+  .flowtree-stat-icon,
+  .progress-mascot-copy > span,
+  .flowtree-week-header span
+) {
+  color: #2f80ff;
+}
+
+.app.app-color-blau :is(
+  .home-flowtree-message,
+  .home-flowtree-status,
+  .flowtree-status-message,
+  .flowtree-visual-panel,
+  .flowtree-points-panel,
+  .flowtree-stat-grid article,
+  .flowtree-graph-card,
+  .flowtree-donut-card,
+  .flowtree-bars-card,
+  .flowtree-streak-card,
+  .progress-mascot
+) {
+  border-color: rgba(78, 168, 255, 0.18);
+  background: #f7faff;
+  box-shadow: 0 10px 26px rgba(47, 128, 255, 0.09);
+}
+
+.app.app-color-blau :is(
+  .home-flowtree-track,
+  .flowtree-progress-track,
+  .progress-mascot-track,
+  .profile-level-progress,
+  .flow-tree-progress,
+  .focus-progress-track,
+  .checkin-progress-track,
+  .student-onboarding-progress,
+  .flowtree-sustainability-track
+) {
+  background: #eaf6ff;
+}
+
+.app.app-color-blau :is(
+  .home-flowtree-track > span,
+  .flowtree-progress-track > span,
+  .progress-mascot-track > span,
+  .profile-level-progress > span,
+  .flow-tree-progress > span,
+  .focus-progress-track > span,
+  .checkin-progress-track > span,
+  .student-onboarding-progress > span,
+  .flowtree-sustainability-track > span,
+  .voice-exercise-progress > span
+) {
+  background: linear-gradient(90deg, #4ea8ff, #7dd3fc);
+  box-shadow: 0 6px 16px rgba(47, 128, 255, 0.2);
+}
+
+.app.app-color-blau .home-flowtree-track > b,
+.app.app-color-blau .flowtree-level-step.current .flowtree-step-node,
+.app.app-color-blau .flowtree-level-step.reached .flowtree-step-node {
+  color: #ffffff;
+  border-color: #4ea8ff;
+  background: linear-gradient(135deg, #4ea8ff, #7dd3fc);
+}
+
+.app.app-color-blau .flowtree-donut {
+  background: conic-gradient(#2f80ff var(--progress), #eaf6ff 0);
+}
+
+.app.app-color-blau :is(.flowtree-week-bars span, .flowtree-streak-dots i.active) {
+  background: linear-gradient(180deg, #7dd3fc, #2f80ff);
+}
+
+.app.app-color-blau.theme-dark :is(
+  .home-flowtree-message,
+  .home-flowtree-status,
+  .flowtree-status-message,
+  .flowtree-visual-panel,
+  .flowtree-points-panel,
+  .flowtree-stat-grid article,
+  .flowtree-graph-card,
+  .flowtree-donut-card,
+  .flowtree-bars-card,
+  .flowtree-streak-card,
+  .progress-mascot
+) {
+  border-color: rgba(125, 211, 252, 0.14);
+  background: rgba(18, 38, 59, 0.92);
+}
+
+/* Spacious two-step design selector in profile settings. */
+.profile-settings-screen .auth-design-picker {
+  display: grid;
+  gap: 28px;
+  width: 100%;
+  margin: 0;
+}
+
+.auth-design-group {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-design-heading strong {
+  display: block;
+  color: #765cff;
+  font-size: 18px;
+}
+
+.auth-design-heading p {
+  margin: 3px 0 0;
+  color: #6d7692;
+  font-size: 13px;
+}
+
+.auth-design-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-settings-screen .auth-design-card {
+  display: grid;
+  gap: 12px;
+  min-height: 132px;
+  padding: 18px;
+  border: 2px solid rgba(109, 118, 146, 0.13);
+  border-radius: 24px;
+  background: #ffffff;
+  color: #1c2340;
+  text-align: left;
+  box-shadow: 0 10px 26px rgba(80, 70, 140, 0.07);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.profile-settings-screen .auth-design-card:hover {
+  transform: translateY(-2px);
+}
+
+.auth-design-card-title {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 30px;
+  gap: 10px;
+  align-items: center;
+}
+
+.auth-design-card-title i {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 21px;
+  font-style: normal;
+}
+
+.color-card.lila .auth-design-card-title i {
+  background: linear-gradient(135deg, #b893ff, #765cff);
+}
+
+.color-card.blau .auth-design-card-title i {
+  background: linear-gradient(135deg, #7dd3fc, #2f80ff);
+}
+
+.mode-card:first-child .auth-design-card-title i {
+  background: linear-gradient(135deg, #d4b6ff, #9160f4);
+}
+
+.mode-card:last-child .auth-design-card-title i {
+  background: linear-gradient(135deg, #59698f, #1c2340);
+}
+
+.auth-design-card-title strong {
+  color: #1c2340;
+  font-size: 16px;
+}
+
+.auth-design-card-title b {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a873ff, #765cff);
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.auth-design-card > small {
+  color: #6d7692;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.profile-settings-screen .auth-design-card.selected {
+  border-color: #9160f4;
+  background: linear-gradient(145deg, #ffffff, #faf5ff);
+  box-shadow: 0 12px 30px rgba(118, 92, 255, 0.14);
+}
+
+.app.app-color-blau .auth-design-heading strong {
+  color: #2f80ff;
+}
+
+.app.app-color-blau .mode-card:first-child .auth-design-card-title i,
+.app.app-color-blau .auth-design-card-title b {
+  background: linear-gradient(135deg, #7dd3fc, #2f80ff);
+}
+
+.app.app-color-blau .profile-settings-screen .auth-design-card.selected {
+  border-color: #4ea8ff;
+  background: linear-gradient(145deg, #ffffff, #f7faff);
+  box-shadow: 0 12px 30px rgba(47, 128, 255, 0.14);
+}
+
+.app.theme-dark .profile-settings-screen .auth-design-card {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.app.theme-dark .profile-settings-screen .auth-design-card.selected {
+  background: rgba(118, 92, 255, 0.13);
+}
+
+.app.app-color-blau.theme-dark .profile-settings-screen .auth-design-card.selected {
+  background: rgba(78, 168, 255, 0.14);
+}
+
+@media (max-width: 360px) {
+  .auth-design-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Final blue-theme sweep: no purple/pink accents remain in app UI. */
+body:has(.app.app-color-blau.theme-light) {
+  background: linear-gradient(145deg, #ffffff, #eaf6ff);
+}
+
+body:has(.app.app-color-blau.theme-dark) {
+  background: #09131f;
+}
+
+.app.app-color-blau :is(
+  .global-profile-avatar img,
+  .global-profile-button img,
+  .setting-row-icon img,
+  .communication-bubbles-icon,
+  .profile-picture-card .small-logo
+) {
+  filter: hue-rotate(285deg) saturate(0.88) brightness(1.08);
+}
+
+.app.app-color-blau :is(
+  .global-profile-button,
+  .routine-add-circle,
+  .calendar-fab,
+  .calendar-check-button,
+  .diary-add-row > span:first-child,
+  .social-modal-icon,
+  .social-modal > span:first-child,
+  .invite-panel button,
+  .add-friend-button,
+  .routine-suggestion:hover,
+  .calendar-full-month-grid button.selected,
+  .calendar-full-month-grid button.active,
+  .calendar-week-card button.active
+) {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(135deg, #4ea8ff, #7dd3fc);
+  box-shadow: 0 10px 24px rgba(47, 128, 255, 0.22);
+}
+
+.app.app-color-blau :is(
+  .calendar-icon-button,
+  .calendar-month-card button,
+  .calendar-section-title,
+  .calendar-section-title strong,
+  .calendar-full-month-weekdays,
+  .routines-page-header .eyebrow,
+  .diary-images-header,
+  .diary-filter-results-header,
+  .social-modal h2,
+  .settings-section-label
+) {
+  color: #2f80ff;
+}
+
+.app.app-color-blau :is(
+  .calendar-screen,
+  .routines-screen,
+  .calendar-month-overview,
+  .calendar-date-card,
+  .calendar-month-card,
+  .calendar-week-card,
+  .calendar-note-card,
+  .calendar-timeline-card,
+  .calendar-full-month,
+  .routines-empty-state,
+  .routine-selection-panel,
+  .custom-routine-card,
+  .social-modal
+) {
+  border-color: rgba(78, 168, 255, 0.16);
+}
+
+.app.app-color-blau.theme-light :is(
+  .calendar-month-overview,
+  .calendar-date-card,
+  .calendar-month-card,
+  .calendar-week-card,
+  .calendar-note-card,
+  .calendar-timeline-card,
+  .calendar-full-month,
+  .routines-empty-state,
+  .routine-selection-panel,
+  .custom-routine-card,
+  .social-modal
+) {
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(47, 128, 255, 0.09);
+}
+
+.app.app-color-blau :is(
+  .diary-add-row.appointment,
+  .diary-add-row.note,
+  .diary-add-row.images,
+  .diary-task-empty,
+  .calendar-empty-state
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: linear-gradient(135deg, #f7faff, #eaf6ff);
+}
+
+.app.app-color-blau :is(
+  .calendar-full-month-weekdays span,
+  .calendar-full-month-grid button,
+  .calendar-week-card button,
+  .diary-task-pill
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.14);
+  background: #f7faff;
+}
+
+.app.app-color-blau .calendar-full-month-grid button::after,
+.app.app-color-blau .calendar-week-card button::after {
+  background: #2f80ff;
+}
+
+.app.app-color-blau :is(
+  .calendar-full-month.violet,
+  .calendar-full-month.pink,
+  .calendar-full-month.lilac,
+  .calendar-full-month.blue
+) {
+  --month-accent: #2f80ff;
+  --month-soft: #eaf6ff;
+  --month-border: rgba(78, 168, 255, 0.2);
+}
+
+.app.app-color-blau .setting-row-icon {
+  color: #2f80ff;
+  background: linear-gradient(135deg, #eaf6ff, #bee7ff);
+}
+
+.app.app-color-blau .communication-bubbles-icon stop:first-child,
+.app.app-color-blau .communication-bubbles-icon stop:last-child {
+  stop-color: #2f80ff;
+}
+
+.app.app-color-blau.theme-dark {
+  color: #f7faff;
+}
+
+.app.app-color-blau.theme-dark :is(
+  h1, h2, h3, strong, .profile-setting-row span,
+  .calendar-full-month-grid button, .calendar-week-card button,
+  .diary-add-row, .social-modal h2
+) {
+  color: #f7faff;
+}
+
+.app.app-color-blau.theme-dark :is(
+  p, small, .lead, .profile-setting-row strong,
+  .calendar-full-month-weekdays, .calendar-section-title small
+) {
+  color: #aebfd1;
+}
+
+.app.app-color-blau.theme-dark :is(
+  .calendar-month-overview,
+  .calendar-date-card,
+  .calendar-month-card,
+  .calendar-week-card,
+  .calendar-note-card,
+  .calendar-timeline-card,
+  .calendar-full-month,
+  .routines-empty-state,
+  .routine-selection-panel,
+  .custom-routine-card,
+  .social-modal,
+  .account-menu,
+  .bottom-nav
+) {
+  color: #f7faff;
+  border-color: rgba(125, 211, 252, 0.14);
+  background: #12263b;
+  box-shadow: 0 14px 34px rgba(2, 10, 18, 0.32);
+}
+
+.app.app-color-blau.theme-dark :is(
+  .diary-add-row,
+  .calendar-full-month-grid button,
+  .calendar-week-card button,
+  .diary-task-pill,
+  input, select, textarea
+) {
+  color: #f7faff;
+  border-color: rgba(125, 211, 252, 0.14);
+  background: #182f47;
+}
+
+.app.app-color-blau.theme-dark .social-modal-backdrop {
+  background: rgba(4, 13, 24, 0.74);
+}
+
+.app.app-color-blau .settings-profile-avatar,
+.app.app-color-blau .global-profile-initial {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f80ff, #7dd3fc);
+  box-shadow: 0 12px 26px rgba(47, 128, 255, 0.24);
+}
+
+.app.app-color-blau.theme-light .profile-settings-screen .profile-settings-panel > .profile-edit-panel {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: linear-gradient(135deg, #f7faff, #eaf6ff);
+}
+
+.app.app-color-blau.theme-dark .profile-settings-screen .profile-settings-panel > .profile-edit-panel {
+  color: #f7faff;
+  border-color: rgba(125, 211, 252, 0.16);
+  background: linear-gradient(135deg, #18344f, #102438);
+  box-shadow: 0 16px 34px rgba(2, 10, 18, 0.3);
+}
+
+.app.app-color-blau.theme-dark .profile-settings-screen .profile-settings-panel > .profile-edit-panel p {
+  color: #aebfd1;
+}
+
+/* Keep design option names readable side by side on narrow phones. */
+.profile-settings-screen .auth-design-card {
+  min-height: 124px;
+  padding: 14px 12px;
+}
+
+.profile-settings-screen .auth-design-card-title {
+  grid-template-columns: 34px minmax(0, 1fr) 26px;
+  gap: 7px;
+}
+
+.profile-settings-screen .auth-design-card-title i {
+  width: 34px;
+  height: 34px;
+  font-size: 18px;
+}
+
+.profile-settings-screen .auth-design-card-title strong {
+  min-width: max-content;
+  color: inherit;
+  font-size: 14px;
+  line-height: 1.1;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+.profile-settings-screen .auth-design-card-title b {
+  width: 26px;
+  height: 26px;
+  font-size: 14px;
+}
+
+.profile-settings-screen .auth-design-card > small {
+  font-size: 12px;
+}
+
+@media (max-width: 350px) {
+  .profile-settings-screen .auth-design-card-grid {
+    gap: 8px;
+  }
+
+  .profile-settings-screen .auth-design-card {
+    padding-inline: 9px;
+  }
+
+  .profile-settings-screen .auth-design-card-title {
+    grid-template-columns: 30px minmax(0, 1fr) 22px;
+    gap: 5px;
+  }
+
+  .profile-settings-screen .auth-design-card-title i {
+    width: 30px;
+    height: 30px;
+  }
+
+  .profile-settings-screen .auth-design-card-title b {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* Blue Light: detailed component accents. */
+.app.app-color-blau.theme-light .calendar-screen {
+  --diary-primary: #2f80ff;
+  --diary-active: #4ea8ff;
+  --diary-light: #7dd3fc;
+  --diary-pastel: #bee7ff;
+  --diary-hover: #eaf6ff;
+  --diary-lavender: #f7faff;
+  --diary-white: #ffffff;
+  --diary-card: #ffffff;
+  --diary-border: rgba(78, 168, 255, 0.18);
+  --diary-title: #1c2340;
+  --diary-text: #4d5875;
+  --diary-muted: #6d7692;
+  background:
+    linear-gradient(rgba(247, 250, 255, 0.82), rgba(234, 246, 255, 0.9)),
+    url("./assets/diary-bg-light.jpeg") center / cover no-repeat;
+}
+
+.app.app-color-blau.theme-light :is(
+  .calendar-week-card button.today strong,
+  .calendar-full-month-grid button.selected,
+  .calendar-full-month-grid button.today
+) {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f80ff, #7dd3fc);
+  box-shadow: 0 9px 22px rgba(47, 128, 255, 0.2);
+}
+
+.app.app-color-blau.theme-light .calendar-full-month-weekdays span {
+  color: #2f80ff;
+  border-color: rgba(78, 168, 255, 0.2);
+  background: linear-gradient(135deg, #eaf6ff, #bee7ff);
+  box-shadow: 0 7px 16px rgba(47, 128, 255, 0.08);
+}
+
+.app.app-color-blau.theme-light :is(
+  .calendar-month-overview-header span,
+  .calendar-section-title span,
+  .diary-images-header span,
+  .diary-filter-results-header span
+) {
+  color: #2f80ff;
+}
+
+.app.app-color-blau.theme-light :is(
+  .diary-task-pill,
+  .diary-task-empty,
+  .diary-add-row,
+  .diary-add-row.images,
+  .diary-add-row.appointment
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.18);
+  background: linear-gradient(135deg, #f7faff, #eaf6ff);
+}
+
+.app.app-color-blau.theme-light .home-flowtree-visual {
+  border-color: rgba(78, 168, 255, 0.2);
+  background: linear-gradient(145deg, #ffffff, #eaf6ff);
+  box-shadow: 0 12px 28px rgba(47, 128, 255, 0.1);
+}
+
+.app.app-color-blau.theme-light .home-flowtree-stage-symbol {
+  filter: hue-rotate(285deg) saturate(0.55) brightness(1.12);
+}
+
+.app.app-color-blau.theme-light :is(
+  .home-flowtree-message,
+  .home-flowtree-message::before,
+  .home-flowtree-message small,
+  .home-flowtree-progress > div:first-child > span,
+  .home-flowtree-status::before,
+  .home-goals-header > div > span,
+  .home-goals-header button,
+  .home-status-grid article > span,
+  .daily-focus-header > span,
+  .home-motivation-card > span
+) {
+  color: #2f80ff;
+}
+
+.app.app-color-blau.theme-light .home-flowtree-message::before {
+  background: #eaf6ff;
+}
+
+.app.app-color-blau.theme-light .home-flowtree-status {
+  color: #6d7692;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #f7faff;
+}
+
+.app.app-color-blau.theme-light :is(
+  .status-card-done,
+  .status-card-open,
+  .daily-focus-card,
+  .home-motivation-card,
+  .home-goals-card
+) {
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(47, 128, 255, 0.09);
+}
+
+.app.app-color-blau.theme-light .status-card-open {
+  background: linear-gradient(145deg, #ffffff, #eaf6ff);
+}
+
+.app.app-color-blau.theme-light :is(
+  .routine-add-circle,
+  .routine-category > strong,
+  .custom-routine-card button,
+  .wide-button,
+  .routine-entry-save,
+  .routine-duration-options button.selected
+) {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.75);
+  background: linear-gradient(135deg, #4ea8ff, #7dd3fc);
+  box-shadow: 0 10px 24px rgba(47, 128, 255, 0.2);
+}
+
+.app.app-color-blau.theme-light :is(
+  .routine-category,
+  .routine-suggestion,
+  .routine-form,
+  .routine-entry-panel,
+  .routine-focus-panel,
+  .routine-mini-task-list button
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #ffffff;
+  box-shadow: 0 9px 22px rgba(47, 128, 255, 0.08);
+}
+
+.app.app-color-blau.theme-light :is(
+  .routine-category-icon,
+  .custom-routine-illustration,
+  .routine-icon
+) {
+  color: #2f80ff;
+  border-color: rgba(78, 168, 255, 0.18);
+  background: linear-gradient(135deg, #eaf6ff, #bee7ff);
+}
+
+.app.app-color-blau.theme-light :is(
+  .stats-date-chip,
+  .sleep-tracker-icon,
+  .sleep-calendar-button,
+  .sleep-calendar-select-button,
+  .flowtree-week-header button
+) {
+  color: #2f80ff;
+  border-color: rgba(78, 168, 255, 0.18);
+  background: #eaf6ff;
+}
+
+.app.app-color-blau.theme-light :is(
+  .sleep-tracker-card,
+  .sleep-tracker-average,
+  .sleep-week-strip,
+  .sleep-calendar-sheet,
+  .flowtree-week-card
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(47, 128, 255, 0.09);
+}
+
+.app.app-color-blau.theme-light :is(
+  .sleep-week-strip button,
+  .sleep-calendar-grid button,
+  .flowtree-week-days div
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.14);
+  background: #f7faff;
+}
+
+.app.app-color-blau.theme-light :is(
+  .sleep-week-strip button.selected,
+  .sleep-calendar-grid button.selected,
+  .sleep-week-strip button.has-entry,
+  .sleep-calendar-grid button.has-entry
+) {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f80ff, #7dd3fc);
+}
+
+.app.app-color-blau.theme-light :is(
+  .flowtree-week-days div,
+  .flowtree-week-days b,
+  .flowtree-step-node,
+  .flowtree-level-step i
+) {
+  border-color: rgba(78, 168, 255, 0.18);
+  background-color: #eaf6ff;
+}
+
+.app.app-color-blau.theme-light :is(
+  .social-user-badge,
+  .social-avatar,
+  .social-section-title > b,
+  .social-friend-card > i,
+  .social-actions button > span,
+  .daily-check.active
+) {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.72);
+  background: linear-gradient(135deg, #4ea8ff, #7dd3fc);
+  box-shadow: 0 9px 22px rgba(47, 128, 255, 0.2);
+}
+
+.app.app-color-blau.theme-light :is(
+  .social-section-title span,
+  .social-kicker,
+  .challenge-result,
+  .friends-subtitle
+) {
+  color: #2f80ff;
+}
+
+.app.app-color-blau.theme-light :is(
+  .social-section,
+  .social-friend-card,
+  .social-request-card,
+  .social-challenge-card,
+  .social-empty,
+  .social-notice
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(47, 128, 255, 0.08);
+}
+
+.app.app-color-blau.theme-light :is(
+  .duel-progress,
+  .progress-bar
+) {
+  background: #eaf6ff;
+}
+
+.app.app-color-blau.theme-light :is(
+  .duel-progress span,
+  .progress-fill
+) {
+  background: linear-gradient(90deg, #4ea8ff, #7dd3fc);
+}
+
+.app.app-color-blau.theme-light :is(
+  .checkin-intro-card,
+  .checkin-question-card,
+  .checkin-result-card,
+  .checkin-recommendation,
+  .checkin-chat-card,
+  .checkin-summary-grid article,
+  .checkin-activity-guidance article,
+  .task-companion
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(47, 128, 255, 0.09);
+}
+
+.app.app-color-blau.theme-light :is(
+  .checkin-option.selected,
+  .checkin-chat-option.selected,
+  .ai-start-option.primary,
+  .ai-start-icon,
+  .task-companion-progress > span
+) {
+  color: #ffffff;
+  border-color: #4ea8ff;
+  background: linear-gradient(135deg, #4ea8ff, #7dd3fc);
+  box-shadow: 0 9px 22px rgba(47, 128, 255, 0.18);
+}
+
+.app.app-color-blau.theme-light :is(
+  .checkin-chat-bubble.assistant,
+  .checkin-chat-option,
+  .checkin-alternatives button,
+  .ai-start-option
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #f7faff;
+}
+
+.app.app-color-blau.theme-light .checkin-chat-bubble.user {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f80ff, #4ea8ff);
+}
+
+.app.app-color-blau.theme-light :is(
+  .profile-situation-card,
+  .profile-level-card,
+  .flow-tree-card,
+  .bmi-card
+) {
+  color: #1c2340;
+  border-color: rgba(78, 168, 255, 0.16);
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(47, 128, 255, 0.09);
+}
+
+.app.app-color-blau.theme-light :is(
+  .profile-situation-header button,
+  .profile-level-number,
+  .profile-level-card .eyebrow,
+  .flow-tree-card .eyebrow,
+  .profile-situation-card .eyebrow
+) {
+  color: #2f80ff;
+}
+
+.app.app-color-blau.theme-light .profile-situation-header button {
+  border-color: rgba(78, 168, 255, 0.18);
+  background: #eaf6ff;
+  box-shadow: none;
+}
+
+.app.app-color-blau.theme-light .communication-bubbles-icon path {
+  stroke: #2f80ff !important;
+}
+
+.app.app-color-blau.theme-light :is(
+  .profile-setting-row button,
+  .settings-gear-button,
+  .back-button
+) svg {
+  stroke: #2f80ff;
+}
+
+.app.app-color-blau .floating-checkin-button {
+  color: #ffffff !important;
+  border-color: #7dd3fc !important;
+  background: linear-gradient(145deg, #4ea8ff, #7dd3fc) !important;
+  box-shadow:
+    0 0 0 4px rgba(190, 231, 255, 0.9),
+    0 14px 30px rgba(47, 128, 255, 0.24) !important;
+}
+
+.app.app-color-blau .floating-checkin-button::before {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f80ff, #7dd3fc);
+  box-shadow: 0 7px 16px rgba(47, 128, 255, 0.26);
+}
+
+.app.app-color-blau .floating-checkin-button img {
+  border: 2px solid #bee7ff;
+  background: #eaf6ff;
+  box-shadow: none;
 }

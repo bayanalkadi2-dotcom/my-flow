@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/authContextValue'
 import { useProfile } from '../context/profileContextValue'
 import logo from '../assets/Icon Gruppe H.png'
+import blueLogo from '../assets/myflow-logo-blue.png'
 import iconDesign from '../assets/settings-icons/design.png'
 import iconGender from '../assets/settings-icons/gender.png'
 import iconHeight from '../assets/settings-icons/height.png'
@@ -13,6 +14,7 @@ import iconWeight from '../assets/settings-icons/weight.png'
 import { calculateChallengePoints } from '../utils/progressLevels'
 import { updateProfile, uploadProfileAvatar } from '../services/authService'
 import PwaInstallOption from '../commponents/PwaInstallOption'
+import AuthDesignPicker from '../commponents/AuthDesignPicker'
 import {
   getHeightError,
   getProfileAgeError,
@@ -41,8 +43,6 @@ const genderOptions = [
   { id: 'diverse', label: 'Divers', name: 'Student:in' },
   { id: 'none', label: 'Keine Angabe', name: 'Student' },
 ]
-
-const designOptions = ['Hell', 'Dunkel']
 
 const paymentPlans = [
   { id: 'free', label: 'Kostenlos', monthlyPrice: '0 EUR', yearlyPrice: '0 EUR' },
@@ -200,6 +200,7 @@ function SettingIcon({ type }) {
 }
 
 function Profil({
+  appColor,
   appTheme,
   communicationStyle,
   languageStyle,
@@ -209,6 +210,7 @@ function Profil({
   tone,
   t,
   onAppThemeChange,
+  onAppDesignChange,
   onCommunicationStyleChange,
   onNavigate,
   onProfileNameChange,
@@ -377,9 +379,9 @@ function Profil({
     }))
   }
 
-  function selectDesign(option) {
-    updateDraft('design', option)
-    onAppThemeChange(option)
+  function selectDesign(color, mode) {
+    updateDraft('design', mode)
+    onAppDesignChange(color, mode)
     setActiveEditor(null)
   }
 
@@ -489,7 +491,7 @@ function Profil({
       )}
       {!settingsPage ? (
         <div className="profile-title-row">
-          <img src={logo} alt="MyFlow Logo" className="small-logo" />
+          <img src={appColor === 'Blau' ? blueLogo : logo} alt="MyFlow Logo" className="small-logo" />
           <h1>{t.profile.title}</h1>
         </div>
       ) : null}
@@ -789,23 +791,12 @@ function Profil({
         <div className="profile-setting-row">
           <SettingIcon type="design" />
           <span>{t.profile.design}</span>
-          <strong>{appTheme}</strong>
+          <strong>{appColor} · {appTheme}</strong>
           <button type="button" onClick={() => openEditor('design')}>{t.common.change}</button>
         </div>
         {activeEditor === 'design' && (
           <div className="profile-edit-panel">
-            <div className="option-grid">
-              {designOptions.map((option) => (
-                <button
-                  className={`profile-choice ${draftSettings.design === option ? 'selected' : ''}`}
-                  key={option}
-                  onClick={() => selectDesign(option)}
-                  type="button"
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
+            <AuthDesignPicker color={appColor} mode={appTheme} onChange={selectDesign} />
           </div>
         )}
         <div className="profile-setting-row">

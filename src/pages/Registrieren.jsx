@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../context/authContextValue'
 import PasswordVisibilityButton from '../commponents/PasswordVisibilityButton'
+import AuthDesignPicker from '../commponents/AuthDesignPicker'
 
 const languageOptions = [
   ['german', 'Deutsch'],
@@ -14,10 +15,7 @@ const communicationOptions = [
   ['formal', 'Formal'],
 ]
 
-const designOptions = [
-  ['Hell', 'Hell'],
-  ['Dunkel', 'Dunkel'],
-]
+const designOptions = [['Hell', 'Hell'], ['Dunkel', 'Dunkel']]
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -41,7 +39,7 @@ function getRegisterErrorMessage(error) {
   return 'Registrierung fehlgeschlagen. Bitte versuche es später erneut.'
 }
 
-function Registrieren({ onNavigate, t }) {
+function Registrieren({ appColor, appTheme, onAppDesignChange, onNavigate, t }) {
   const { signup } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -49,7 +47,7 @@ function Registrieren({ onNavigate, t }) {
   const [displayName, setDisplayName] = useState('')
   const [languageStyle, setLanguageStyle] = useState('')
   const [communicationStyle, setCommunicationStyle] = useState('')
-  const [theme, setTheme] = useState('')
+  const [theme, setTheme] = useState(appTheme)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false)
@@ -71,7 +69,7 @@ function Registrieren({ onNavigate, t }) {
       return
     }
 
-    if (!languageStyle || !communicationStyle || !theme) {
+    if (!languageStyle || !communicationStyle) {
       setError('Bitte wähle Sprache, Kommunikationsstil und Design aus.')
       return
     }
@@ -97,7 +95,8 @@ function Registrieren({ onNavigate, t }) {
       await signup(email, password, displayName.trim(), {
         language_style: languageStyle,
         communication_style: communicationStyle,
-        theme,
+        theme: appTheme,
+        color_theme: appColor,
         onboarding_completed: true,
       })
       setSuccess('Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mail.')
@@ -107,7 +106,6 @@ function Registrieren({ onNavigate, t }) {
       setDisplayName('')
       setLanguageStyle('')
       setCommunicationStyle('')
-      setTheme('')
       setAcceptedPrivacy(false)
     } catch (err) {
       setError(getRegisterErrorMessage(err))
@@ -165,7 +163,11 @@ function Registrieren({ onNavigate, t }) {
           </div>
         </label>
 
-        <label className="student-onboarding-label">
+        <div className="register-design-section">
+          <AuthDesignPicker color={appColor} mode={appTheme} onChange={onAppDesignChange} />
+        </div>
+
+        <label className="student-onboarding-label legacy-register-design">
           Design
           <div className="student-chip-grid">
             {designOptions.map(([value, label]) => (

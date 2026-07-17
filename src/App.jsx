@@ -51,6 +51,10 @@ function getThemeStorageKey(userId) {
   return userId ? `myflow-theme-${userId}` : 'myflow-theme-guest'
 }
 
+function getColorThemeStorageKey(userId) {
+  return userId ? `myflow-color-theme-${userId}` : 'myflow-color-theme-guest'
+}
+
 function loadLastScreen(userId) {
   if (!userId) return 'dashboard'
   const savedScreen = localStorage.getItem(`myflow-last-screen-${userId}`)
@@ -191,6 +195,7 @@ function App() {
   const [communicationStyle, setCommunicationStyle] = useState('casual')
   const [profileName, setProfileName] = useState('Gast')
   const [appTheme, setAppTheme] = useState('Hell')
+  const [appColor, setAppColor] = useState('Lila')
   const [routineItems, setRoutineItems] = useState([])
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [routinesLoaded, setRoutinesLoaded] = useState(false)
@@ -223,17 +228,20 @@ function App() {
         setCommunicationStyle('casual')
         setProfileName('Gast')
         setAppTheme('Hell')
+        setAppColor('Lila')
         setRoutineItems([])
         setCalendarNotes(loadCalendarNotes('guest'))
         setProfile(null)
         setAccountProfile(loadAccountProfile())
         const savedGuestSetup = loadGuestSetup()
         const savedGuestTheme = localStorage.getItem(getThemeStorageKey(null))
+        const savedGuestColor = localStorage.getItem(getColorThemeStorageKey(null)) || localStorage.getItem('myflow-last-color-theme')
         setGuestSetup(savedGuestSetup)
         setLanguageStyle(savedGuestSetup.language_style || 'german')
         setCommunicationStyle(savedGuestSetup.communication_style || 'casual')
         setProfileName(savedGuestSetup.display_name || 'Gast')
         setAppTheme(savedGuestTheme || savedGuestSetup.theme || 'Hell')
+        setAppColor(savedGuestColor || 'Lila')
         setScreen('start')
         setRoutinesLoaded(true)
       })
@@ -247,6 +255,8 @@ function App() {
         // Load settings
         const settingsRes = await getUserSettings(user.id)
         const savedTheme = localStorage.getItem(getThemeStorageKey(user.id))
+        const savedColor = localStorage.getItem(getColorThemeStorageKey(user.id))
+        setAppColor(savedColor || 'Lila')
         if (settingsRes.success && settingsRes.settings) {
           setLanguageStyle(settingsRes.settings.language_style || 'german')
           setCommunicationStyle(settingsRes.settings.communication_style || 'casual')
@@ -692,6 +702,14 @@ function App() {
     setScreen(guestSetup.completed ? 'dashboard' : 'quickStartSetup')
   }
 
+  function handleAppDesignChange(color, mode) {
+    setAppColor(color)
+    localStorage.setItem(getColorThemeStorageKey(user?.id), color)
+    localStorage.setItem('myflow-last-color-theme', color)
+    localStorage.setItem('myflow-last-display-mode', mode)
+    handleAppThemeChange(mode)
+  }
+
   async function handleGuestSetupComplete(answers) {
     const nextSetup = {
       ...defaultGuestSetup,
@@ -778,7 +796,7 @@ function App() {
         case 'login':
           return <Einloggen onNavigate={setScreen} t={t} />
         case 'register':
-          return <Registrieren onNavigate={setScreen} t={t} />
+          return <Registrieren appColor={appColor} appTheme={appTheme} onAppDesignChange={handleAppDesignChange} onNavigate={setScreen} t={t} />
         case 'resetPassword':
           return <PasswordReset onNavigate={setScreen} t={t} />
         case 'languageStyle':
@@ -802,12 +820,12 @@ function App() {
             />
           )
         default:
-          return <Startseite onNavigate={setScreen} onStart={handleQuickStart} t={t} />
+          return <Startseite appColor={appColor} onNavigate={setScreen} onStart={handleQuickStart} t={t} />
       }
     }
 
     return (
-      <main className={`app ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
+      <main className={`app ${appColor === 'Blau' ? 'auth-blue' : 'auth-lila'} ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
         {renderAuthScreen()}
       </main>
     )
@@ -902,6 +920,7 @@ function App() {
       case 'profile':
         return (
           <Profil
+            appColor={appColor}
             accountProfile={accountProfile}
             appTheme={appTheme}
             habits={preparedHabits}
@@ -912,6 +931,7 @@ function App() {
             t={t}
             onAccountProfileChange={handleAccountProfileChange}
             onAppThemeChange={handleAppThemeChange}
+            onAppDesignChange={handleAppDesignChange}
             onNavigate={setScreen}
             onProfileNameChange={handleProfileNameChange}
             onCommunicationStyleChange={handleCommunicationStyleChange}
@@ -921,6 +941,7 @@ function App() {
       case 'profileSettings':
         return (
           <Profil
+            appColor={appColor}
             accountProfile={accountProfile}
             appTheme={appTheme}
             habits={preparedHabits}
@@ -932,6 +953,7 @@ function App() {
             t={t}
             onAccountProfileChange={handleAccountProfileChange}
             onAppThemeChange={handleAppThemeChange}
+            onAppDesignChange={handleAppDesignChange}
             onNavigate={setScreen}
             onProfileNameChange={handleProfileNameChange}
             onCommunicationStyleChange={handleCommunicationStyleChange}
@@ -976,7 +998,7 @@ function App() {
   }
 
   return (
-    <main className={`app app-has-global-profile ${screen === 'profileSettings' ? 'profile-settings-active' : ''} ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
+    <main className={`app app-color-${appColor.toLowerCase()} app-has-global-profile ${screen === 'profileSettings' ? 'profile-settings-active' : ''} ${appTheme === 'Dunkel' ? 'theme-dark' : 'theme-light'} ${languageStyle === 'arabic' ? 'rtl' : ''}`} dir={languageStyle === 'arabic' ? 'rtl' : 'ltr'}>
       <div className="global-account" ref={accountMenuRef}>
         <button
           className={`global-profile-button ${isAccountMenuOpen ? 'active' : ''}`}

@@ -1,6 +1,8 @@
-import logo from '../assets/Icon Gruppe H.png'
+import purpleLogo from '../assets/Icon Gruppe H.png'
+import blueLogo from '../assets/myflow-logo-blue.png'
 
-function Startseite({ onNavigate, onStart, t }) {
+function Startseite({ appColor, onNavigate, onStart, t }) {
+  const logo = appColor === 'Blau' ? blueLogo : purpleLogo
   return (
     <section className="screen welcome-screen">
       <div className="orb orb-one" />
