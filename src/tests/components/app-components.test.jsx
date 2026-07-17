@@ -427,6 +427,17 @@ describe('DailyCheckIn, diary and routines interactions', () => {
     await waitFor(() => expect(screen.getAllByText('Mathe lernen').length).toBeGreaterThan(0))
   })
 
+  it('shows Turkish weekday abbreviations in the month overview', async () => {
+    const user = userEvent.setup()
+    renderWithDefaults(<Kalender languageStyle="turkish" notes={{}} onNotesChange={vi.fn()} />)
+
+    await user.click(screen.getByRole('button', { name: 'Aylık genel bakış' }))
+    expect(screen.getAllByText('Pzt').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Sal').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Paz').length).toBeGreaterThan(0)
+    expect(screen.queryByText('Mo')).not.toBeInTheDocument()
+  })
+
   it('adds and removes routines', async () => {
     const onAddHabit = vi.fn()
     const onRemove = vi.fn()

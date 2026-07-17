@@ -394,7 +394,7 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
     if (!showMonthOverview) return
 
     requestAnimationFrame(() => {
-      currentMonthRef.current?.scrollIntoView({ block: 'start' })
+      currentMonthRef.current?.scrollIntoView?.({ block: 'start' })
     })
   }, [showMonthOverview])
 
@@ -498,7 +498,7 @@ function Kalender({ languageStyle = 'german', notes = {}, onNotesChange }) {
               >
                 <h3>{(ar?.months ?? monthNames)[month]} {year}</h3>
                 <div className="calendar-full-month-weekdays" aria-hidden="true">
-                  {weekdays.map((weekday) => <span key={weekday}>{weekday}</span>)}
+                  {ar.weekdays.map((weekday) => <span key={weekday}>{weekday}</span>)}
                 </div>
                 <div className="calendar-full-month-grid">
                   {getMonthDays(year, month).map((day, index) => {
